@@ -1,0 +1,189 @@
+{
+  "excelReportStructure": {
+    "sheets": [
+      "Updated Multi-Year Budget",
+      "Sheet1",
+      "Annual Budget",
+      "Acreage"
+    ],
+    "keySections": {
+      "multiYearBudget": {
+        "realProperty": "Row 14",
+        "personalProperty": "Row 15",
+        "centrallyAssessed": "Row 16",
+        "totalAssessed": "Row 17",
+        "baseYearValue": "Row 18-19",
+        "taxRates": "Row 23-25",
+        "growthRates": "Row 70",
+        "taxIncrementRevenue": "Calculated from assessed values and tax rates"
+      },
+      "acreage": {
+        "developed": "Row 3",
+        "undeveloped": "Row 4",
+        "total": "Row 5",
+        "percentDeveloped": "Row 6 (calculated)",
+        "percentUndeveloped": "Row 7 (calculated)"
+      }
+    }
+  },
+  "formFieldMapping": {
+    "externalForm": {
+      "acreage": {
+        "mapsTo": "Total Acreage",
+        "usedIn": [
+          "Acreage sheet",
+          "Percentage calculations"
+        ]
+      },
+      "baseValue": {
+        "mapsTo": "Base Year Value",
+        "usedIn": [
+          "Tax increment calculations"
+        ]
+      },
+      "developedAcreage": {
+        "mapsTo": "Developed Acreage",
+        "usedIn": [
+          "Acreage sheet",
+          "Percentage calculations"
+        ]
+      },
+      "undevelopedAcreage": {
+        "mapsTo": "Undeveloped Acreage",
+        "usedIn": [
+          "Acreage sheet",
+          "Percentage calculations"
+        ]
+      },
+      "fundBalance": {
+        "mapsTo": "Fund Balance",
+        "usedIn": [
+          "Financial summaries"
+        ]
+      }
+    },
+    "internalForm": {
+      "tyValue": {
+        "mapsTo": "Total Assessed Value",
+        "usedIn": [
+          "Multi-year budget",
+          "Tax increment calculations"
+        ],
+        "note": "May need to split into Real/Personal/Centrally"
+      },
+      "taxEntityName": {
+        "mapsTo": "Tax Entity Names",
+        "usedIn": [
+          "Tax rate lookups",
+          "Revenue calculations"
+        ]
+      },
+      "taxEntityParticipationRate": {
+        "mapsTo": "Participation Rates",
+        "usedIn": [
+          "Revenue allocation"
+        ]
+      },
+      "tyOriginalBudgetRevenues": {
+        "mapsTo": "Original Budget Revenues",
+        "usedIn": [
+          "Growth analysis"
+        ]
+      },
+      "tyActualRevenue": {
+        "mapsTo": "Actual Revenue",
+        "usedIn": [
+          "Growth analysis",
+          "Variance calculations"
+        ]
+      }
+    }
+  },
+  "missingFields": {
+    "needsToBeAdded": [
+      {
+        "field": "personalPropertyValue",
+        "form": "internal",
+        "type": "number",
+        "description": "Personal Property Assessed Value",
+        "default": 0,
+        "required": false
+      },
+      {
+        "field": "centrallyAssessedValue",
+        "form": "internal",
+        "type": "number",
+        "description": "Centrally Assessed Value",
+        "required": true
+      },
+      {
+        "field": "realPropertyValue",
+        "form": "internal",
+        "type": "number",
+        "description": "Real Property Assessed Value (if tyValue is total, this should be separate)",
+        "required": true,
+        "note": "May be calculated as tyValue - personalPropertyValue - centrallyAssessedValue"
+      },
+      {
+        "field": "growthRates",
+        "form": "internal",
+        "type": "array",
+        "description": "Annual growth rates for projected years (array of rates per year)",
+        "required": false,
+        "note": "Can be calculated from historical data or input manually"
+      }
+    ],
+    "comesFromImport": [
+      {
+        "field": "taxRatesByEntity",
+        "source": "Excel/CSV import",
+        "description": "Tax rates by entity (County, School District, City) and year",
+        "format": "CSV/Excel with columns: Entity, Year, Rate",
+        "note": "From Utah Certified Tax Rates website"
+      },
+      {
+        "field": "taxEntityNames",
+        "source": "Excel/CSV import or form",
+        "description": "Tax entity names matching the import",
+        "note": "May already exist in taxEntityName fields but needs validation"
+      }
+    ]
+  },
+  "formulaDependencies": {
+    "totalAssessedValue": {
+      "formula": "Real Property + Personal Property + Centrally Assessed",
+      "baseFields": [
+        "realPropertyValue",
+        "personalPropertyValue",
+        "centrallyAssessedValue"
+      ],
+      "status": "needsFields"
+    },
+    "taxIncrementRevenue": {
+      "formula": "(Total Assessed Value - Base Year Value) * Tax Rate",
+      "baseFields": [
+        "totalAssessedValue",
+        "baseValue",
+        "taxRatesByEntity"
+      ],
+      "status": "needsTaxRates"
+    },
+    "realPropertyGrowth": {
+      "formula": "Previous Year * (1 + Growth Rate)",
+      "baseFields": [
+        "realPropertyValue",
+        "growthRates"
+      ],
+      "status": "needsGrowthRates"
+    },
+    "acreagePercentages": {
+      "formula": "Developed / Total, Undeveloped / Total",
+      "baseFields": [
+        "developedAcreage",
+        "undevelopedAcreage",
+        "acreage"
+      ],
+      "status": "complete"
+    }
+  }
+}

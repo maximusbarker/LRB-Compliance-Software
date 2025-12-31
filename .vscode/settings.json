@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LRB Compliance Database</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="lrb_public_finance_advisors_logo.jpg">
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0ea5e9;
+            --primary-blue-dark: #0284c7;
+            --primary-blue-light: #e0f2fe;
+            --secondary-blue: #38bdf8;
+            --accent-blue: #7dd3fc;
+            --success-green: #10b981;
+            --warning-yellow: #f59e0b;
+            --error-red: #ef4444;
+            --neutral-gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --border-gray: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #374151;
+            --text-muted: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-gray);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .main-content {
+            padding: 32px 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-gray);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-gray);
+            background: var(--bg-secondary);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 32px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            font-size: 14px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-gray);
+            border-color: var(--neutral-gray);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--error-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-gray);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--bg-primary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--primary-blue-light);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .table-container {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-gray);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: var(--primary-blue);
+            color: white;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-gray);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-gray);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .table tbody tr:hover {
+            background: var(--light-gray);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-ready {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-needed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .password-input {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto 24px auto;
+            display: block;
+        }
+
+        .modal-login-btn {
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius);
+        }
+
+        .modal-close:hover {
+            background: var(--primary-blue-light);
+            color: var(--primary-blue-dark);
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 4px;
+            gap: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+        }
+
+        .tab.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--light-gray);
+            color: var(--text-primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Legacy compatibility styles */
+        .landing-container, .main-container, .internal-container, .login-container {
+            max-width: 900px;
+            margin: 60px auto;
+            background: var(--bg-primary);
+            padding: 40px 30px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-gray);
+        }
+
+        .landing-container {
+            text-align: center;
+            padding: 64px 32px;
+        }
+
+        .landing-container h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .landing-container p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .landing-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.2s ease;
+            min-width: 200px;
+            display: inline-block;
+        }
+
+        .landing-btn:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tab-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .site-logo {
+            position: absolute;
+            top: 18px;
+            left: 24px;
+            max-width: 48px;
+            max-height: 48px;
+            width: 48px;
+            height: 48px;
+            z-index: 100;
+            background: var(--bg-primary);
+            border-radius: 50%;
+            box-shadow: var(--shadow-md);
+            object-fit: contain;
+        }
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--primary-blue);
+            color: white;
+            padding: 18px 32px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Form styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px 32px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        input[type="text"], input[type="number"], input[type="url"], textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-gray);
+            border-radius: var(--border-radius);
+            margin-bottom: 0;
+            font-size: 14px;
+            background: var(--bg-primary);
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--primary-blue-light);
+        }
+
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        select {
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%236b7280" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px 18px;
+            padding-right: 40px;
+            appearance: none;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 0 0;
+        }
+
+        /* Project area styling */
+        .project-area {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 32px 24px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin: 30px 0 15px 0;
+            border-bottom: 1px solid var(--primary-blue);
+            padding-bottom: 8px;
+        }
+
+        /* Input styles */
+        input, textarea, select {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Button styles */
+        .btn, .add-btn, .save-btn, .logout-btn, .internal-btn, .back-btn, .landing-btn, .internal-db-action-btn, .internal-db-actions-btn, .view-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 30px 0 0 0;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover, .add-btn:hover, .save-btn:hover, .logout-btn:hover, .internal-btn:hover, .back-btn:hover, .landing-btn:hover, .internal-db-action-btn:hover, .internal-db-actions-btn:hover, .view-btn:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logout-btn, .internal-btn {
+            float: right;
+            margin: 0 0 20px 10px;
+            padding: 10px 24px;
+            font-size: 14px;
+        }
+
+        /* Status styles */
+        .internal-db-status {
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .internal-db-status-pending { background: #fef3c7; color: #92400e; }
+        .internal-db-status-approved, .internal-db-status-ready { background: #dcfce7; color: #166534; }
+        .internal-db-status-rejected, .internal-db-status-internal-needed { background: #fee2e2; color: #991b1b; }
+        .internal-db-status-multiple { background: #fef3c7; color: #92400e; }
+        .internal-db-status-none { background: var(--neutral-gray); color: white; }
+        .status-submitted { background: #dcfce7; color: #166534; }
+        .status-ready { background: #dcfce7; color: #166534; }
+        .status-internal-needed { background: #fee2e2; color: #991b1b; }
+        .status-external-needed { background: #fef3c7; color: #92400e; }
+
+        /* Table styles */
+        .table-container {
+            margin-top: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border-gray);
+            padding: 16px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Internal database controls */
+        .internal-db-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        #internal-db-filter-year {
+            width: 160px;
+            min-width: 160px;
+            max-width: 160px;
+        }
+
+        #internal-db-search {
+            width: 320px;
+            min-width: 120px;
+            max-width: 340px;
+        }
+
+        #internal-db-filter-status {
+            width: 180px;
+            min-width: 90px;
+            max-width: 180px;
+        }
+
+        .internal-db-controls input[type="text"],
+        .internal-db-controls select {
+            height: 44px;
+            padding: 12px 16px;
+            font-size: 14px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-primary);
+            box-sizing: border-box;
+            margin-bottom: 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .internal-db-controls select {
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        /* External table container */
+        .external-table-container {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        #project-table {
+            min-width: 1200px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .card-body {
+                padding: 24px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+
+            .site-logo { 
+                left: 8px; 
+                top: 8px; 
+                max-width: 36px; 
+                max-height: 36px; 
+                width: 36px; 
+                height: 36px; 
+            }
+
+            .landing-container, .main-container, .internal-container { 
+                padding: 24px 16px; 
+            }
+            
+            .form-grid { 
+                grid-template-columns: 1fr; 
+                gap: 18px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="lrb_public_finance_advisors_logo.jpg" alt="LRB Logo">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Landing Page -->
+            <div id="landing-container" class="landing-container">
+                <h1>Welcome!</h1>
+                <p>Choose your access point to proceed:</p>
+                <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 32px;">
+                    <button id="external-role-btn" class="landing-btn" style="background: var(--primary-blue); color: white;">Client Portal</button>
+                    <button id="internal-role-btn" class="landing-btn" style="background: var(--primary-blue); color: white;">Internal Database</button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div id="tab-bar" class="tabs hidden" style="margin-bottom: 24px;">
+                <button id="external-tab-btn" class="tab">External Data Request</button>
+                <button id="internal-tab-btn" class="tab">Internal Database</button>
+                <button id="internal-data-tab-btn" class="tab">Internal Data Request</button>
+                <button id="logout-btn" class="btn btn-secondary" style="margin-left: auto;">Logout</button>
+            </div>
+
+            <!-- External Data Request -->
+            <div id="main-container" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">June 30th Data Request Form</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="project-form">
+                            <div class="form-row" style="flex-direction: row; align-items: center; gap: 10px;">
+                                <label for="external-year-select" style="margin-bottom:0;">Year:</label>
+                                <select id="external-year-select" name="year" required style="width:130px;min-width:130px;max-width:130px;">
+                                    <option value="">Select Year</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>
+                                    <option value="2038">2038</option>
+                                    <option value="2039">2039</option>
+                                    <option value="2040">2040</option>
+                                    <option value="2041">2041</option>
+                                    <option value="2042">2042</option>
+                                    <option value="2043">2043</option>
+                                    <option value="2044">2044</option>
+                                    <option value="2045">2045</option>
+                                    <option value="2046">2046</option>
+                                    <option value="2047">2047</option>
+                                    <option value="2048">2048</option>
+                                    <option value="2049">2049</option>
+                                    <option value="2050">2050</option>
+                                    <option value="2051">2051</option>
+                                    <option value="2052">2052</option>
+                                    <option value="2053">2053</option>
+                                    <option value="2054">2054</option>
+                                    <option value="2055">2055</option>
+                                    <option value="2056">2056</option>
+                                    <option value="2057">2057</option>
+                                    <option value="2058">2058</option>
+                                    <option value="2059">2059</option>
+                                    <option value="2060">2060</option>
+                                </select>
+                            </div>
+                            <div class="project-area">
+                                <div class="section-title">Project Area Information</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>Agency/Submitter Name:</label>
+                                        <input type="text" name="submitterName" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>Project Area Name:</label>
+                                        <input type="text" name="projectAreaName" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL ACREAGE:</label>
+                                        <input type="number" name="acreage" step="0.01" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>CREATION YEAR:</label>
+                                        <input type="number" name="creationYear" min="1900" max="2100" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>BASE YEAR:</label>
+                                        <input type="number" name="baseYear" min="1900" max="2100" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TERM LENGTH:</label>
+                                        <input type="number" name="termLength" min="1" max="100" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>START YEAR:</label>
+                                        <input type="number" name="startYear" min="1900" max="2100" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>EXPIRATION YEAR:</label>
+                                        <input type="number" name="expirationYear" min="1900" max="2100" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>BASE VALUE:</label>
+                                        <input type="number" name="baseValue" step="0.01" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>FY INCREMENT:</label>
+                                        <input type="number" name="fyIncrement" step="0.01" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>REMAINING LIFE:</label>
+                                        <input type="number" name="remainingLife" step="0.01" readonly>
+                                        <small style="color: #666; font-size: 0.8em;">Auto-calculated: Expiration Year - 2025</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-title">Assessed Value & Financial Information</div>
+                                <div class="form-row" style="grid-column: 1 / -1;">
+                                    <label>DESCRIPTION OF GROWTH IN ASSESSED VALUE:</label>
+                                    <textarea name="descriptionGrowthAssessedValue" required></textarea>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>FUND BALANCE:</label>
+                                        <input type="number" name="fundBalance" step="0.01" required>
+                                    </div>
+                                    <div class="form-row" style="grid-column: 1 / -1;">
+                                        <label>PLANNED USES FOR FUND BALANCE:</label>
+                                        <textarea name="plannedUsesFundBalance" required></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-title">Expense Categories</div>
+                                <div id="expense-container">
+                                    <!-- Default expense row -->
+                                    <div class="expense-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 12px; align-items: end; margin-bottom: 12px; padding: 16px; background: var(--bg-secondary); border-radius: var(--border-radius); border: 1px solid var(--border-gray);">
+                                        <div class="form-row">
+                                            <label>Expense Title:</label>
+                                            <input type="text" name="expenseTitle_0" required>
+                                        </div>
+                                        <div class="form-row">
+                                            <label id="fy-label-0">FY (Selected Year) Expense:</label>
+                                            <input type="number" name="tyExpense_0" step="0.01" required onchange="calculateExpenseTotal(0)">
+                                        </div>
+                                        <div class="form-row">
+                                            <label id="cy-label-0">2025 Expense:</label>
+                                            <input type="number" name="cyExpense_0" step="0.01" required onchange="calculateExpenseTotal(0)">
+                                        </div>
+                                        <div class="form-row">
+                                            <label id="ny-label-0">2026 Expense:</label>
+                                            <input type="number" name="nyExpense_0" step="0.01" required onchange="calculateExpenseTotal(0)">
+                                        </div>
+                                        <button type="button" class="btn btn-secondary" onclick="removeExpenseRow(this)" style="padding: 6px 12px; font-size: 12px;">Remove</button>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 16px;">
+                                    <button type="button" class="add-btn" id="add-expense-btn" style="width: auto; margin: 0;">+ Add Expense</button>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label id="fy-actual-spent-label">FY (Selected Year) ACTUAL SPENT TOTAL:</label>
+                                        <input type="number" name="tyActualSpentTotal" step="0.01" readonly>
+                                        <small style="color: #666; font-size: 0.8em;">Auto-calculated: Sum of all expense totals</small>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>ADMINISTRATIVE PERCENTAGE:</label>
+                                        <input type="number" name="administrativePercentage" step="0.01" readonly>
+                                        <small style="color: #666; font-size: 0.8em;">Auto-calculated: (Admin Expense / Total Expenses) × 100</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-title">Development Information</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>DEVELOPED ACREAGE:</label>
+                                        <input type="number" name="developedAcreage" step="0.01" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>UNDEVELOPED ACREAGE:</label>
+                                        <input type="number" name="undevelopedAcreage" step="0.01" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>RESIDENTIAL ACREAGE:</label>
+                                        <input type="number" name="residentialAcreage" step="0.01" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>% RESIDENTIAL:</label>
+                                        <input type="number" name="percentResidential" min="0" max="100" step="0.01" required readonly>
+                                        <small style="color: #666; font-size: 0.8em;">Auto-calculated: (Residential Acreage / Total Acreage) × 100</small>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL AUTHORIZED HOUSING UNITS:</label>
+                                        <input type="number" name="totalAuthorizedHousingUnits" min="0" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-title">Descriptions</div>
+                                <div class="form-row" style="grid-column: 1 / -1;">
+                                    <label>DESCRIPTION OF SIGNIFICANT DEVELOPMENT:</label>
+                                    <textarea name="descriptionSignificantDevelopment" required></textarea>
+                                </div>
+                                <div class="form-row" style="grid-column: 1 / -1;">
+                                    <label>DESCRIPTION OF HOW THE PLAN HAS BEEN FURTHERED:</label>
+                                    <textarea name="descriptionPlanFurthered" required></textarea>
+                                </div>
+                                <div class="form-row" style="grid-column: 1 / -1;">
+                                    <label>DESCRIPTION OF OTHER ISSUES WORTH NOTING:</label>
+                                    <textarea name="descriptionOtherIssues"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="add-btn" style="width:100%;margin-top:24px;">Add Project Area</button>
+                        </form>
+                        <div class="table-container external-table-container">
+                            <table id="project-table" style="margin-top:0; display:none;">
+                                <thead>
+                                    <tr>
+                                        <th>Agency/Submitter Name</th>
+                                        <th>Project Area Name</th>
+                                        <th>ACREAGE</th>
+                                        <th>CREATION YEAR</th>
+                                        <th>BASE YEAR</th>
+                                        <th>TERM LENGTH</th>
+                                        <th>START YEAR</th>
+                                        <th>EXPIRATION YEAR</th>
+                                        <th>BASE VALUE</th>
+                                        <th>FY INCREMENT</th>
+                                        <th>REMAINING LIFE</th>
+                                        <th>FUND BALANCE</th>
+                                        <th id="fy-actual-spent-header">FY (Selected Year) ACTUAL SPENT TOTAL</th>
+                                        <th>DEVELOPED ACREAGE</th>
+                                        <th>UNDEVELOPED ACREAGE</th>
+                                        <th>RESIDENTIAL ACREAGE</th>
+                                        <th>% RESIDENTIAL</th>
+                                        <th>TOTAL AUTHORIZED HOUSING UNITS</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <button id="external-submit-all-btn" class="add-btn" style="display:none; margin-top:18px; width:100%;">Submit All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thank You Page -->
+            <div id="external-thankyou" class="hidden">
+                <div class="card">
+                    <div class="card-body" style="text-align: center; padding: 64px 32px;">
+                        <h2 style="font-size: 28px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Thanks for your help!</h2>
+                        <p style="margin-bottom: 32px; color: var(--text-secondary);">Your submission has been received successfully.</p>
+                        <button id="external-new-submission-btn" class="btn btn-primary">Make Another Submission</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internal Database -->
+            <div id="internal-container" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">June 30th Database</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="controls">
+                            <div class="search-box">
+                                <input type="text" id="internal-db-search" class="form-control" placeholder="Search by city, project area, status...">
+                            </div>
+                            <div class="filter-group">
+                                <select id="internal-db-filter-year" class="form-control" style="width: 160px;">
+                                    <option value="">Select Year</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>
+                                    <option value="2038">2038</option>
+                                    <option value="2039">2039</option>
+                                    <option value="2040">2040</option>
+                                    <option value="2041">2041</option>
+                                    <option value="2042">2042</option>
+                                    <option value="2043">2043</option>
+                                    <option value="2044">2044</option>
+                                    <option value="2045">2045</option>
+                                    <option value="2046">2046</option>
+                                    <option value="2047">2047</option>
+                                    <option value="2048">2048</option>
+                                    <option value="2049">2049</option>
+                                    <option value="2050">2050</option>
+                                    <option value="2051">2051</option>
+                                    <option value="2052">2052</option>
+                                    <option value="2053">2053</option>
+                                    <option value="2054">2054</option>
+                                    <option value="2055">2055</option>
+                                    <option value="2056">2056</option>
+                                    <option value="2057">2057</option>
+                                    <option value="2058">2058</option>
+                                    <option value="2059">2059</option>
+                                    <option value="2060">2060</option>
+                                </select>
+                                <select id="internal-db-filter-status" class="form-control" style="width: 180px;">
+                                    <option value="">All Status</option>
+                                    <option value="Ready">Ready</option>
+                                    <option value="Internal Data Needed">Internal Data Needed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="internal-db-table-container"></div>
+                        <div id="internal-db-detail-modal" class="internal-db-modal" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internal Data Request -->
+            <div id="internal-data-request-container" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Internal Data Request Form</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="internal-data-request-form">
+                            <div class="form-row" style="flex-direction: row; align-items: center; gap: 10px;">
+                                <label for="internal-year-select" style="margin-bottom:0;">Year:</label>
+                                <select id="internal-year-select" name="year" required style="width:130px;min-width:130px;max-width:130px;">
+                                    <option value="">Select Year</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>
+                                    <option value="2038">2038</option>
+                                    <option value="2039">2039</option>
+                                    <option value="2040">2040</option>
+                                    <option value="2041">2041</option>
+                                    <option value="2042">2042</option>
+                                    <option value="2043">2043</option>
+                                    <option value="2044">2044</option>
+                                    <option value="2045">2045</option>
+                                    <option value="2046">2046</option>
+                                    <option value="2047">2047</option>
+                                    <option value="2048">2048</option>
+                                    <option value="2049">2049</option>
+                                    <option value="2050">2050</option>
+                                    <option value="2051">2051</option>
+                                    <option value="2052">2052</option>
+                                    <option value="2053">2053</option>
+                                    <option value="2054">2054</option>
+                                    <option value="2055">2055</option>
+                                    <option value="2056">2056</option>
+                                    <option value="2057">2057</option>
+                                    <option value="2058">2058</option>
+                                    <option value="2059">2059</option>
+                                    <option value="2060">2060</option>
+                                </select>
+                            </div>
+                            <div class="project-area">
+                                <div class="section-title">Basic Information</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>Client (Agency/Submitter):</label>
+                                        <select id="internal-city-dropdown" name="cityCounty" required onchange="populateProjectDropdown()">
+                                            <option value="">Select Client</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>Project Area:</label>
+                                        <select id="internal-project-dropdown" name="projectArea" required>
+                                            <option value="">Select Project Area</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <label id="fy-label">Fiscal Year:</label>
+                                        <input type="number" name="fy" min="1900" max="2100">
+                                    </div>
+                                    <div class="form-row">
+                                        <label id="ty-label">Tax Year:</label>
+                                        <input type="number" name="ty" min="1900" max="2100">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TYPE:</label>
+                                        <select name="type" required>
+                                            <option value="">Select Type</option>
+                                            <option value="EDA">EDA</option>
+                                            <option value="URA">URA</option>
+                                            <option value="RDA">RDA</option>
+                                            <option value="CDA">CDA</option>
+                                            <option value="CRA">CRA</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>PURPOSE:</label>
+                                        <select name="purpose" required>
+                                            <option value="">Select Purpose</option>
+                                            <option value="Commercial Development">Commercial Development</option>
+                                            <option value="Industrial Development">Industrial Development</option>
+                                            <option value="Mixed-Used Development">Mixed-Used Development</option>
+                                            <option value="Residential Development">Residential Development</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TAXING DISTRICT:</label>
+                                        <input type="text" name="taxingDistrict">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TAX RATE:</label>
+                                        <input type="number" name="taxRate" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Value Information</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label id="fy-value-label">Total Assessed Value:</label>
+                                        <input type="number" name="tyValue" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>VALUE INCREASE:</label>
+                                        <input type="number" name="valueIncrease" step="0.01" readonly>
+                                        <small style="color: #666; font-size: 0.8em;">Auto-calculated: FY (Selected Year) VALUE - Prior Year Value</small>
+                                    </div>
+                                    <div class="form-row" style="grid-column: 1 / -1;">
+                                        <label>DESCRIPTION OF PROJECT AREA:</label>
+                                        <textarea name="growthInAssessedValue"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Tax Entities</div>
+                                <div class="form-grid">
+                                    <div class="table-container" style="grid-column: 1 / -1;">
+                                        <table class="table" id="tax-entities-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 20%;">Tax Entity</th>
+                                                    <th style="width: 12%;">Participation Rate (%)</th>
+                                                    <th style="width: 12%;">Remittance</th>
+                                                    <th style="width: 12%;">Cap Amount</th>
+                                                    <th style="width: 15%;" id="actual-revenue-header">(Selected Year) Increment Paid</th>
+                                                    <th style="width: 12%;">Remaining Authorized</th>
+                                                    <th style="width: 5%;">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tax-entities-tbody">
+                                                <tr class="tax-entity-row">
+                                                    <td>
+                                                        <input type="text" name="taxEntityName_0" placeholder="Enter tax entity name" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="taxEntityParticipationRate_0" step="0.01" min="0" max="100" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="taxEntityRemittance_0" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="taxEntityCapAmount_0" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="taxEntityIncrementPaid_0" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="taxEntityRemainingAuthorized_0" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                                                    </td>
+                                                    <td style="width: 60px;">
+                                                        <button type="button" class="btn btn-secondary" onclick="removeTaxEntityRow(this)" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-row" style="grid-column: 1 / -1; margin-top: 4px;">
+                                        <button type="button" id="add-tax-entity-btn" class="btn btn-primary">+ Add Tax Entity</button>
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Totals</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>TOTAL REMITTANCE:</label>
+                                        <input type="number" name="totalRemittance" step="0.01" readonly>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL CAP:</label>
+                                        <input type="number" name="totalCap" step="0.01" readonly>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL ACTUAL RECEIVED:</label>
+                                        <input type="number" name="totalActualReceived" step="0.01" readonly>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL REMAINING AUTHORIZED:</label>
+                                        <input type="number" name="totalRemainingAuthorized" step="0.01" readonly>
+                                    </div>
+
+                                </div>
+
+                                <div class="section-title">Revenue Information</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label id="fy-original-budget-label">FY (Selected Year) ORIGINAL BUDGET REVENUES:</label>
+                                        <input type="number" name="tyOriginalBudgetRevenues" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label id="fy-lifetime-revenues-label">ORIGINAL BUDGET LIFETIME REVENUES:</label>
+                                        <input type="number" name="lifetimeRevenues" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label id="fy-actual-revenue-label">FY (Selected Year) ACTUAL REVENUE:</label>
+                                        <input type="number" name="tyActualRevenue" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>LIFETIME ACTUAL REVENUES:</label>
+                                        <input type="number" name="lifetimeActualRevenues" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label id="fy-base-year-revenue-label">FY (Selected Year) BASE YEAR REVENUE:</label>
+                                        <input type="number" name="tyBaseYearRevenue" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>LIFETIME BASE YEAR REVENUES:</label>
+                                        <input type="number" name="lifetimeBaseYearRevenues" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Financial Analysis</div>
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>ADMINISTRATIVE PERCENTAGE:</label>
+                                        <input type="number" name="administrativePercentage" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>DISCOUNT RATE (%):</label>
+                                        <input type="number" name="discountRate" step="0.01" min="0" max="100">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>AGGREGATE REMAINING REVENUE:</label>
+                                        <input type="number" name="aggregateRemainingRevenue" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>DISCOUNTED AGGREGATE REMAINING REVENUE:</label>
+                                        <input type="number" name="discountedAggregateRemainingRevenue" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL AGGREGATE EXPENSE:</label>
+                                        <input type="number" name="totalAggregateExpense" step="0.01">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL AGGREGATE EXPENSE AT NPV:</label>
+                                        <input type="number" name="totalAggregateExpenseAtNpv" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Total Expenses</div>
+                                <div class="form-grid">
+                                    <div class="table-container" style="grid-column: 1 / -1;">
+                                        <table class="table" id="total-expenses-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 50%;">Expense Description</th>
+                                                    <th style="width: 20%;">Amount</th>
+                                                    <th style="width: 20%;">NPV</th>
+                                                    <th style="width: 10%;">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="total-expenses-tbody">
+                                                <tr class="total-expense-row">
+                                                    <td>
+                                                        <input type="text" name="totalExpenseDescription_0" placeholder="Enter expense description" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="totalExpenseAmount_0" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTotalUsesOfFunds()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="totalExpenseNpv_0" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTotalUsesOfFunds()">
+                                                    </td>
+                                                    <td style="width: 60px;">
+                                                        <button type="button" class="btn btn-secondary" onclick="removeTotalExpenseRow(this)" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-row" style="grid-column: 1 / -1; margin-top: 4px;">
+                                        <button type="button" id="add-total-expense-btn" class="btn btn-primary">+ Add Expense</button>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>TOTAL USES OF FUNDS:</label>
+                                        <input type="number" name="totalUsesOfFunds" step="0.01" readonly>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="section-title">Additional Information</div>
+                                <div class="form-row" style="grid-column: 1 / -1;">
+                                    <label>DESCRIPTION OF BENEFITS TO TAXING ENTITIES:</label>
+                                    <textarea name="descriptionOfBenefitsToTaxingEntities"></textarea>
+                                </div>
+
+                                <button type="submit" class="add-btn" style="width:100%;margin-top:24px;">Submit Data Request</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="internal-password-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Internal Access</h3>
+                <button class="modal-close" id="internal-password-cancel">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="password" id="internal-password-input" class="form-control password-input" placeholder="Enter password">
+                </div>
+                <div id="internal-password-error" class="hidden" style="color: var(--error-red); margin-bottom: 16px;"></div>
+                <div style="display: flex; justify-content: center;">
+                    <button id="internal-password-submit" class="btn btn-primary modal-login-btn">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="external-password-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Client Portal Access</h3>
+                <button class="modal-close" id="external-password-cancel">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="password" id="external-password-input" class="form-control password-input" placeholder="Enter password">
+                </div>
+                <div id="external-password-error" class="hidden" style="color: var(--error-red); margin-bottom: 16px;"></div>
+                <div style="display: flex; justify-content: center;">
+                    <button id="external-password-submit" class="btn btn-primary modal-login-btn">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">New submission received!</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Global variables
+        let allSubmissions = JSON.parse(localStorage.getItem('allSubmissions') || '[]');
+        let currentSubmission = {};
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize year dropdowns
+            populateYearDropdown('external-year-select');
+            populateYearDropdown('internal-year-select');
+            populateYearDropdown('internal-db-filter-year');
+
+            // Landing page button handlers
+            const externalRoleBtn = document.getElementById('external-role-btn');
+            const internalRoleBtn = document.getElementById('internal-role-btn');
+
+            if (externalRoleBtn) {
+                externalRoleBtn.onclick = function() {
+                    document.getElementById('external-password-modal').classList.remove('hidden');
+                };
+            }
+
+            if (internalRoleBtn) {
+                internalRoleBtn.onclick = function() {
+                    document.getElementById('internal-password-modal').classList.remove('hidden');
+                };
+            }
+
+            // Password modal handlers
+            setupPasswordModals();
+
+            // Tab switching
+            setupTabSwitching();
+
+            // Form submissions
+            setupFormSubmissions();
+
+            // Internal database functionality
+            setupInternalDatabase();
+
+            // Setup number formatting with commas
+            setupNumberFormatting();
+
+            // Setup percentage formatting
+            setupPercentageFormatting();
+
+            // Auto-save functionality
+            window.onbeforeunload = function() {
+                if (Object.keys(currentSubmission).length > 0) {
+                    localStorage.setItem('currentSubmission', JSON.stringify(currentSubmission));
+                }
+            };
+
+            // Load saved submission
+            const savedSubmission = localStorage.getItem('currentSubmission');
+            if (savedSubmission) {
+                currentSubmission = JSON.parse(savedSubmission);
+                if (Object.keys(currentSubmission).length > 0) {
+                    renderTable();
+                }
+            }
+        });
+
+        function setupPasswordModals() {
+            // Internal password modal
+            const internalPasswordModal = document.getElementById('internal-password-modal');
+            const internalPasswordInput = document.getElementById('internal-password-input');
+            const internalPasswordSubmit = document.getElementById('internal-password-submit');
+            const internalPasswordCancel = document.getElementById('internal-password-cancel');
+            const internalPasswordError = document.getElementById('internal-password-error');
+
+            internalPasswordSubmit.onclick = function() {
+                if (internalPasswordInput.value === 'Lrb2017!') {
+                    internalPasswordModal.classList.add('hidden');
+                    internalPasswordInput.value = '';
+                    internalPasswordError.classList.add('hidden');
+                    
+                    // Show all tabs for internal users
+                    document.getElementById('internal-tab-btn').style.display = 'inline-block';
+                    document.getElementById('internal-data-tab-btn').style.display = 'inline-block';
+                    
+                    // Show internal database
+                    document.getElementById('landing-container').classList.add('hidden');
+                    document.getElementById('tab-bar').classList.remove('hidden');
+                    document.getElementById('internal-container').classList.remove('hidden');
+                    document.getElementById('internal-tab-btn').classList.add('active');
+                    
+                    // Render internal database
+                    renderInternalDBCityList();
+                } else {
+                    internalPasswordError.textContent = 'Incorrect password';
+                    internalPasswordError.classList.remove('hidden');
+                }
+            };
+
+            // Add Enter key support for internal password
+            internalPasswordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    internalPasswordSubmit.click();
+                }
+            });
+
+            internalPasswordCancel.onclick = function() {
+                internalPasswordModal.classList.add('hidden');
+                internalPasswordInput.value = '';
+                internalPasswordError.classList.add('hidden');
+            };
+
+            // External password modal
+            const externalPasswordModal = document.getElementById('external-password-modal');
+            const externalPasswordInput = document.getElementById('external-password-input');
+            const externalPasswordSubmit = document.getElementById('external-password-submit');
+            const externalPasswordCancel = document.getElementById('external-password-cancel');
+            const externalPasswordError = document.getElementById('external-password-error');
+
+            externalPasswordSubmit.onclick = function() {
+                if (externalPasswordInput.value === 'june30!') {
+                    externalPasswordModal.classList.add('hidden');
+                    externalPasswordInput.value = '';
+                    externalPasswordError.classList.add('hidden');
+                    
+                    // Hide all tabs except logout for external users
+                    document.getElementById('external-tab-btn').style.display = 'none';
+                    document.getElementById('internal-tab-btn').style.display = 'none';
+                    document.getElementById('internal-data-tab-btn').style.display = 'none';
+                    
+                    // Show external data request
+                    document.getElementById('landing-container').classList.add('hidden');
+                    document.getElementById('tab-bar').classList.remove('hidden');
+                    document.getElementById('main-container').classList.remove('hidden');
+                } else {
+                    externalPasswordError.textContent = 'Incorrect password';
+                    externalPasswordError.classList.remove('hidden');
+                }
+            };
+
+            // Add Enter key support for external password
+            externalPasswordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    externalPasswordSubmit.click();
+                }
+            });
+
+            externalPasswordCancel.onclick = function() {
+                externalPasswordModal.classList.add('hidden');
+                externalPasswordInput.value = '';
+                externalPasswordError.classList.remove('hidden');
+            };
+        }
+
+        function setupTabSwitching() {
+            const externalTabBtn = document.getElementById('external-tab-btn');
+            const internalTabBtn = document.getElementById('internal-tab-btn');
+            const internalDataTabBtn = document.getElementById('internal-data-tab-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            externalTabBtn.onclick = function() {
+                showTab('external');
+            };
+
+            internalTabBtn.onclick = function() {
+                showTab('internal');
+            };
+
+            internalDataTabBtn.onclick = function() {
+                showTab('internal-data');
+            };
+
+            logoutBtn.onclick = function() {
+                // Reset to landing page
+                document.getElementById('landing-container').classList.remove('hidden');
+                document.getElementById('tab-bar').classList.add('hidden');
+                document.getElementById('main-container').classList.add('hidden');
+                document.getElementById('internal-container').classList.add('hidden');
+                document.getElementById('internal-data-request-container').classList.add('hidden');
+                document.getElementById('external-thankyou').classList.add('hidden');
+                
+                // Reset tab states
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            };
+        }
+
+        function showTab(tabName) {
+            // Hide all containers
+            document.getElementById('main-container').classList.add('hidden');
+            document.getElementById('internal-container').classList.add('hidden');
+            document.getElementById('internal-data-request-container').classList.add('hidden');
+            document.getElementById('external-thankyou').classList.add('hidden');
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            // Show selected container and activate tab
+            if (tabName === 'external') {
+                document.getElementById('main-container').classList.remove('hidden');
+                document.getElementById('external-tab-btn').classList.add('active');
+            } else if (tabName === 'internal') {
+                document.getElementById('internal-container').classList.remove('hidden');
+                document.getElementById('internal-tab-btn').classList.add('active');
+                renderInternalDBCityList();
+            } else if (tabName === 'internal-data') {
+                document.getElementById('internal-data-request-container').classList.remove('hidden');
+                document.getElementById('internal-data-tab-btn').classList.add('active');
+            }
+        }
+
+        function setupFormSubmissions() {
+            // External form submission
+            const projectForm = document.getElementById('project-form');
+            if (projectForm) {
+                projectForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(projectForm);
+                    const submission = {};
+                    
+                    // Capture all form data
+                    for (let [key, value] of formData.entries()) {
+                        submission[key] = value;
+                    }
+                    
+                    // Capture all dynamic expense data
+                    const expenseRows = document.querySelectorAll('.expense-row');
+                    expenseRows.forEach((row, index) => {
+                        const expenseTitle = row.querySelector(`input[name="expenseTitle_${index}"]`)?.value;
+                        const tyExpense = row.querySelector(`input[name="tyExpense_${index}"]`)?.value;
+                        const cyExpense = row.querySelector(`input[name="cyExpense_${index}"]`)?.value;
+                        const nyExpense = row.querySelector(`input[name="nyExpense_${index}"]`)?.value;
+                        
+                        if (expenseTitle || tyExpense || cyExpense || nyExpense) {
+                            submission[`expenseTitle_${index}`] = expenseTitle;
+                            submission[`tyExpense_${index}`] = tyExpense;
+                            submission[`cyExpense_${index}`] = cyExpense;
+                            submission[`nyExpense_${index}`] = nyExpense;
+                        }
+                    });
+                    
+                    // Also keep the expenses array for compatibility
+                    const expenses = [];
+                    expenseRows.forEach((row, index) => {
+                        const expenseTitle = row.querySelector(`input[name="expenseTitle_${index}"]`)?.value;
+                        const tyExpense = row.querySelector(`input[name="tyExpense_${index}"]`)?.value;
+                        const cyExpense = row.querySelector(`input[name="cyExpense_${index}"]`)?.value;
+                        const nyExpense = row.querySelector(`input[name="nyExpense_${index}"]`)?.value;
+                        
+                        if (expenseTitle || tyExpense || cyExpense || nyExpense) {
+                            expenses.push({
+                                title: expenseTitle,
+                                tyExpense: tyExpense,
+                                cyExpense: cyExpense,
+                                nyExpense: nyExpense
+                            });
+                        }
+                    });
+                    
+                    submission.expenses = expenses;
+                    submission.timestamp = new Date().toISOString();
+                    
+                    // Add to current submission
+                    if (!currentSubmission.projectAreas) {
+                        currentSubmission.projectAreas = [];
+                    }
+                    currentSubmission.projectAreas.push(submission);
+                    
+                    // Clear form
+                    projectForm.reset();
+                    
+                    // Clear expense rows and add default
+                    const expenseContainer = document.getElementById('expense-container');
+                    if (expenseContainer) {
+                        expenseContainer.innerHTML = '';
+                        // Add back the default expense row
+                        addExpenseRow();
+                    }
+                    
+                    // Show table
+                    renderTable();
+                    
+                    // Show notification
+                    showNotification('Project area added successfully!');
+                    
+                    console.log('Project area added:', submission);
+                };
+            }
+
+            // Setup remaining life calculation
+            const expirationYearInput = document.querySelector('input[name="expirationYear"]');
+            if (expirationYearInput) {
+                expirationYearInput.addEventListener('input', calculateRemainingLife);
+                expirationYearInput.addEventListener('change', calculateRemainingLife);
+            }
+
+            // Internal form submission
+            const internalForm = document.getElementById('internal-data-request-form');
+            if (internalForm) {
+                internalForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(internalForm);
+                    const submission = {};
+                    
+                    // Capture all form data
+                    for (let [key, value] of formData.entries()) {
+                        submission[key] = value;
+                    }
+                    
+                    // Capture expense data
+                    const expenseRows = document.querySelectorAll('.expense-row');
+                    const expenses = [];
+                    expenseRows.forEach((row, index) => {
+                        const expenseTitle = row.querySelector(`input[name="expenseTitle_${index}"]`)?.value;
+                        const tyExpense = row.querySelector(`input[name="tyExpense_${index}"]`)?.value;
+                        const cyExpense = row.querySelector(`input[name="cyExpense_${index}"]`)?.value;
+                        const nyExpense = row.querySelector(`input[name="nyExpense_${index}"]`)?.value;
+                        
+                        if (expenseTitle || tyExpense || cyExpense || nyExpense) {
+                            expenses.push({
+                                title: expenseTitle,
+                                tyExpense: tyExpense,
+                                cyExpense: cyExpense,
+                                nyExpense: nyExpense
+                            });
+                        }
+                    });
+                    
+                    submission.expenses = expenses;
+                    
+                    // Capture all dynamic tax entity data
+                    const taxEntityRows = document.querySelectorAll('.tax-entity-row');
+                    taxEntityRows.forEach((row, index) => {
+                        const taxEntityName = row.querySelector(`input[name="taxEntityName_${index}"]`)?.value;
+                        const participationRate = row.querySelector(`input[name="taxEntityParticipationRate_${index}"]`)?.value;
+                        const remittance = row.querySelector(`input[name="taxEntityRemittance_${index}"]`)?.value;
+                        const capAmount = row.querySelector(`input[name="taxEntityCapAmount_${index}"]`)?.value;
+                        const incrementPaid = row.querySelector(`input[name="taxEntityIncrementPaid_${index}"]`)?.value;
+                        const remainingAuthorized = row.querySelector(`input[name="taxEntityRemainingAuthorized_${index}"]`)?.value;
+                        const percentOfTotal = row.querySelector(`input[name="taxEntityPercentOfTotal_${index}"]`)?.value;
+                        
+                        if (taxEntityName || participationRate || remittance || capAmount || incrementPaid || remainingAuthorized || percentOfTotal) {
+                            submission[`taxEntityName_${index}`] = taxEntityName;
+                            submission[`taxEntityParticipationRate_${index}`] = participationRate;
+                            submission[`taxEntityRemittance_${index}`] = remittance;
+                            submission[`taxEntityCapAmount_${index}`] = capAmount;
+                            submission[`taxEntityIncrementPaid_${index}`] = incrementPaid;
+                            submission[`taxEntityRemainingAuthorized_${index}`] = remainingAuthorized;
+                            submission[`taxEntityPercentOfTotal_${index}`] = percentOfTotal;
+                        }
+                    });
+                    
+                    // Capture all dynamic total expense data
+                    const totalExpenseRows = document.querySelectorAll('.total-expense-row');
+                    totalExpenseRows.forEach((row, index) => {
+                        const description = row.querySelector(`input[name="totalExpenseDescription_${index}"]`)?.value;
+                        const amount = row.querySelector(`input[name="totalExpenseAmount_${index}"]`)?.value;
+                        const npv = row.querySelector(`input[name="totalExpenseNpv_${index}"]`)?.value;
+                        
+                        if (description || amount || npv) {
+                            submission[`totalExpenseDescription_${index}`] = description;
+                            submission[`totalExpenseAmount_${index}`] = amount;
+                            submission[`totalExpenseNpv_${index}`] = npv;
+                        }
+                    });
+                    
+                    // Add timestamp
+                    submission.timestamp = new Date().toISOString();
+                    
+                    // Find the matching submission by client, project area, AND year
+                    const matchingSubmission = allSubmissions.find(sub => {
+                        const externalClient = sub.submitterName || sub.cityCounty;
+                        const externalProject = sub.projectAreaName || sub.projectArea;
+                        const externalYear = sub.fy || sub.year;
+                        const internalClient = submission.cityCounty;
+                        const internalProject = submission.projectArea;
+                        const internalYear = submission.fy;
+                        return externalClient === internalClient && externalProject === internalProject && externalYear === internalYear;
+                    });
+                    
+                    if (matchingSubmission) {
+                        // Merge internal data with external data
+                        Object.assign(matchingSubmission, submission);
+                        console.log('Internal data merged with external submission:', matchingSubmission);
+                    } else {
+                        // If no matching external submission, add as new submission
+                        allSubmissions.push(submission);
+                        console.log('New internal submission added:', submission);
+                    }
+                    
+                    localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
+                    
+                    // Clear form
+                    internalForm.reset();
+                    
+                    // Clear expense rows
+                    const expenseContainer = document.getElementById('expense-container');
+                    if (expenseContainer) {
+                        expenseContainer.innerHTML = '';
+                        // Add back the default expense row
+                        addExpenseRow();
+                    }
+                    
+                    // Show notification
+                    showNotification('Internal data submitted successfully!');
+                    
+                    // Switch to internal database view to show the new submission
+                    showTab('internal');
+                    
+                    console.log('Submission saved:', submission);
+                };
+            }
+
+            // Submit all button
+            const submitAllBtn = document.getElementById('external-submit-all-btn');
+            if (submitAllBtn) {
+                submitAllBtn.onclick = function() {
+                    if (Object.keys(currentSubmission).length > 0) {
+                        // Add each project area as a separate submission to allSubmissions
+                        if (currentSubmission.projectAreas && currentSubmission.projectAreas.length > 0) {
+                            currentSubmission.projectAreas.forEach(projectArea => {
+                                allSubmissions.push(projectArea);
+                            });
+                        }
+                        localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
+                        currentSubmission = {};
+                        
+                        // Show thank you page
+                        document.getElementById('main-container').classList.add('hidden');
+                        document.getElementById('external-thankyou').classList.remove('hidden');
+                    }
+                };
+            }
+
+            // New submission button
+            const newSubmissionBtn = document.getElementById('external-new-submission-btn');
+            if (newSubmissionBtn) {
+                newSubmissionBtn.onclick = function() {
+                    document.getElementById('external-thankyou').classList.add('hidden');
+                    document.getElementById('main-container').classList.remove('hidden');
+                    document.getElementById('project-form').reset();
+                    document.getElementById('project-table').style.display = 'none';
+                    document.getElementById('external-submit-all-btn').style.display = 'none';
+                    currentSubmission = {};
+                };
+            }
+
+            // Add Expense button functionality
+            const addExpenseBtn = document.getElementById('add-expense-btn');
+            if (addExpenseBtn) {
+                addExpenseBtn.onclick = function() {
+                    addExpenseRow();
+                };
+            }
+        }
+
+        function setupInternalDatabase() {
+            // Search functionality
+            const searchInput = document.getElementById('internal-db-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    renderInternalDBCityList();
+                });
+            }
+
+            // Year filter
+            const yearFilter = document.getElementById('internal-db-filter-year');
+            if (yearFilter) {
+                yearFilter.addEventListener('change', function() {
+                    renderInternalDBCityList();
+                });
+            }
+
+            // External year select - update expense labels
+            const externalYearSelect = document.getElementById('external-year-select');
+            if (externalYearSelect) {
+                externalYearSelect.addEventListener('change', function() {
+                    updateExpenseLabels();
+                });
+            }
+
+            // Internal year select - update FY/TY labels
+            const internalYearSelect = document.getElementById('internal-year-select');
+            if (internalYearSelect) {
+                internalYearSelect.addEventListener('change', function() {
+                    updateInternalYearLabels();
+                    updateExpenseLabels();
+                });
+            }
+
+            // Populate internal form dropdowns when internal data tab is shown
+            const internalDataTabBtn = document.getElementById('internal-data-tab-btn');
+            if (internalDataTabBtn) {
+                internalDataTabBtn.addEventListener('click', function() {
+                    populateClientDropdown();
+                });
+            }
+
+            // Status filter
+            const statusFilter = document.getElementById('internal-db-filter-status');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    renderInternalDBCityList();
+                });
+            }
+
+            // Total Expenses functionality
+            const addTotalExpenseBtn = document.getElementById('add-total-expense-btn');
+            if (addTotalExpenseBtn) {
+                addTotalExpenseBtn.addEventListener('click', addTotalExpenseRow);
+            }
+
+            // Total Expenses NPV functionality
+            const addTotalExpenseNpvBtn = document.getElementById('add-total-expense-npv-btn');
+            if (addTotalExpenseNpvBtn) {
+                addTotalExpenseNpvBtn.addEventListener('click', addTotalExpenseNpvRow);
+            }
+
+            // Tax Entities functionality
+            const addTaxEntityBtn = document.getElementById('add-tax-entity-btn');
+            if (addTaxEntityBtn) {
+                addTaxEntityBtn.addEventListener('click', addTaxEntityRow);
+            }
+
+            // Auto-calculations
+            const residentialAcreageInput = document.querySelector('input[name="residentialAcreage"]');
+            const totalAcreageInput = document.querySelector('input[name="acreage"]');
+            if (residentialAcreageInput) {
+                residentialAcreageInput.addEventListener('input', calculatePercentResidential);
+            }
+            if (totalAcreageInput) {
+                totalAcreageInput.addEventListener('input', calculatePercentResidential);
+            }
+
+            // Update year headers when year changes
+            if (internalYearSelect) {
+                internalYearSelect.addEventListener('change', updateYearHeaders);
+            }
+        }
+
+        function populateYearDropdown(selectId) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+
+            // Clear existing options except the first one
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+
+            // Add years 2020-2060
+            for (let year = 2020; year <= 2060; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                select.appendChild(option);
+            }
+        }
+
+        function renderTable() {
+            const table = document.getElementById('project-table');
+            const tbody = table.querySelector('tbody');
+            const submitAllBtn = document.getElementById('external-submit-all-btn');
+            
+            if (!currentSubmission.projectAreas || currentSubmission.projectAreas.length === 0) {
+                table.style.display = 'none';
+                submitAllBtn.style.display = 'none';
+                return;
+            }
+
+            table.style.display = 'table';
+            submitAllBtn.style.display = 'block';
+            
+            tbody.innerHTML = '';
+            
+            currentSubmission.projectAreas.forEach((area, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${area.submitterName || ''}</td>
+                    <td>${area.projectAreaName || ''}</td>
+                    <td>${area.acreage || ''}</td>
+                    <td>${area.creationYear || ''}</td>
+                    <td>${area.baseYear || ''}</td>
+                    <td>${area.termLength || ''}</td>
+                    <td>${area.startYear || ''}</td>
+                    <td>${area.expirationYear || ''}</td>
+                    <td>${area.baseValue || ''}</td>
+                    <td>${area.fyIncrement || ''}</td>
+                    <td>${area.remainingLife || ''}</td>
+                    <td>${area.fundBalance || ''}</td>
+                    <td>${area.tyActualSpentTotal || ''}</td>
+                    <td>${area.developedAcreage || ''}</td>
+                    <td>${area.undevelopedAcreage || ''}</td>
+                    <td>${area.residentialAcreage || ''}</td>
+                    <td>${area.percentResidential || ''}</td>
+                    <td>${area.totalAuthorizedHousingUnits || ''}</td>
+                    <td><button onclick="editRow(${index})" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editRow(index) {
+            // Implementation for editing rows
+            console.log('Edit row:', index);
+        }
+
+        function getProjectAreaStatus(projectArea) {
+            const externalData = allSubmissions.filter(sub => 
+                sub.projectAreas && sub.projectAreas.some(pa => pa.projectAreaName === projectArea)
+            );
+            
+            const internalData = allSubmissions.filter(sub => 
+                sub.projectArea === projectArea
+            );
+
+            if (externalData.length > 1 || internalData.length > 1) {
+                return 'Multiple Submissions';
+            } else if (externalData.length === 1 && internalData.length === 1) {
+                return 'Ready';
+            } else if (externalData.length === 1 && internalData.length === 0) {
+                return 'Internal Data Needed';
+            } else {
+                return 'None';
+            }
+        }
+
+        function renderInternalDBCityList() {
+            const container = document.getElementById('internal-db-table-container');
+            const searchTerm = document.getElementById('internal-db-search').value.toLowerCase();
+            const selectedYear = document.getElementById('internal-db-filter-year').value;
+            const selectedStatus = document.getElementById('internal-db-filter-status').value;
+
+            // Group submissions by year first, then by city/county
+            const yearGroups = {};
+            allSubmissions.forEach(submission => {
+                const year = submission.year || submission.fy || 'Unknown';
+                const cityName = submission.cityCounty || 
+                                submission.submitterName || 
+                                submission.projectArea || 
+                                'Unknown';
+                
+                if (!yearGroups[year]) {
+                    yearGroups[year] = {};
+                }
+                if (!yearGroups[year][cityName]) {
+                    yearGroups[year][cityName] = [];
+                }
+                yearGroups[year][cityName].push(submission);
+            });
+
+            let html = '<div class="table-container">';
+            html += '<table class="table">';
+            html += '<thead><tr><th>Year</th><th>Clients</th><th>Project Areas</th><th>Actions</th></tr></thead><tbody>';
+
+            // Sort years in descending order (newest first)
+            const sortedYears = Object.keys(yearGroups).sort((a, b) => parseInt(b) - parseInt(a));
+
+            sortedYears.forEach(year => {
+                // Apply year filter
+                if (selectedYear && year !== selectedYear) return;
+                
+                const yearCities = yearGroups[year];
+                
+                Object.keys(yearCities).forEach(city => {
+                    const citySubmissions = yearCities[city];
+                    const projectCount = citySubmissions.length;
+                    
+                    // Apply search filter
+                    if (searchTerm && !city.toLowerCase().includes(searchTerm)) return;
+
+                    html += `<tr onclick="viewClientDetailsByYear('${city}', '${year}')" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor=''">
+                        <td><strong>${year}</strong></td>
+                        <td><strong>${city}</strong></td>
+                        <td>${projectCount} project area${projectCount !== 1 ? 's' : ''}</td>
+                        <td><span style="color: #007bff; font-size: 12px;">Click to view →</span></td>
+                    </tr>`;
+                });
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function viewClientDetailsByYear(city, year) {
+            const container = document.getElementById('internal-db-table-container');
+            const cityYearSubmissions = allSubmissions.filter(submission => {
+                const submissionCity = submission.cityCounty || 
+                                     submission.submitterName || 
+                                     submission.projectArea || 
+                                     'Unknown';
+                const submissionYear = submission.year || submission.fy || 'Unknown';
+                return submissionCity === city && submissionYear === year;
+            });
+
+            let html = '<div class="table-container">';
+            html += `<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">`;
+            html += `<button onclick="renderInternalDBCityList()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">← Back to Clients</button>`;
+            html += `<h3 style="margin: 0; color: var(--primary-blue);">${city} - ${year} Project Areas</h3>`;
+            html += `<button onclick="downloadExcelForClient('${city}')" class="btn btn-primary" style="margin-left: auto;">Download Excel</button>`;
+            html += `</div>`;
+            html += '<table class="table">';
+            html += '<thead><tr><th>Project Area</th><th>Type</th><th>Purpose</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+            // Group submissions by project area to show separate entries
+            const projectGroups = {};
+            cityYearSubmissions.forEach(submission => {
+                const projectArea = submission.projectArea || submission.projectAreaName || 'N/A';
+                
+                if (!projectGroups[projectArea]) {
+                    projectGroups[projectArea] = submission;
+                } else {
+                    // Merge data if we have both external and internal data for same project
+                    Object.assign(projectGroups[projectArea], submission);
+                }
+            });
+
+            Object.values(projectGroups).forEach(submission => {
+                const projectArea = submission.projectArea || submission.projectAreaName || 'N/A';
+                const type = submission.type || 'N/A';
+                const purpose = submission.purpose || 'N/A';
+                
+                // Determine status based on data completeness
+                const hasExternalData = submission.submitterName || submission.projectAreaName;
+                const hasInternalData = submission.cityCounty || submission.fy || submission.ty;
+                let status, statusClass;
+                
+                if (hasExternalData && hasInternalData) {
+                    status = 'Ready';
+                    statusClass = 'status-ready';
+                } else if (hasExternalData) {
+                    status = 'Internal Data Needed';
+                    statusClass = 'status-internal-needed';
+                } else {
+                    status = 'External Data Needed';
+                    statusClass = 'status-external-needed';
+                }
+
+                html += `<tr onclick="viewProjectDetails('${city}', '${projectArea}', '${year}')" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor=''">
+                    <td><strong>${projectArea}</strong></td>
+                    <td>${type}</td>
+                    <td>${purpose}</td>
+                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    <td><span style="color: #007bff; font-size: 12px;">Click to view →</span></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function viewClientDetails(city) {
+            const container = document.getElementById('internal-db-table-container');
+            const citySubmissions = allSubmissions.filter(submission => {
+                const submissionCity = submission.cityCounty || 
+                                     submission.submitterName || 
+                                     submission.projectArea || 
+                                     'Unknown';
+                return submissionCity === city;
+            });
+
+            let html = '<div class="table-container">';
+            html += `<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">`;
+            html += `<button onclick="renderInternalDBCityList()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">← Back to Clients</button>`;
+            html += `<h3 style="margin: 0; color: var(--primary-blue);">${city} - Project Areas</h3>`;
+            html += `<button onclick="downloadExcelForClient('${city}')" class="btn btn-primary" style="margin-left: auto;">Download Excel</button>`;
+            html += `</div>`;
+            html += '<table class="table">';
+            html += '<thead><tr><th>Project Area</th><th>Year</th><th>Type</th><th>Purpose</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+            // Group submissions by project area and year to show separate entries
+            const projectYearGroups = {};
+            citySubmissions.forEach(submission => {
+                const projectArea = submission.projectArea || submission.projectAreaName || 'N/A';
+                const year = submission.year || submission.fy || 'N/A';
+                const key = `${projectArea}-${year}`;
+                
+                if (!projectYearGroups[key]) {
+                    projectYearGroups[key] = {
+                        projectArea: projectArea,
+                        year: year,
+                        submission: submission
+                    };
+                } else {
+                    // Merge data if we have both external and internal data for same project/year
+                    Object.assign(projectYearGroups[key].submission, submission);
+                }
+            });
+
+            Object.values(projectYearGroups).forEach(group => {
+                const submission = group.submission;
+                const projectArea = group.projectArea;
+                const year = group.year;
+                const type = submission.type || 'N/A';
+                const purpose = submission.purpose || 'N/A';
+                
+                // Determine status based on data completeness
+                const hasExternalData = submission.submitterName || submission.projectAreaName;
+                const hasInternalData = submission.cityCounty || submission.fy || submission.ty;
+                let status, statusClass;
+                
+                if (hasExternalData && hasInternalData) {
+                    status = 'Ready';
+                    statusClass = 'status-ready';
+                } else if (hasExternalData) {
+                    status = 'Internal Data Needed';
+                    statusClass = 'status-internal-needed';
+                } else {
+                    status = 'External Data Needed';
+                    statusClass = 'status-external-needed';
+                }
+
+                html += `<tr>
+                    <td><strong>${projectArea}</strong></td>
+                    <td>${year}</td>
+                    <td>${type}</td>
+                    <td>${purpose}</td>
+                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    <td><button onclick="viewProjectDetails('${city}', '${projectArea}', '${year}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">View Details</button></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function viewProjectDetails(city, projectArea, year) {
+            const container = document.getElementById('internal-db-table-container');
+            const submission = allSubmissions.find(sub => {
+                const submissionCity = sub.cityCounty || sub.submitterName || sub.projectArea || 'Unknown';
+                const submissionProject = sub.projectArea || sub.projectAreaName || 'N/A';
+                const submissionYear = sub.year || sub.fy || 'N/A';
+                return submissionCity === city && submissionProject === projectArea && submissionYear === year;
+            });
+
+            if (!submission) {
+                container.innerHTML = '<div class="card"><div class="card-body"><p>Project details not found.</p></div></div>';
+                return;
+            }
+
+            let html = '<div class="card">';
+            html += `<div class="card-header" style="display: flex; align-items: center; gap: 16px;">`;
+            html += `<button onclick="viewClientDetails('${city}')" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">← Back to ${city}</button>`;
+            html += `<h3 style="margin: 0;">${projectArea} - ${year}</h3>`;
+            html += `</div>`;
+            html += '<div class="card-body">';
+            
+            // Basic Information
+            html += '<div class="section-title">Basic Information</div>';
+            html += '<div class="form-grid">';
+            html += `<div class="form-row"><label>Agency/Submitter:</label><span>${submission.submitterName || submission.cityCounty || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>Project Area:</label><span>${submission.projectArea || submission.projectAreaName || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>Year:</label><span>${submission.year || submission.fy || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>FY:</label><span>${submission.fy || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>TY:</label><span>${submission.ty || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>Type:</label><span>${submission.type || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>Purpose:</label><span>${submission.purpose || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>Taxing District:</label><span>${submission.taxingDistrict || 'N/A'}</span></div>`;
+            html += `<div class="form-row"><label>Tax Rate:</label><span>${submission.taxRate || 'N/A'}</span></div>`;
+            html += '</div>';
+
+            // Project Area Information (External Form)
+            if (submission.acreage || submission.creationYear || submission.baseYear || submission.termLength || submission.startYear || submission.expirationYear || submission.baseValue || submission.fyIncrement || submission.remainingLife || submission.fundBalance) {
+                html += '<div class="section-title">Project Area Information</div>';
+                html += '<div class="form-grid">';
+                html += `<div class="form-row"><label>ACREAGE:</label><span>${submission.acreage || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>CREATION YEAR:</label><span>${submission.creationYear || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>BASE YEAR:</label><span>${submission.baseYear || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>TERM LENGTH:</label><span>${submission.termLength || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>START YEAR:</label><span>${submission.startYear || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>EXPIRATION YEAR:</label><span>${submission.expirationYear || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>BASE VALUE:</label><span>${submission.baseValue || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>FY INCREMENT:</label><span>${submission.fyIncrement || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>REMAINING LIFE:</label><span>${submission.remainingLife || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>FUND BALANCE:</label><span>${submission.fundBalance || 'N/A'}</span></div>`;
+                html += '</div>';
+            }
+
+            // Value Information
+            if (submission.tyValue || submission.valueIncrease) {
+                html += '<div class="section-title">Value Information</div>';
+                html += '<div class="form-grid">';
+                html += `<div class="form-row"><label>TY Value:</label><span>${submission.tyValue || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>Value Increase:</label><span>${submission.valueIncrease || 'N/A'}</span></div>`;
+                if (submission.growthInAssessedValue) {
+                    html += `<div class="form-row" style="grid-column: 1 / -1;"><label>Growth in Assessed Value:</label><span>${submission.growthInAssessedValue}</span></div>`;
+                }
+                html += '</div>';
+            }
+
+            // Development Information (External Form)
+            if (submission.developedAcreage || submission.undevelopedAcreage || submission.residentialAcreage || submission.percentResidential || submission.totalAuthorizedHousingUnits) {
+                html += '<div class="section-title">Development Information</div>';
+                html += '<div class="form-grid">';
+                html += `<div class="form-row"><label>DEVELOPED ACREAGE:</label><span>${submission.developedAcreage || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>UNDEVELOPED ACREAGE:</label><span>${submission.undevelopedAcreage || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>RESIDENTIAL ACREAGE:</label><span>${submission.residentialAcreage || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>% RESIDENTIAL:</label><span>${submission.percentResidential || 'N/A'}</span></div>`;
+                html += `<div class="form-row"><label>TOTAL AUTHORIZED HOUSING UNITS:</label><span>${submission.totalAuthorizedHousingUnits || 'N/A'}</span></div>`;
+                html += '</div>';
+            }
+
+            // Descriptions (External Form)
+            if (submission.descriptionSignificantDevelopment || submission.descriptionPlanFurthered || submission.descriptionOtherIssues) {
+                html += '<div class="section-title">Descriptions</div>';
+                if (submission.descriptionSignificantDevelopment) {
+                    html += `<div class="form-row" style="grid-column: 1 / -1;"><label>DESCRIPTION OF SIGNIFICANT DEVELOPMENT:</label><span>${submission.descriptionSignificantDevelopment}</span></div>`;
+                }
+                if (submission.descriptionPlanFurthered) {
+                    html += `<div class="form-row" style="grid-column: 1 / -1;"><label>DESCRIPTION OF HOW THE PLAN HAS BEEN FURTHERED:</label><span>${submission.descriptionPlanFurthered}</span></div>`;
+                }
+                if (submission.descriptionOtherIssues) {
+                    html += `<div class="form-row" style="grid-column: 1 / -1;"><label>DESCRIPTION OF OTHER ISSUES WORTH NOTING:</label><span>${submission.descriptionOtherIssues}</span></div>`;
+                }
+            }
+
+            // Expenses
+            if (submission.expenses && submission.expenses.length > 0) {
+                html += '<div class="section-title">Expenses</div>';
+                html += '<div class="table-container">';
+                html += '<table class="table">';
+                html += '<thead><tr><th>Expense Title</th><th>TY Expense</th><th>CY Expense</th><th>NY Expense</th></tr></thead><tbody>';
+                
+                submission.expenses.forEach(expense => {
+                    html += `<tr>
+                        <td>${expense.title || 'N/A'}</td>
+                        <td>${expense.tyExpense || 'N/A'}</td>
+                        <td>${expense.cyExpense || 'N/A'}</td>
+                        <td>${expense.nyExpense || 'N/A'}</td>
+                    </tr>`;
+                });
+                
+                html += '</tbody></table></div>';
+            }
+
+            // Tax Entities (Internal Form)
+            if (submission.taxEntities && submission.taxEntities.length > 0) {
+                html += '<div class="section-title">Tax Entities</div>';
+                html += '<div class="table-container">';
+                html += '<table class="table">';
+                html += '<thead><tr><th>Tax Entity</th><th>Tax Rate</th><th>Tax Revenue</th></tr></thead><tbody>';
+                
+                submission.taxEntities.forEach(entity => {
+                    html += `<tr>
+                        <td>${entity.name || 'N/A'}</td>
+                        <td>${entity.rate || 'N/A'}</td>
+                        <td>${entity.revenue || 'N/A'}</td>
+                    </tr>`;
+                });
+                
+                html += '</tbody></table></div>';
+            }
+
+            // Additional Internal Form Fields
+            if (submission.totalAggregateExpense || submission.totalAggregateExpenseAtNpv || submission.totalUsesOfFundsNpv || submission.descriptionOfBenefitsToTaxingEntities) {
+                html += '<div class="section-title">Additional Internal Information</div>';
+                html += '<div class="form-grid">';
+                if (submission.totalAggregateExpense) {
+                    html += `<div class="form-row"><label>TOTAL AGGREGATE EXPENSE:</label><span>${submission.totalAggregateExpense}</span></div>`;
+                }
+                if (submission.totalAggregateExpenseAtNpv) {
+                    html += `<div class="form-row"><label>TOTAL AGGREGATE EXPENSE AT NPV:</label><span>${submission.totalAggregateExpenseAtNpv}</span></div>`;
+                }
+                if (submission.totalUsesOfFundsNpv) {
+                    html += `<div class="form-row"><label>TOTAL USES OF FUNDS NPV:</label><span>${submission.totalUsesOfFundsNpv}</span></div>`;
+                }
+                if (submission.descriptionOfBenefitsToTaxingEntities) {
+                    html += `<div class="form-row" style="grid-column: 1 / -1;"><label>DESCRIPTION OF BENEFITS TO TAXING ENTITIES:</label><span>${submission.descriptionOfBenefitsToTaxingEntities}</span></div>`;
+                }
+                html += '</div>';
+            }
+
+            html += '</div></div>';
+            container.innerHTML = html;
+        }
+
+        function addExpenseRow() {
+            const expenseContainer = document.getElementById('expense-container');
+            const expenseIndex = expenseContainer.children.length;
+            
+            const expenseRow = document.createElement('div');
+            expenseRow.className = 'expense-row';
+            expenseRow.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 12px; align-items: end; margin-bottom: 12px; padding: 16px; background: var(--bg-secondary); border-radius: var(--border-radius); border: 1px solid var(--border-gray);';
+            
+            const selectedYear = document.getElementById('external-year-select').value || new Date().getFullYear();
+            
+            expenseRow.innerHTML = `
+                <div class="form-row">
+                    <label>Expense Title:</label>
+                    <input type="text" name="expenseTitle_${expenseIndex}" required>
+                </div>
+                <div class="form-row">
+                    <label id="fy-label-${expenseIndex}">FY (${selectedYear}) Expense:</label>
+                    <input type="number" name="tyExpense_${expenseIndex}" step="0.01" required onchange="calculateExpenseTotal(${expenseIndex})">
+                </div>
+                <div class="form-row">
+                    <label id="cy-label-${expenseIndex}">${parseInt(selectedYear) + 1} Expense:</label>
+                    <input type="number" name="cyExpense_${expenseIndex}" step="0.01" required onchange="calculateExpenseTotal(${expenseIndex})">
+                </div>
+                <div class="form-row">
+                    <label id="ny-label-${expenseIndex}">${parseInt(selectedYear) + 2} Expense:</label>
+                    <input type="number" name="nyExpense_${expenseIndex}" step="0.01" required onchange="calculateExpenseTotal(${expenseIndex})">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="removeExpenseRow(this)" style="padding: 6px 12px; font-size: 12px;">Remove</button>
+            `;
+            
+            expenseContainer.appendChild(expenseRow);
+            updateTotalExpenses();
+        }
+
+        function removeExpenseRow(button) {
+            button.closest('.expense-row').remove();
+            updateTotalExpenses();
+        }
+
+        function calculateExpenseTotal(index) {
+            const tyExpense = parseFloat(document.querySelector(`input[name="tyExpense_${index}"]`)?.value) || 0;
+            const cyExpense = parseFloat(document.querySelector(`input[name="cyExpense_${index}"]`)?.value) || 0;
+            const nyExpense = parseFloat(document.querySelector(`input[name="nyExpense_${index}"]`)?.value) || 0;
+            
+            // Update the main total field
+            updateTotalExpenses();
+        }
+
+        function updateExpenseLabels() {
+            const selectedYear = document.getElementById('external-year-select')?.value || document.getElementById('internal-year-select')?.value;
+            if (!selectedYear) return;
+            
+            const expenseRows = document.querySelectorAll('.expense-row');
+            expenseRows.forEach((row, index) => {
+                const fyLabel = row.querySelector(`#fy-label-${index}`);
+                if (fyLabel) {
+                    fyLabel.textContent = `FY (${selectedYear}) Expense:`;
+                }
+            });
+            
+            // Update other FY labels
+            const fyActualSpentLabel = document.getElementById('fy-actual-spent-label');
+            const fyActualSpentHeader = document.getElementById('fy-actual-spent-header');
+            const fyOriginalBudgetLabel = document.getElementById('fy-original-budget-label');
+            const fyLifetimeRevenuesLabel = document.getElementById('fy-lifetime-revenues-label');
+            const fyActualRevenueLabel = document.getElementById('fy-actual-revenue-label');
+            const fyBaseYearRevenueLabel = document.getElementById('fy-base-year-revenue-label');
+            const fyValueLabel = document.getElementById('fy-value-label');
+            
+            if (fyActualSpentLabel) {
+                fyActualSpentLabel.textContent = `FY (${selectedYear}) ACTUAL SPENT TOTAL:`;
+            }
+            if (fyActualSpentHeader) {
+                fyActualSpentHeader.textContent = `FY (${selectedYear}) ACTUAL SPENT TOTAL`;
+            }
+            if (fyOriginalBudgetLabel) {
+                fyOriginalBudgetLabel.textContent = `FY (${selectedYear}) ORIGINAL BUDGET REVENUES:`;
+            }
+
+            if (fyActualRevenueLabel) {
+                fyActualRevenueLabel.textContent = `FY (${selectedYear}) ACTUAL REVENUE:`;
+            }
+            if (fyBaseYearRevenueLabel) {
+                fyBaseYearRevenueLabel.textContent = `FY (${selectedYear}) BASE YEAR REVENUE:`;
+            }
+            if (fyValueLabel) {
+                fyValueLabel.textContent = `FY (${selectedYear}) VALUE:`;
+            }
+        }
+
+        function populateClientDropdown() {
+            const clientDropdown = document.getElementById('internal-city-dropdown');
+            if (!clientDropdown) return;
+            
+            // Get unique clients from external submissions
+            const clients = new Set();
+            allSubmissions.forEach(submission => {
+                const clientName = submission.submitterName || submission.cityCounty;
+                if (clientName) {
+                    clients.add(clientName);
+                }
+            });
+            
+            // Clear existing options except the first one
+            clientDropdown.innerHTML = '<option value="">Select Client</option>';
+            
+            // Add client options
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client;
+                option.textContent = client;
+                clientDropdown.appendChild(option);
+            });
+        }
+
+        function populateProjectDropdown() {
+            const clientDropdown = document.getElementById('internal-city-dropdown');
+            const projectDropdown = document.getElementById('internal-project-dropdown');
+            if (!clientDropdown || !projectDropdown) return;
+            
+            const selectedClient = clientDropdown.value;
+            if (!selectedClient) {
+                projectDropdown.innerHTML = '<option value="">Select Project Area</option>';
+                return;
+            }
+            
+            // Get project areas for the selected client
+            const projectAreas = new Set();
+            allSubmissions.forEach(submission => {
+                const clientName = submission.submitterName || submission.cityCounty;
+                const projectArea = submission.projectAreaName || submission.projectArea;
+                if (clientName === selectedClient && projectArea) {
+                    projectAreas.add(projectArea);
+                }
+            });
+            
+            // Clear existing options except the first one
+            projectDropdown.innerHTML = '<option value="">Select Project Area</option>';
+            
+            // Add project area options
+            projectAreas.forEach(projectArea => {
+                const option = document.createElement('option');
+                option.value = projectArea;
+                option.textContent = projectArea;
+                projectDropdown.appendChild(option);
+            });
+        }
+
+        function updateInternalYearLabels() {
+            const selectedYear = document.getElementById('internal-year-select').value;
+            if (!selectedYear) return;
+            
+            const fiscalYear = selectedYear;
+            const taxYear = parseInt(selectedYear) - 1;
+            
+            // Update the labels
+            const fyLabel = document.getElementById('fy-label');
+            const tyLabel = document.getElementById('ty-label');
+            
+            if (fyLabel) {
+                fyLabel.textContent = `Fiscal Year (${fiscalYear}):`;
+            }
+            if (tyLabel) {
+                tyLabel.textContent = `Tax Year (${taxYear}):`;
+            }
+            
+            // Auto-fill the input fields
+            const fyInput = document.querySelector('input[name="fy"]');
+            const tyInput = document.querySelector('input[name="ty"]');
+            
+            if (fyInput) {
+                fyInput.value = fiscalYear;
+            }
+            if (tyInput) {
+                tyInput.value = taxYear;
+            }
+        }
+
+        function addTotalExpenseRow() {
+            const tbody = document.getElementById('total-expenses-tbody');
+            const rowIndex = tbody.children.length;
+            
+            const row = document.createElement('tr');
+            row.className = 'total-expense-row';
+            row.innerHTML = `
+                <td>
+                    <input type="text" name="totalExpenseDescription_${rowIndex}" placeholder="Enter expense description" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;">
+                </td>
+                <td>
+                    <input type="number" name="totalExpenseAmount_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTotalUsesOfFunds()">
+                </td>
+                <td>
+                    <input type="number" name="totalExpenseNpv_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTotalUsesOfFunds()">
+                </td>
+                <td style="width: 60px;">
+                    <button type="button" class="btn btn-secondary" onclick="removeTotalExpenseRow(this)" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            updateTotalUsesOfFunds();
+        }
+
+        function removeTotalExpenseRow(button) {
+            button.closest('tr').remove();
+            updateTotalUsesOfFunds();
+        }
+
+        function updateTotalUsesOfFunds() {
+            const totalInput = document.querySelector('input[name="totalUsesOfFunds"]');
+            const expenseRows = document.querySelectorAll('.total-expense-row');
+            let total = 0;
+            
+            expenseRows.forEach(row => {
+                const amount = parseFloat(row.querySelector('input[name*="totalExpenseAmount_"]')?.value) || 0;
+                total += amount;
+            });
+            
+            if (totalInput) {
+                totalInput.value = total.toFixed(2);
+            }
+        }
+
+        function addTotalExpenseNpvRow() {
+            const tbody = document.getElementById('total-expenses-npv-tbody');
+            const rowIndex = tbody.children.length;
+            
+            const row = document.createElement('tr');
+            row.className = 'total-expense-npv-row';
+            row.innerHTML = `
+                <td>
+                    <input type="text" name="totalExpenseNpvDescription_${rowIndex}" placeholder="Enter expense description" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;">
+                </td>
+                <td>
+                    <input type="number" name="totalExpenseNpvAmount_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTotalUsesOfFundsNpv()">
+                </td>
+                <td style="width: 60px;">
+                    <button type="button" class="btn btn-secondary" onclick="removeTotalExpenseNpvRow(this)" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            updateTotalUsesOfFundsNpv();
+        }
+
+        function removeTotalExpenseNpvRow(button) {
+            button.closest('tr').remove();
+            updateTotalUsesOfFundsNpv();
+        }
+
+        function updateTotalUsesOfFundsNpv() {
+            const totalInput = document.querySelector('input[name="totalUsesOfFundsNpv"]');
+            const expenseRows = document.querySelectorAll('.total-expense-npv-row');
+            let total = 0;
+            
+            expenseRows.forEach(row => {
+                const amount = parseFloat(row.querySelector('input[name*="totalExpenseNpvAmount_"]')?.value) || 0;
+                total += amount;
+            });
+            
+            if (totalInput) {
+                totalInput.value = total.toFixed(2);
+            }
+        }
+
+        function addTaxEntityRow() {
+            const tbody = document.getElementById('tax-entities-tbody');
+            const rowIndex = tbody.children.length;
+            
+            const row = document.createElement('tr');
+            row.className = 'tax-entity-row';
+            row.innerHTML = `
+                <td>
+                    <input type="text" name="taxEntityName_${rowIndex}" placeholder="Enter tax entity name" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;">
+                </td>
+                <td>
+                    <input type="number" name="taxEntityParticipationRate_${rowIndex}" step="0.01" min="0" max="100" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                </td>
+                <td>
+                    <input type="number" name="taxEntityRemittance_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                </td>
+                <td>
+                    <input type="number" name="taxEntityCapAmount_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                </td>
+                <td>
+                    <input type="number" name="taxEntityIncrementPaid_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                </td>
+                <td>
+                    <input type="number" name="taxEntityRemainingAuthorized_${rowIndex}" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--border-gray); border-radius: 4px;" onchange="updateTaxEntitiesTotal()">
+                </td>
+                <td style="width: 60px;">
+                    <button type="button" class="btn btn-secondary" onclick="removeTaxEntityRow(this)" style="padding: 4px 8px; font-size: 11px;">Remove</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            updateTaxEntitiesTotal();
+        }
+
+        function removeTaxEntityRow(button) {
+            button.closest('tr').remove();
+            updateTaxEntitiesTotal();
+        }
+
+        function updateTaxEntitiesTotal() {
+            const taxEntityRows = document.querySelectorAll('.tax-entity-row');
+            let totalParticipationRate = 0;
+            let totalRemittance = 0;
+            let totalCapAmount = 0;
+            let totalIncrementPaid = 0;
+            let totalRemainingAuthorized = 0;
+            
+            taxEntityRows.forEach(row => {
+                const participationRate = parseFloat(row.querySelector('input[name*="taxEntityParticipationRate_"]')?.value) || 0;
+                const remittance = parseFloat(row.querySelector('input[name*="taxEntityRemittance_"]')?.value) || 0;
+                const capAmount = parseFloat(row.querySelector('input[name*="taxEntityCapAmount_"]')?.value) || 0;
+                const incrementPaid = parseFloat(row.querySelector('input[name*="taxEntityIncrementPaid_"]')?.value) || 0;
+                const remainingAuthorized = parseFloat(row.querySelector('input[name*="taxEntityRemainingAuthorized_"]')?.value) || 0;
+                
+                totalParticipationRate += participationRate;
+                totalRemittance += remittance;
+                totalCapAmount += capAmount;
+                totalIncrementPaid += incrementPaid;
+                totalRemainingAuthorized += remainingAuthorized;
+            });
+            
+            // Update the totals fields in real-time
+            const totalRemittanceInput = document.querySelector('input[name="totalRemittance"]');
+            const totalCapInput = document.querySelector('input[name="totalCap"]');
+            const totalActualReceivedInput = document.querySelector('input[name="totalActualReceived"]');
+            const totalRemainingAuthorizedInput = document.querySelector('input[name="totalRemainingAuthorized"]');
+            
+            if (totalRemittanceInput) {
+                totalRemittanceInput.value = totalRemittance.toFixed(2);
+            }
+            if (totalCapInput) {
+                totalCapInput.value = totalCapAmount.toFixed(2);
+            }
+            if (totalActualReceivedInput) {
+                totalActualReceivedInput.value = totalIncrementPaid.toFixed(2);
+            }
+            if (totalRemainingAuthorizedInput) {
+                totalRemainingAuthorizedInput.value = totalRemainingAuthorized.toFixed(2);
+            }
+            
+            // Console logging for debugging
+            console.log('Total Participation Rate:', totalParticipationRate);
+            console.log('Total Remittance:', totalRemittance);
+            console.log('Total Cap Amount:', totalCapAmount);
+            console.log('Total Increment Paid:', totalIncrementPaid);
+            console.log('Total Remaining Authorized:', totalRemainingAuthorized);
+        }
+
+        function updateTotalExpenses() {
+            const totalInput = document.querySelector('input[name="tyActualSpentTotal"]');
+            const expenseRows = document.querySelectorAll('.expense-row');
+            let total = 0;
+            
+            expenseRows.forEach(row => {
+                const tyExpense = parseFloat(row.querySelector('input[name*="tyExpense_"]')?.value) || 0;
+                
+                            // Only sum the FY (Fiscal Year) expenses
+            total += tyExpense;
+            });
+            
+            if (totalInput) {
+                totalInput.value = total.toFixed(2);
+            }
+        }
+
+        function calculatePercentResidential() {
+            const residentialAcreage = parseFloat(document.querySelector('input[name="residentialAcreage"]')?.value) || 0;
+            const totalAcreage = parseFloat(document.querySelector('input[name="acreage"]')?.value) || 0;
+            const percentResidentialInput = document.querySelector('input[name="percentResidential"]');
+            
+            if (percentResidentialInput && totalAcreage > 0) {
+                const percentResidential = (residentialAcreage / totalAcreage) * 100;
+                percentResidentialInput.value = percentResidential.toFixed(2);
+            } else if (percentResidentialInput) {
+                percentResidentialInput.value = '0.00';
+            }
+        }
+
+        function calculateRemainingLife() {
+            const expirationYearInput = document.querySelector('input[name="expirationYear"]');
+            const remainingLifeInput = document.querySelector('input[name="remainingLife"]');
+            
+            if (expirationYearInput && remainingLifeInput) {
+                const expirationYear = parseInt(expirationYearInput.value) || 0;
+                const currentYear = 2025; // Current year
+                
+                if (expirationYear > 0) {
+                    const remainingLife = expirationYear - currentYear;
+                    remainingLifeInput.value = remainingLife;
+                } else {
+                    remainingLifeInput.value = '';
+                }
+            }
+        }
+
+        function calculateAdminPercentage() {
+            const adminExpenseInput = document.querySelector('input[name="administrativeExpense"]');
+            const totalExpensesInput = document.querySelector('input[name="tyActualSpentTotal"]');
+            const adminPercentageInput = document.querySelector('input[name="administrativePercentage"]');
+            
+            if (adminExpenseInput && totalExpensesInput && adminPercentageInput) {
+                const adminExpense = parseFloat(adminExpenseInput.value) || 0;
+                const totalExpenses = parseFloat(totalExpensesInput.value) || 0;
+                
+                if (totalExpenses > 0) {
+                    const adminPercentage = (adminExpense / totalExpenses) * 100;
+                    adminPercentageInput.value = adminPercentage.toFixed(2);
+                } else {
+                    adminPercentageInput.value = '0.00';
+                }
+            }
+        }
+
+        function updateYearHeaders() {
+            const selectedYear = document.getElementById('internal-year-select')?.value;
+            const actualRevenueHeader = document.getElementById('actual-revenue-header');
+            
+            if (selectedYear && actualRevenueHeader) {
+                actualRevenueHeader.textContent = `(${selectedYear}) Increment Paid`;
+            }
+            
+            // Also update external request labels
+            updateExpenseLabels();
+        }
+
+        function downloadExcelForClient(clientName) {
+            // Get ALL submissions for the client (not just complete ones)
+            const clientSubmissions = allSubmissions.filter(submission => {
+                const submissionClient = submission.submitterName || submission.cityCounty;
+                return submissionClient === clientName;
+            });
+            
+            // Group by project area and year to ensure we get all years
+            const groupedSubmissions = {};
+            clientSubmissions.forEach(submission => {
+                const projectArea = submission.projectArea || submission.projectAreaName || 'N/A';
+                const year = submission.year || submission.fy || 'N/A';
+                const key = `${projectArea}-${year}`;
+                
+                if (!groupedSubmissions[key]) {
+                    groupedSubmissions[key] = submission;
+                } else {
+                    // Merge data if we have both external and internal data for same project/year
+                    Object.assign(groupedSubmissions[key], submission);
+                }
+            });
+            
+            const finalSubmissions = Object.values(groupedSubmissions);
+            
+            if (finalSubmissions.length === 0) {
+                showNotification(`No submissions found for ${clientName}.`);
+                return;
+            }
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Prepare data for Excel - Include ALL possible fields with blank values
+            const excelData = finalSubmissions.map(submission => {
+                return {
+                    // External Request - Project Area Information
+                    'Agency/Submitter Name': submission.submitterName || '',
+                    'Project Area Name': submission.projectAreaName || '',
+                    'Total Acreage': submission.acreage || '',
+                    'Creation Year': submission.creationYear || '',
+                    'Base Year': submission.baseYear || '',
+                    'Term Length': submission.termLength || '',
+                    'Start Year': submission.startYear || '',
+                    'Expiration Year': submission.expirationYear || '',
+                    'Base Value': submission.baseValue || '',
+                    'FY Increment': submission.fyIncrement || '',
+                    'Remaining Life': submission.remainingLife || '',
+                    
+                    // External Request - Assessed Value & Financial Information
+                    'Description of Growth in Assessed Value': submission.descriptionGrowthAssessedValue || '',
+                    'Fund Balance': submission.fundBalance || '',
+                    'Planned Uses for Fund Balance': submission.plannedUsesForFundBalance || '',
+                    
+                    // External Request - Development Information
+                    'Developed Acreage': submission.developedAcreage || '',
+                    'Undeveloped Acreage': submission.undevelopedAcreage || '',
+                    'Residential Acreage': submission.residentialAcreage || '',
+                    '% Residential': submission.percentResidential || '',
+                    'Total Authorized Housing Units': submission.totalAuthorizedHousingUnits || '',
+                    'Description of Significant Development': submission.descriptionSignificantDevelopment || '',
+                    'Description of How Plan Has Been Furthered': submission.descriptionPlanFurthered || '',
+                    'Description of Other Issues': submission.descriptionOtherIssues || '',
+                    
+                    // Internal Request - Basic Information
+                    'Client (Agency/Submitter)': submission.cityCounty || '',
+                    'Project Area': submission.projectArea || '',
+                    'Fiscal Year': submission.fy || '',
+                    'Tax Year': submission.ty || '',
+                    'Type': submission.type || '',
+                    'Purpose': submission.purpose || '',
+                    'Taxing District': submission.taxingDistrict || '',
+                    'Tax Rate': submission.taxRate || '',
+                    'Total Assessed Value': submission.tyValue || '',
+                    'Value Increase': submission.valueIncrease || '',
+                    'Description of Project Area': submission.growthInAssessedValue || '',
+                    
+                    // Internal Request - Tax Entities (All 10 possible entities)
+                    'Tax Entity 1': submission.taxEntityName_0 || '',
+                    'Participation Rate 1': submission.taxEntityParticipationRate_0 || '',
+                    'Remittance 1': submission.taxEntityRemittance_0 || '',
+                    'Cap Amount 1': submission.taxEntityCapAmount_0 || '',
+                    'Increment Paid 1': submission.taxEntityIncrementPaid_0 || '',
+                    'Remaining Authorized 1': submission.taxEntityRemainingAuthorized_0 || '',
+                    'Tax Entity 2': submission.taxEntityName_1 || '',
+                    'Participation Rate 2': submission.taxEntityParticipationRate_1 || '',
+                    'Remittance 2': submission.taxEntityRemittance_1 || '',
+                    'Cap Amount 2': submission.taxEntityCapAmount_1 || '',
+                    'Increment Paid 2': submission.taxEntityIncrementPaid_1 || '',
+                    'Remaining Authorized 2': submission.taxEntityRemainingAuthorized_1 || '',
+                    'Tax Entity 3': submission.taxEntityName_2 || '',
+                    'Participation Rate 3': submission.taxEntityParticipationRate_2 || '',
+                    'Remittance 3': submission.taxEntityRemittance_2 || '',
+                    'Cap Amount 3': submission.taxEntityCapAmount_2 || '',
+                    'Increment Paid 3': submission.taxEntityIncrementPaid_2 || '',
+                    'Remaining Authorized 3': submission.taxEntityRemainingAuthorized_2 || '',
+                    'Tax Entity 4': submission.taxEntityName_3 || '',
+                    'Participation Rate 4': submission.taxEntityParticipationRate_3 || '',
+                    'Remittance 4': submission.taxEntityRemittance_3 || '',
+                    'Cap Amount 4': submission.taxEntityCapAmount_3 || '',
+                    'Increment Paid 4': submission.taxEntityIncrementPaid_3 || '',
+                    'Remaining Authorized 4': submission.taxEntityRemainingAuthorized_3 || '',
+                    'Tax Entity 5': submission.taxEntityName_4 || '',
+                    'Participation Rate 5': submission.taxEntityParticipationRate_4 || '',
+                    'Remittance 5': submission.taxEntityRemittance_4 || '',
+                    'Cap Amount 5': submission.taxEntityCapAmount_4 || '',
+                    'Increment Paid 5': submission.taxEntityIncrementPaid_4 || '',
+                    'Remaining Authorized 5': submission.taxEntityRemainingAuthorized_4 || '',
+                    'Tax Entity 6': submission.taxEntityName_5 || '',
+                    'Participation Rate 6': submission.taxEntityParticipationRate_5 || '',
+                    'Remittance 6': submission.taxEntityRemittance_5 || '',
+                    'Cap Amount 6': submission.taxEntityCapAmount_5 || '',
+                    'Increment Paid 6': submission.taxEntityIncrementPaid_5 || '',
+                    'Remaining Authorized 6': submission.taxEntityRemainingAuthorized_5 || '',
+                    'Tax Entity 7': submission.taxEntityName_6 || '',
+                    'Participation Rate 7': submission.taxEntityParticipationRate_6 || '',
+                    'Remittance 7': submission.taxEntityRemittance_6 || '',
+                    'Cap Amount 7': submission.taxEntityCapAmount_6 || '',
+                    'Increment Paid 7': submission.taxEntityIncrementPaid_6 || '',
+                    'Remaining Authorized 7': submission.taxEntityRemainingAuthorized_6 || '',
+                    'Tax Entity 8': submission.taxEntityName_7 || '',
+                    'Participation Rate 8': submission.taxEntityParticipationRate_7 || '',
+                    'Remittance 8': submission.taxEntityRemittance_7 || '',
+                    'Cap Amount 8': submission.taxEntityCapAmount_7 || '',
+                    'Increment Paid 8': submission.taxEntityIncrementPaid_7 || '',
+                    'Remaining Authorized 8': submission.taxEntityRemainingAuthorized_7 || '',
+                    'Tax Entity 9': submission.taxEntityName_8 || '',
+                    'Participation Rate 9': submission.taxEntityParticipationRate_8 || '',
+                    'Remittance 9': submission.taxEntityRemittance_8 || '',
+                    'Cap Amount 9': submission.taxEntityCapAmount_8 || '',
+                    'Increment Paid 9': submission.taxEntityIncrementPaid_8 || '',
+                    'Remaining Authorized 9': submission.taxEntityRemainingAuthorized_8 || '',
+                    'Tax Entity 10': submission.taxEntityName_9 || '',
+                    'Participation Rate 10': submission.taxEntityParticipationRate_9 || '',
+                    'Remittance 10': submission.taxEntityRemittance_9 || '',
+                    'Cap Amount 10': submission.taxEntityCapAmount_9 || '',
+                    'Increment Paid 10': submission.taxEntityIncrementPaid_9 || '',
+                    'Remaining Authorized 10': submission.taxEntityRemainingAuthorized_9 || '',
+                    
+                    // Internal Request - Totals
+                    'Total Remittance': submission.totalRemittance || '',
+                    'Total Cap': submission.totalCap || '',
+                    'Total Actual Received': submission.totalActualReceived || '',
+                    'Total Remaining Authorized': submission.totalRemainingAuthorized || '',
+                    
+                    // Internal Request - Revenue Information
+                    'FY Original Budget Revenues': submission.tyOriginalBudgetRevenues || '',
+                    'Original Budget Lifetime Revenues': submission.lifetimeRevenues || '',
+                    'FY Actual Revenue': submission.tyActualRevenue || '',
+                    'Lifetime Actual Revenues': submission.lifetimeActualRevenues || '',
+                    'FY Base Year Revenue': submission.tyBaseYearRevenue || '',
+                    'Lifetime Base Year Revenues': submission.lifetimeBaseYearRevenues || '',
+                    
+                    // Internal Request - Financial Analysis
+                    'Administrative Percentage': submission.administrativePercentage || '',
+                    'Discount Rate': submission.discountRate || '',
+                    'Aggregate Remaining Revenue': submission.aggregateRemainingRevenue || '',
+                    'Discounted Aggregate Remaining Revenue': submission.discountedAggregateRemainingRevenue || '',
+                    'Total Aggregate Expense': submission.totalAggregateExpense || '',
+                    'Total Aggregate Expense at NPV': submission.totalAggregateExpenseAtNpv || '',
+                    
+                    // Internal Request - Total Expenses (All 10 possible expenses)
+                    'Total Expense Description 1': submission.totalExpenseDescription_0 || '',
+                    'Total Expense Amount 1': submission.totalExpenseAmount_0 || '',
+                    'Total Expense NPV 1': submission.totalExpenseNpv_0 || '',
+                    'Total Expense Description 2': submission.totalExpenseDescription_1 || '',
+                    'Total Expense Amount 2': submission.totalExpenseAmount_1 || '',
+                    'Total Expense NPV 2': submission.totalExpenseNpv_1 || '',
+                    'Total Expense Description 3': submission.totalExpenseDescription_2 || '',
+                    'Total Expense Amount 3': submission.totalExpenseAmount_2 || '',
+                    'Total Expense NPV 3': submission.totalExpenseNpv_2 || '',
+                    'Total Expense Description 4': submission.totalExpenseDescription_3 || '',
+                    'Total Expense Amount 4': submission.totalExpenseAmount_3 || '',
+                    'Total Expense NPV 4': submission.totalExpenseNpv_3 || '',
+                    'Total Expense Description 5': submission.totalExpenseDescription_4 || '',
+                    'Total Expense Amount 5': submission.totalExpenseAmount_4 || '',
+                    'Total Expense NPV 5': submission.totalExpenseNpv_4 || '',
+                    'Total Expense Description 6': submission.totalExpenseDescription_5 || '',
+                    'Total Expense Amount 6': submission.totalExpenseAmount_5 || '',
+                    'Total Expense NPV 6': submission.totalExpenseNpv_5 || '',
+                    'Total Expense Description 7': submission.totalExpenseDescription_6 || '',
+                    'Total Expense Amount 7': submission.totalExpenseAmount_6 || '',
+                    'Total Expense NPV 7': submission.totalExpenseNpv_6 || '',
+                    'Total Expense Description 8': submission.totalExpenseDescription_7 || '',
+                    'Total Expense Amount 8': submission.totalExpenseAmount_7 || '',
+                    'Total Expense NPV 8': submission.totalExpenseNpv_7 || '',
+                    'Total Expense Description 9': submission.totalExpenseDescription_8 || '',
+                    'Total Expense Amount 9': submission.totalExpenseAmount_8 || '',
+                    'Total Expense NPV 9': submission.totalExpenseNpv_8 || '',
+                    'Total Expense Description 10': submission.totalExpenseDescription_9 || '',
+                    'Total Expense Amount 10': submission.totalExpenseAmount_9 || '',
+                    'Total Expense NPV 10': submission.totalExpenseNpv_9 || '',
+                    
+                    // External Request - Expenses (All 10 possible expenses)
+                    'Expense Title 1': submission.expenseTitle_0 || '',
+                    'FY Expense 1': submission.tyExpense_0 || '',
+                    '2025 Expense 1': submission.cyExpense_0 || '',
+                    '2026 Expense 1': submission.nyExpense_0 || '',
+                    'Expense Title 2': submission.expenseTitle_1 || '',
+                    'FY Expense 2': submission.tyExpense_1 || '',
+                    '2025 Expense 2': submission.cyExpense_1 || '',
+                    '2026 Expense 2': submission.nyExpense_1 || '',
+                    'Expense Title 3': submission.expenseTitle_2 || '',
+                    'FY Expense 3': submission.tyExpense_2 || '',
+                    '2025 Expense 3': submission.cyExpense_2 || '',
+                    '2026 Expense 3': submission.nyExpense_2 || '',
+                    'Expense Title 4': submission.expenseTitle_3 || '',
+                    'FY Expense 4': submission.tyExpense_3 || '',
+                    '2025 Expense 4': submission.cyExpense_3 || '',
+                    '2026 Expense 4': submission.nyExpense_3 || '',
+                    'Expense Title 5': submission.expenseTitle_4 || '',
+                    'FY Expense 5': submission.tyExpense_4 || '',
+                    '2025 Expense 5': submission.cyExpense_4 || '',
+                    '2026 Expense 5': submission.nyExpense_4 || '',
+                    'Expense Title 6': submission.expenseTitle_5 || '',
+                    'FY Expense 6': submission.tyExpense_5 || '',
+                    '2025 Expense 6': submission.cyExpense_5 || '',
+                    '2026 Expense 6': submission.nyExpense_5 || '',
+                    'Expense Title 7': submission.expenseTitle_6 || '',
+                    'FY Expense 7': submission.tyExpense_6 || '',
+                    '2025 Expense 7': submission.cyExpense_6 || '',
+                    '2026 Expense 7': submission.nyExpense_6 || '',
+                    'Expense Title 8': submission.expenseTitle_7 || '',
+                    'FY Expense 8': submission.tyExpense_7 || '',
+                    '2025 Expense 8': submission.cyExpense_7 || '',
+                    '2026 Expense 8': submission.nyExpense_7 || '',
+                    'Expense Title 9': submission.expenseTitle_8 || '',
+                    'FY Expense 9': submission.tyExpense_8 || '',
+                    '2025 Expense 9': submission.cyExpense_8 || '',
+                    '2026 Expense 9': submission.nyExpense_8 || '',
+                    'Expense Title 10': submission.expenseTitle_9 || '',
+                    'FY Expense 10': submission.tyExpense_9 || '',
+                    '2025 Expense 10': submission.cyExpense_9 || '',
+                    '2026 Expense 10': submission.nyExpense_9 || '',
+                    
+                    // Metadata
+                    'Timestamp': submission.timestamp || '',
+                    'Submission Type': submission.submitterName ? 'External' : 'Internal'
+                };
+            });
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, `${clientName} Data`);
+            
+            // Generate Excel file
+            XLSX.writeFile(wb, `${clientName}_LRB_Compliance_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            showNotification(`Excel file downloaded successfully for ${clientName}!`);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function formatNumberWithCommas(input) {
+            // Only format if there's actually a number
+            if (!input.value || input.value.trim() === '') return;
+            
+            // Get the raw value without commas
+            let rawValue = input.value.replace(/,/g, '');
+            
+            // Only proceed if it's a valid number
+            if (isNaN(parseFloat(rawValue))) return;
+            
+            // Format with commas - simple approach
+            const num = parseFloat(rawValue);
+            const formatted = num.toLocaleString('en-US');
+            
+            // Only update if the formatting is different
+            if (formatted !== input.value) {
+                input.value = formatted;
+            }
+        }
+
+        function removeCommas(input) {
+            // Remove commas when user clicks in to edit
+            if (input.value && input.value.includes(',')) {
+                input.value = input.value.replace(/,/g, '');
+            }
+        }
+
+        function setupNumberFormatting() {
+            // Select all number inputs that should have comma formatting
+            // Exclude year fields and percentage fields
+            const numberInputs = document.querySelectorAll('input[type="number"]:not([name*="year"]):not([name*="Year"]):not([name*="percentage"]):not([name*="Percentage"]):not([name*="rate"]):not([name*="Rate"]):not([min="0"][max="100"])');
+            
+            numberInputs.forEach(input => {
+                // Change input type to text to avoid browser interference
+                input.type = 'text';
+                input.pattern = '[0-9,]*';
+                
+                // Format on blur (when user clicks out)
+                input.addEventListener('blur', function() {
+                    formatNumberWithCommas(this);
+                });
+                
+                // Remove commas on focus (when user clicks in)
+                input.addEventListener('focus', function() {
+                    removeCommas(this);
+                });
+            });
+        }
+
+        function setupPercentageFormatting() {
+            // Select all percentage inputs
+            const percentageInputs = document.querySelectorAll('input[type="number"][name*="percentage"], input[type="number"][name*="Percentage"], input[type="number"][name*="rate"], input[type="number"][name*="Rate"], input[type="number"][min="0"][max="100"]');
+            
+            percentageInputs.forEach(input => {
+                // Change input type to text to avoid browser interference
+                input.type = 'text';
+                input.pattern = '[0-9.]*';
+                
+                // Format on blur (when user clicks out)
+                input.addEventListener('blur', function() {
+                    formatPercentage(this);
+                });
+                
+                // Remove % on focus (when user clicks in)
+                input.addEventListener('focus', function() {
+                    removePercentage(this);
+                });
+            });
+        }
+
+        function formatPercentage(input) {
+            if (!input.value || input.value.trim() === '') return;
+            
+            // Remove any existing % and get the raw number
+            let rawValue = input.value.replace(/%/g, '');
+            
+            // Only proceed if it's a valid number
+            if (isNaN(parseFloat(rawValue))) return;
+            
+            // Add % symbol
+            const num = parseFloat(rawValue);
+            const formatted = num + '%';
+            
+            // Only update if the formatting is different
+            if (formatted !== input.value) {
+                input.value = formatted;
+            }
+        }
+
+        function removePercentage(input) {
+            // Remove % symbol when user clicks in
+            if (input.value && input.value.includes('%')) {
+                input.value = input.value.replace(/%/g, '');
+            }
+        }
+    </script>
+</body>
+</html> 
