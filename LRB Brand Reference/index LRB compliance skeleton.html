@@ -1910,7 +1910,58 @@
                                     </div>
                                 </div>
 
-                                <div class="form-grid compact-grid project-grid">
+                                <style>
+                                    .tif-obligation-grid .form-row {
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 8px;
+                                    }
+                                    .tif-obligation-grid input,
+                                    .tif-obligation-grid textarea {
+                                        width: 100%;
+                                        min-height: 48px;
+                                        padding: 10px 12px;
+                                        border-radius: 8px;
+                                        border: 1px solid var(--border-gray);
+                                        background: #fff;
+                                        font-size: 16px;
+                                    }
+                                    .tif-obligation-grid small {
+                                        color: #666;
+                                        font-size: 0.8em;
+                                        line-height: 1.4;
+                                    }
+                                    .growth-rates-container {
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 12px;
+                                        margin-top: 8px;
+                                    }
+                                    .growth-rate-row {
+                                        display: grid;
+                                        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) 90px;
+                                        gap: 12px;
+                                        align-items: end;
+                                        background: #e8f5e9;
+                                        border: 1px solid #a5d6a7;
+                                        border-radius: 10px;
+                                        padding: 12px;
+                                    }
+                                    .growth-rate-row select,
+                                    .growth-rate-row input {
+                                        width: 100%;
+                                        min-height: 48px;
+                                        padding: 10px 12px;
+                                        border-radius: 8px;
+                                        border: 1px solid #a5d6a7;
+                                        background: #f9fffa;
+                                        font-size: 15px;
+                                    }
+                                    .growth-rate-row button {
+                                        align-self: center;
+                                    }
+                                </style>
+                                <div class="form-grid compact-grid project-grid tif-obligation-grid">
                                     <!-- Row 2: five items -->
                                     <div class="form-row">
                                         <label>TOTAL ACREAGE: <span style="background: #4caf50; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; margin-left: 4px;">TIF</span></label>
@@ -1953,30 +2004,63 @@
                                     </div>
                                 </div>
                                 
-                                <!-- TIF Report Fields (New - Light Green) -->
-                                <div class="section-title" style="margin-top: 24px; padding: 8px 12px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px;">
-                                    <span style="color: #2e7d32; font-weight: 600;">TIF Report Fields (New)</span>
+                                <!-- TIF Report Fields (Light Green) -->
+                                <div style="background: #f1f8f4; padding: 16px; border-radius: 8px; border: 1px solid #c8e6c9; margin-top: 24px;">
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start;">
+                                        <div style="display: flex; flex-direction: column;">
+                                            <label style="margin-bottom: 8px; font-weight: 600;">REAL PROPERTY VALUE:</label>
+                                            <input type="number" name="realPropertyValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px; border-radius: 4px; min-height: 40px;">
+                                            <small style="color: #666; font-size: 0.8em; margin-top: 4px;">Real Property Assessed Value</small>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <label style="margin-bottom: 8px; font-weight: 600;">PERSONAL PROPERTY VALUE:</label>
+                                            <input type="number" name="personalPropertyValue" step="0.01" value="0" style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px; border-radius: 4px; min-height: 40px;">
+                                            <small style="color: #666; font-size: 0.8em; margin-top: 4px;">Personal Property Assessed Value (default: 0)</small>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <label style="margin-bottom: 8px; font-weight: 600;">CENTRALLY ASSESSED VALUE:</label>
+                                            <input type="number" name="centrallyAssessedValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px; border-radius: 4px; min-height: 40px;">
+                                            <small style="color: #666; font-size: 0.8em; margin-top: 4px;">Centrally Assessed Value</small>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 16px;">
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">GROWTH PROJECTIONS:</label>
+                                        <textarea name="growthRates" data-growth-container="external-growth-rates-container" data-add-btn="external-add-growth-rate-btn" style="display:none;"></textarea>
+                                        <div id="external-growth-rates-container" class="growth-rates-container"></div>
+                                        <button type="button" id="external-add-growth-rate-btn" class="btn btn-secondary" style="margin-top: 12px;">+ Add Projection</button>
+                                        <small style="color: #666; font-size: 0.8em; margin-top: 4px; display: block;">Enter projection year and rate (%). Leave blank to remove.</small>
+                                    </div>
                                 </div>
-                                <div class="form-grid compact-grid project-grid" style="background: #f1f8f4; padding: 16px; border-radius: 8px; border: 1px solid #c8e6c9;">
+                                
+                                <div class="section-title">TIF Obligations & Requirements</div>
+                                <div class="form-grid compact-grid project-grid">
                                     <div class="form-row">
-                                        <label>REAL PROPERTY VALUE:</label>
-                                        <input type="number" name="realPropertyValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                                        <small style="color: #666; font-size: 0.8em;">Real Property Assessed Value</small>
+                                        <label>CRA Housing Requirement (Annual)</label>
+                                        <input type="number" name="craHousingRequirement" step="0.01" placeholder="0.00">
+                                        <small style="color: #666; font-size: 0.8em;">Enter the annual housing requirement dollars (leave blank if not applicable).</small>
                                     </div>
                                     <div class="form-row">
-                                        <label>PERSONAL PROPERTY VALUE:</label>
-                                        <input type="number" name="personalPropertyValue" step="0.01" value="0" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                                        <small style="color: #666; font-size: 0.8em;">Personal Property Assessed Value (default: 0)</small>
+                                        <label>Guaranteed Developer Payment (Annual)</label>
+                                        <input type="number" name="guaranteedDeveloperPayment" step="0.01" placeholder="0.00">
+                                        <small style="color: #666; font-size: 0.8em;">Annual guaranteed payment amount.</small>
                                     </div>
                                     <div class="form-row">
-                                        <label>CENTRALLY ASSESSED VALUE:</label>
-                                        <input type="number" name="centrallyAssessedValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                                        <small style="color: #666; font-size: 0.8em;">Centrally Assessed Value</small>
+                                        <label>Guaranteed Payment Years</label>
+                                        <input type="number" name="guaranteedDeveloperPaymentYears" step="1" min="0" placeholder="15">
+                                        <small style="color: #666; font-size: 0.8em;">Number of years the guaranteed payment applies.</small>
                                     </div>
-                                    <div class="form-row" style="grid-column: 1 / -1;">
-                                        <label>GROWTH RATES (JSON Array):</label>
-                                        <textarea name="growthRates" placeholder='[{"year": 2025, "rate": 0.585}, {"year": 2026, "rate": 0.385}]' style="min-height: 80px; background: #e8f5e9; border: 1px solid #a5d6a7; font-family: monospace; font-size: 12px;"></textarea>
-                                        <small style="color: #666; font-size: 0.8em;">Annual growth rates for projected years (JSON format)</small>
+                                    <div class="form-row">
+                                        <label>Developer Reimbursement Rate (%)</label>
+                                        <input type="number" name="developerReimbursementRate" step="0.01" min="0" placeholder="95">
+                                        <small style="color: #666; font-size: 0.8em;">Enter the reimbursement percentage (e.g., 95 for 95%).</small>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>Developer Reimbursement Cap</label>
+                                        <input type="number" name="developerReimbursementCap" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="form-row full-span">
+                                        <label>Developer Reimbursement Notes</label>
+                                        <textarea name="developerReimbursementNote" placeholder="Describe reimbursement terms, caps, or other notes."></textarea>
                                     </div>
                                 </div>
                                 
@@ -2141,6 +2225,7 @@
                             
                             <div style="display: flex; gap: 12px; margin-top: 24px;">
                                 <button type="button" id="save-progress-btn" class="btn btn-secondary" style="flex: 1;">Save Progress</button>
+                                <button type="button" id="load-project-external-btn" class="btn" style="flex: 0 0 auto; background: #007bff; color: white; padding: 8px 12px; font-size: 12px;" title="Load existing project">📂 Load Project</button>
                                 <button type="button" id="fill-test-data-external-btn" class="btn" style="flex: 0 0 auto; background: #6c757d; color: white; padding: 8px 12px; font-size: 12px;" title="Fill form with test data">🧪 Fill Test Data</button>
                                 <button type="submit" class="add-btn" style="flex: 1;">Add Project Area</button>
                             </div>
@@ -2680,30 +2765,63 @@
                                     </div>
                                 </div>
                                 
-                                <!-- TIF Report Fields (New - Light Green) -->
-                                <div class="section-title" style="margin-top: 24px; padding: 8px 12px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px;">
-                                    <span style="color: #2e7d32; font-weight: 600;">TIF Report Fields (New)</span>
+                                <!-- TIF Report Fields (Light Green) -->
+                                <div style="background: #f1f8f4; padding: 16px; border-radius: 8px; border: 1px solid #c8e6c9; margin-top: 24px;">
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start;">
+                                        <div style="display: flex; flex-direction: column;">
+                                            <label style="margin-bottom: 8px; font-weight: 600;">REAL PROPERTY VALUE:</label>
+                                            <input type="number" name="realPropertyValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px; border-radius: 4px; min-height: 40px;">
+                                            <small style="color: #666; font-size: 0.8em; margin-top: 4px;">Real Property Assessed Value</small>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <label style="margin-bottom: 8px; font-weight: 600;">PERSONAL PROPERTY VALUE:</label>
+                                            <input type="number" name="personalPropertyValue" step="0.01" value="0" style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px; border-radius: 4px; min-height: 40px;">
+                                            <small style="color: #666; font-size: 0.8em; margin-top: 4px;">Personal Property Assessed Value (default: 0)</small>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <label style="margin-bottom: 8px; font-weight: 600;">CENTRALLY ASSESSED VALUE:</label>
+                                            <input type="number" name="centrallyAssessedValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px; border-radius: 4px; min-height: 40px;">
+                                            <small style="color: #666; font-size: 0.8em; margin-top: 4px;">Centrally Assessed Value</small>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 16px;">
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">GROWTH PROJECTIONS:</label>
+                                        <textarea name="growthRates" data-growth-container="internal-growth-rates-container" data-add-btn="internal-add-growth-rate-btn" style="display:none;"></textarea>
+                                        <div id="internal-growth-rates-container" class="growth-rates-container"></div>
+                                        <button type="button" id="internal-add-growth-rate-btn" class="btn btn-secondary" style="margin-top: 12px;">+ Add Projection</button>
+                                        <small style="color: #666; font-size: 0.8em; margin-top: 4px; display: block;">Enter projection year and rate (%). Leave blank to remove.</small>
+                                    </div>
                                 </div>
-                                <div class="form-grid compact-grid project-grid" style="background: #f1f8f4; padding: 16px; border-radius: 8px; border: 1px solid #c8e6c9;">
+
+                                <div class="section-title">TIF Obligations & Requirements</div>
+                                <div class="form-grid compact-grid project-grid">
                                     <div class="form-row">
-                                        <label>REAL PROPERTY VALUE:</label>
-                                        <input type="number" name="realPropertyValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                                        <small style="color: #666; font-size: 0.8em;">Real Property Assessed Value</small>
+                                        <label>CRA Housing Requirement (Annual)</label>
+                                        <input type="number" name="craHousingRequirement" step="0.01" placeholder="0.00">
+                                        <small style="color: #666; font-size: 0.8em;">Enter the annual housing requirement dollars (leave blank if not applicable).</small>
                                     </div>
                                     <div class="form-row">
-                                        <label>PERSONAL PROPERTY VALUE:</label>
-                                        <input type="number" name="personalPropertyValue" step="0.01" value="0" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                                        <small style="color: #666; font-size: 0.8em;">Personal Property Assessed Value (default: 0)</small>
+                                        <label>Guaranteed Developer Payment (Annual)</label>
+                                        <input type="number" name="guaranteedDeveloperPayment" step="0.01" placeholder="0.00">
+                                        <small style="color: #666; font-size: 0.8em;">Annual guaranteed payment amount.</small>
                                     </div>
                                     <div class="form-row">
-                                        <label>CENTRALLY ASSESSED VALUE:</label>
-                                        <input type="number" name="centrallyAssessedValue" step="0.01" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                                        <small style="color: #666; font-size: 0.8em;">Centrally Assessed Value</small>
+                                        <label>Guaranteed Payment Years</label>
+                                        <input type="number" name="guaranteedDeveloperPaymentYears" step="1" min="0" placeholder="15">
+                                        <small style="color: #666; font-size: 0.8em;">Number of years the guaranteed payment applies.</small>
                                     </div>
-                                    <div class="form-row" style="grid-column: 1 / -1;">
-                                        <label>GROWTH RATES (JSON Array):</label>
-                                        <textarea name="growthRates" placeholder='[{"year": 2025, "rate": 0.585}, {"year": 2026, "rate": 0.385}]' style="min-height: 80px; background: #e8f5e9; border: 1px solid #a5d6a7; font-family: monospace; font-size: 12px;"></textarea>
-                                        <small style="color: #666; font-size: 0.8em;">Annual growth rates for projected years (JSON format)</small>
+                                    <div class="form-row">
+                                        <label>Developer Reimbursement Rate (%)</label>
+                                        <input type="number" name="developerReimbursementRate" step="0.01" min="0" placeholder="95">
+                                        <small style="color: #666; font-size: 0.8em;">Enter the reimbursement percentage (e.g., 95 for 95%).</small>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>Developer Reimbursement Cap</label>
+                                        <input type="number" name="developerReimbursementCap" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="form-row full-span">
+                                    <label>Developer Reimbursement Notes</label>
+                                        <textarea name="developerReimbursementNote" placeholder="Describe reimbursement terms, caps, or other notes."></textarea>
                                     </div>
                                 </div>
 
@@ -3545,6 +3663,75 @@
             else wrapper.classList.add('hidden');
         }
 
+        function setLandingVisualState(isLanding) {
+            const mainContent = document.querySelector('.main-content');
+            const landingVideo = document.getElementById('landing-video');
+            
+            if (isLanding) {
+                if (mainContent) {
+                    mainContent.classList.add('landing-background');
+                }
+                if (landingVideo) {
+                    landingVideo.currentTime = 0;
+                    const playPromise = landingVideo.play?.();
+                    if (playPromise && typeof playPromise.then === 'function') {
+                        playPromise.then(() => {
+                            landingVideo.classList.add('visible');
+                        }).catch(err => console.warn('Video play failed:', err));
+                    } else {
+                        landingVideo.classList.add('visible');
+                    }
+                }
+            } else {
+                if (mainContent) {
+                    mainContent.classList.remove('landing-background');
+                }
+                if (landingVideo) {
+                    landingVideo.pause();
+                    landingVideo.currentTime = 0;
+                    landingVideo.classList.remove('visible');
+                }
+            }
+        }
+
+        let authExpiryNotified = false;
+        let isInitialLoad = true; // Flag to prevent unauthorized handler during initial load
+        let initialLoadComplete = false;
+        
+        window.addEventListener('api:unauthorized', (event) => {
+            // Suppress unauthorized events during initial page load (first 3 seconds)
+            // This prevents the reload loop when checking for existing session on page load
+            if (isInitialLoad && !initialLoadComplete) {
+                console.log('Suppressing unauthorized event during initial load check');
+                return;
+            }
+            
+            // Also suppress if we're on the landing page (user hasn't logged in yet)
+            const landingContainer = document.getElementById('landing-container');
+            if (landingContainer && !landingContainer.classList.contains('hidden')) {
+                console.log('Suppressing unauthorized event - user is on landing page');
+                return;
+            }
+            
+            if (authExpiryNotified) return;
+            authExpiryNotified = true;
+            const message = (event && event.detail && event.detail.message) || 'Your session expired. Please log in again.';
+            try {
+                if (typeof showNotification === 'function') {
+                    showNotification(message);
+                } else {
+                    alert(message);
+                }
+            } catch (_) {
+                alert(message);
+            }
+            if (typeof window.handleLogout === 'function') {
+                window.handleLogout();
+            } else {
+                setTimeout(() => window.location.reload(), 500);
+            }
+        });
+
         function updateProfileControl(user) {
             if (!profileControlEl || !profileButtonEl || !user) return;
             const email = user.email || user.username || 'user@example.com';
@@ -3966,7 +4153,16 @@
                 }
             } catch (err) {
                 // No valid session, show landing page as normal
-                console.log('No active session, showing landing page');
+                // This is expected if user is not logged in - don't trigger unauthorized handler
+                // The unauthorized event will be suppressed during initial load
+                console.log('No active session, showing landing page:', err.message);
+            } finally {
+                // Mark initial load as complete after session check (give it a moment for any pending events)
+                setTimeout(() => {
+                    isInitialLoad = false;
+                    initialLoadComplete = true;
+                    console.log('Initial load check complete');
+                }, 500);
             }
             
             // If user has active session, skip showing landing page
@@ -4008,23 +4204,8 @@
                 });
             }
             
-            if (landingContainer && !landingContainer.classList.contains('hidden') && mainContent) {
-                mainContent.classList.add('landing-background');
-                if (landingVideo) {
-                    landingVideo.play().then(() => {
-                        landingVideo.classList.add('visible');
-                    }).catch(err => {
-                        console.warn('Video autoplay failed:', err);
-                        // Fallback to white background if video fails
-                    });
-                }
-            } else {
-                // Hide video if landing page is not visible
-                if (landingVideo) {
-                    landingVideo.pause();
-                    landingVideo.classList.remove('visible');
-                }
-            }
+            const landingIsVisible = !!(landingContainer && !landingContainer.classList.contains('hidden'));
+            setLandingVisualState(landingIsVisible);
             // Preload the logo for PDF report headers
             loadLogo();
             loadCircleLogo();
@@ -4461,14 +4642,7 @@
                 }
                 
                 // Clean up landing visuals
-                const mainContent = document.querySelector('.main-content');
-                const landingVideo = document.getElementById('landing-video');
-                if (mainContent) mainContent.classList.remove('landing-background');
-                if (landingVideo) {
-                    landingVideo.pause();
-                    landingVideo.currentTime = 0;
-                    landingVideo.classList.remove('visible');
-                }
+                setLandingVisualState(false);
                 
                 // Record login event
                 if (typeof recordLoginEvent === 'function') {
@@ -4709,15 +4883,8 @@
                             landingContainer.classList.remove('hidden');
                         }
                         
-                        // Restart video
-                        const landingVideo = document.getElementById('landing-video');
-                        const mainContent = document.querySelector('.main-content');
-                        if (mainContent) mainContent.classList.add('landing-background');
-                        if (landingVideo) {
-                            landingVideo.currentTime = 0;
-                            landingVideo.play().catch(e => console.warn('Video play failed:', e));
-                            landingVideo.classList.add('visible');
-                        }
+                        // Restart video / visuals
+                        setLandingVisualState(true);
                     } catch (err) {
                         console.error('Error returning to landing:', err);
                     }
@@ -4848,14 +5015,7 @@
                 changeLogo('Pictures/horz_names (1).png');
                 
                 // Remove landing background and stop video
-                const mainContent = document.querySelector('.main-content');
-                const landingVideo = document.getElementById('landing-video');
-                mainContent.classList.remove('landing-background');
-                if (landingVideo) {
-                    landingVideo.pause();
-                    landingVideo.currentTime = 0;
-                    landingVideo.classList.remove('visible');
-                }
+                setLandingVisualState(false);
                 
                 renderClientDashboard();
             }
@@ -4872,14 +5032,7 @@
                 changeLogo('Pictures/horz_names (1).png');
                 
                 // Remove landing background and stop video
-                const mainContent = document.querySelector('.main-content');
-                const landingVideo = document.getElementById('landing-video');
-                mainContent.classList.remove('landing-background');
-                if (landingVideo) {
-                    landingVideo.pause();
-                    landingVideo.currentTime = 0;
-                    landingVideo.classList.remove('visible');
-                }
+                setLandingVisualState(false);
             }
 
             // Show new submission form
@@ -5024,6 +5177,9 @@
                 // Setup number formatting with commas
                 setupNumberFormatting();
                 console.log('Number formatting setup');
+
+                setupGrowthRateSections();
+                console.log('Growth rate controls setup');
 
                 // Setup percentage formatting
                 setupPercentageFormatting();
@@ -5699,6 +5855,11 @@
             // Remove active class from all tabs
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 
+            const shouldDisableLandingVisuals = ['external', 'internal', 'internal-data', 'account-management'].includes(tabName);
+            if (shouldDisableLandingVisuals) {
+                setLandingVisualState(false);
+            }
+
             // Show selected container and activate tab
             if (tabName === 'external') {
                 document.getElementById('main-container').classList.remove('hidden');
@@ -5708,6 +5869,18 @@
                 document.getElementById('internal-tab-btn').classList.add('active');
                 // Load from API and render (async, but don't await to avoid blocking UI)
                 renderInternalDBCityList().catch(err => console.error('Error loading internal database:', err));
+                // Auto-load Tax Rate Management data when tab is shown
+                // Use window.loadMasterRatesDisplay if available, otherwise wait a bit for setupTaxRateImportUI to complete
+                if (typeof window.loadMasterRatesDisplay === 'function') {
+                    window.loadMasterRatesDisplay().catch(err => console.error('Error loading tax rate management:', err));
+                } else {
+                    // If function not yet available, wait for setupTaxRateImportUI to complete
+                    setTimeout(() => {
+                        if (typeof window.loadMasterRatesDisplay === 'function') {
+                            window.loadMasterRatesDisplay().catch(err => console.error('Error loading tax rate management:', err));
+                        }
+                    }, 500);
+                }
             } else if (tabName === 'internal-data') {
                 const container = document.getElementById('internal-data-request-container');
                 if (container) {
@@ -6753,19 +6926,7 @@
                     }
                     
                     // Restore landing background and start video
-                    const mainContent = document.querySelector('.main-content');
-                    const landingVideo = document.getElementById('landing-video');
-                    if (mainContent) {
-                        mainContent.classList.add('landing-background');
-                    }
-                    if (landingVideo) {
-                        landingVideo.currentTime = 0;
-                        landingVideo.play().then(() => {
-                            landingVideo.classList.add('visible');
-                        }).catch(err => {
-                            console.warn('Video autoplay failed:', err);
-                        });
-                    }
+                    setLandingVisualState(true);
                     
                     // Reset tab states
                     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -6782,6 +6943,8 @@
                     document.getElementById('client-dashboard-container').classList.add('hidden');
                 }
             }
+
+            window.handleLogout = handleLogout;
 
             // Setup logout button with event delegation to handle dynamically created buttons
 
@@ -7123,8 +7286,10 @@
                         <td style="font-size: 12px; max-width: 200px;">${governingBoardText}</td>
                         <td style="font-size: 12px; max-width: 200px;">${agencyStaffText}</td>
                         <td>
-                            <button onclick="editProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; margin-right: 4px;">Edit</button>
-                            <button onclick="deleteProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">Delete</button>
+                            <button onclick="event.stopPropagation(); generateTIFReport('${submissionId}')" class="btn btn-info" style="background-color: #17a2b8; border-color: #17a2b8; color: white; padding: 6px 12px; font-size: 12px; margin-right: 4px;" title="Generate TIF Excel Report">📊 TIF</button>
+                            <button onclick="event.stopPropagation(); viewProjectDetails('${city}', '${projectArea}', '${year}')" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; margin-right: 4px;" title="View Project Details">Details</button>
+                            <button onclick="event.stopPropagation(); editProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; margin-right: 4px;">Edit</button>
+                            <button onclick="event.stopPropagation(); deleteProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">Delete</button>
                         </td>
                     </tr>`;
                 });
@@ -7797,7 +7962,7 @@
                 return;
             }
             
-            // Find and remove the submission
+            // Find the submission
             const submissionIndex = allSubmissions.findIndex(sub => (sub.id || `submission-${allSubmissions.indexOf(sub)}`) === submissionId);
             
             if (submissionIndex === -1) {
@@ -7806,15 +7971,23 @@
             }
             
             const submission = allSubmissions[submissionIndex];
+            const actualSubmissionId = submission.id;
+            
+            console.log(`[deleteProjectSubmission] Deleting submission: ${actualSubmissionId} for project: ${projectArea}`);
             
             // Delete from API if available
-            if (window.apiClient && window.currentUser && submission.id) {
+            if (window.apiClient && window.currentUser && actualSubmissionId) {
                 try {
-                    // Note: You may need to add a delete endpoint to the API
-                    // For now, we'll just remove it locally
-                    console.log('Would delete from API:', submission.id);
+                    await window.apiClient.deleteSubmission(actualSubmissionId);
+                    console.log(`[deleteProjectSubmission] ✓ Successfully deleted from API: ${actualSubmissionId}`);
                 } catch (err) {
-                    console.error('Failed to delete from API:', err);
+                    console.error(`[deleteProjectSubmission] ✗ Failed to delete from API: ${actualSubmissionId}`, err);
+                    showNotification(`Failed to delete from server: ${err.message || err}. Removing locally only.`, 'error');
+                }
+            } else {
+                console.warn('[deleteProjectSubmission] API client or user not available, or submission has no ID');
+                if (!actualSubmissionId) {
+                    console.warn('[deleteProjectSubmission] Submission object:', submission);
                 }
             }
             
@@ -7824,41 +7997,99 @@
             // Update local storage
             localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
             
-            // Refresh the projects list
-            viewProjectsList(city, year);
+            // Wait a moment to ensure deletion is processed
+            await new Promise(resolve => setTimeout(resolve, 500));
             
-            showNotification('Project deleted successfully.');
+            // Reload submissions from API to ensure consistency
+            if (window.apiClient && window.currentUser) {
+                try {
+                    console.log('[deleteProjectSubmission] Reloading submissions from API...');
+                    await loadSubmissionsFromAPI();
+                    console.log('[deleteProjectSubmission] Submissions reloaded. Current count:', allSubmissions.length);
+                } catch (err) {
+                    console.error('[deleteProjectSubmission] Failed to reload submissions:', err);
+                }
+            }
+            
+            // Refresh the projects list - ensure we wait for async operations
+            console.log('[deleteProjectSubmission] Refreshing view...');
+            if (typeof viewProjectsList === 'function') {
+                const result = viewProjectsList(city, year);
+                if (result && typeof result.then === 'function') {
+                    await result;
+                }
+            } else if (typeof viewClientDetailsByYear === 'function') {
+                const result = viewClientDetailsByYear(city, year);
+                if (result && typeof result.then === 'function') {
+                    await result;
+                }
+            } else {
+                // Fallback: reload the internal database view
+                if (typeof renderInternalDBCityList === 'function') {
+                    await renderInternalDBCityList();
+                } else if (typeof loadMasterRatesDisplay === 'function') {
+                    loadMasterRatesDisplay();
+                }
+            }
+            console.log('[deleteProjectSubmission] View refreshed.');
+            
+            showNotification('Project deleted successfully.', 'success');
         }
         
-        function deleteFromInternalDB(city, projectArea, year) {
-            if (confirm('Are you sure you want to delete this project area from the internal database?')) {
-                // Find all submissions that match this city, project area, and year
-                const submissionsToDelete = allSubmissions.filter(sub => {
-                    const submissionCity = sub.cityCounty || sub.submitterName || sub.projectArea || 'Unknown';
-                    const submissionProjectArea = sub.projectArea || sub.projectAreaName || 'N/A';
-                    const submissionYear = sub.year || sub.fy || 'Unknown';
-                    
-                    return submissionCity === city && submissionProjectArea === projectArea && submissionYear === year;
-                });
-                
-                // Remove them from allSubmissions
-                allSubmissions = allSubmissions.filter(sub => {
-                    const submissionCity = sub.cityCounty || sub.submitterName || sub.projectArea || 'Unknown';
-                    const submissionProjectArea = sub.projectArea || sub.projectAreaName || 'N/A';
-                    const submissionYear = sub.year || sub.fy || 'Unknown';
-                    
-                    return !(submissionCity === city && submissionProjectArea === projectArea && submissionYear === year);
-                });
-                
-                // Save to localStorage
-                localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
-                
-                // Refresh the view
-                viewClientDetailsByYear(city, year);
-                
-                // Show notification
-                showNotification('Project area deleted from internal database.');
+        async function deleteFromInternalDB(city, projectArea, year) {
+            if (!confirm('Are you sure you want to delete this project area from the internal database?')) {
+                return;
             }
+            
+            // Find all submissions that match this city, project area, and year
+            const submissionsToDelete = allSubmissions.filter(sub => {
+                const submissionCity = sub.cityCounty || sub.submitterName || sub.projectArea || 'Unknown';
+                const submissionProjectArea = sub.projectArea || sub.projectAreaName || 'N/A';
+                const submissionYear = sub.year || sub.fy || 'Unknown';
+                
+                return submissionCity === city && submissionProjectArea === projectArea && submissionYear === year;
+            });
+            
+            // Delete from API if available
+            if (window.apiClient && window.currentUser) {
+                for (const submission of submissionsToDelete) {
+                    if (submission.id) {
+                        try {
+                            await window.apiClient.deleteSubmission(submission.id);
+                            console.log('Deleted from API:', submission.id);
+                        } catch (err) {
+                            console.error('Failed to delete from API:', err);
+                        }
+                    }
+                }
+            }
+            
+            // Remove them from allSubmissions
+            allSubmissions = allSubmissions.filter(sub => {
+                const submissionCity = sub.cityCounty || sub.submitterName || sub.projectArea || 'Unknown';
+                const submissionProjectArea = sub.projectArea || sub.projectAreaName || 'N/A';
+                const submissionYear = sub.year || sub.fy || 'Unknown';
+                
+                return !(submissionCity === city && submissionProjectArea === projectArea && submissionYear === year);
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
+            
+            // Reload submissions from API to ensure consistency
+            if (window.apiClient && window.currentUser) {
+                try {
+                    await loadSubmissionsFromAPI();
+                } catch (err) {
+                    console.error('Failed to reload submissions:', err);
+                }
+            }
+            
+            // Refresh the view
+            viewClientDetailsByYear(city, year);
+            
+            // Show notification
+            showNotification('Project area deleted from internal database.', 'success');
         }
 
         function editProjectAreaName(city, projectArea, year, rowIndex) {
@@ -7927,25 +8158,125 @@
             showNotification('Client name updated successfully.');
         }
 
-        function deleteClientByYear(city, year) {
-            if (confirm('Are you sure you want to delete all project areas for this client and year from the internal database?')) {
-                // Remove all submissions that match this city and year
-                allSubmissions = allSubmissions.filter(sub => {
-                    const submissionCity = sub.cityCounty || sub.submitterName || sub.projectArea || 'Unknown';
-                    const submissionYear = sub.year || sub.fy || 'Unknown';
-                    
-                    return !(submissionCity === city && submissionYear === year);
-                });
-                
-                // Save to localStorage
-                localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
-                
-                // Refresh the view
-                renderInternalDBCityList();
-                
-                // Show notification
-                showNotification('Client data deleted from internal database.');
+        async function deleteClientByYear(city, year) {
+            if (!confirm('Are you sure you want to delete all project areas for this client and year from the internal database?')) {
+                return;
             }
+            
+            // Second confirmation
+            if (!confirm(`This will delete ALL projects for "${city}" in ${year}. This action cannot be undone. Are you absolutely sure?`)) {
+                return;
+            }
+            
+            // Find all submissions that match this city and year
+            // Use the SAME matching logic as renderInternalDBCityList to ensure we find the right submissions
+            const submissionsToDelete = allSubmissions.filter(sub => {
+                // Match city name using the same priority order as renderInternalDBCityList
+                const submissionCity = sub.cityCounty || 
+                                      sub.submitterName || 
+                                      sub.client ||
+                                      sub.agency ||
+                                      sub.projectArea || 
+                                      sub.projectAreaName ||
+                                      'Unknown';
+                
+                // Match year - convert to string for comparison (same as renderInternalDBCityList)
+                const submissionYear = String(sub.year || sub.fy || sub.ty || 'Unknown');
+                const targetYear = String(year);
+                
+                const cityMatch = submissionCity === city;
+                const yearMatch = submissionYear === targetYear;
+                
+                if (cityMatch && yearMatch) {
+                    console.log(`[deleteClientByYear] Match found:`, {
+                        id: sub.id,
+                        city: submissionCity,
+                        year: submissionYear,
+                        submission: sub
+                    });
+                }
+                
+                return cityMatch && yearMatch;
+            });
+            
+            console.log(`[deleteClientByYear] Found ${submissionsToDelete.length} submissions to delete for ${city} - ${year}`);
+            console.log('[deleteClientByYear] Submission IDs:', submissionsToDelete.map(s => s.id));
+            
+            // Delete from API if available
+            if (window.apiClient && window.currentUser) {
+                let deletedCount = 0;
+                let failedCount = 0;
+                const errors = [];
+                
+                for (const submission of submissionsToDelete) {
+                    if (submission.id) {
+                        try {
+                            console.log(`[deleteClientByYear] Deleting submission: ${submission.id}`);
+                            await window.apiClient.deleteSubmission(submission.id);
+                            deletedCount++;
+                            console.log(`[deleteClientByYear] ✓ Successfully deleted: ${submission.id}`);
+                        } catch (err) {
+                            console.error(`[deleteClientByYear] ✗ Failed to delete ${submission.id}:`, err);
+                            failedCount++;
+                            errors.push({ id: submission.id, error: err.message || err });
+                        }
+                    } else {
+                        console.warn(`[deleteClientByYear] Submission has no ID:`, submission);
+                        failedCount++;
+                    }
+                }
+                
+                console.log(`[deleteClientByYear] Deletion complete: ${deletedCount} succeeded, ${failedCount} failed`);
+                
+                if (failedCount > 0) {
+                    showNotification(`Deleted ${deletedCount} projects. ${failedCount} failed to delete from server. Check console for details.`, 'warning');
+                } else if (deletedCount > 0) {
+                    showNotification(`Successfully deleted ${deletedCount} project(s) from database.`, 'success');
+                } else {
+                    showNotification('No submissions found to delete. They may have already been deleted.', 'info');
+                    // Still reload to refresh the view
+                }
+            } else {
+                console.warn('[deleteClientByYear] API client or user not available - deleting locally only');
+                showNotification('API not available. Deletion only applied locally. Refresh page to see changes.', 'warning');
+            }
+            
+            // Remove them from allSubmissions using the same matching logic
+            allSubmissions = allSubmissions.filter(sub => {
+                const submissionCity = sub.cityCounty || 
+                                      sub.submitterName || 
+                                      sub.client ||
+                                      sub.agency ||
+                                      sub.projectArea || 
+                                      sub.projectAreaName ||
+                                      'Unknown';
+                const submissionYear = String(sub.year || sub.fy || sub.ty || 'Unknown');
+                const targetYear = String(year);
+                
+                return !(submissionCity === city && submissionYear === targetYear);
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('allSubmissions', JSON.stringify(allSubmissions));
+            
+            // Wait a moment to ensure deletions are processed
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Reload submissions from API to ensure consistency
+            if (window.apiClient && window.currentUser) {
+                try {
+                    console.log('[deleteClientByYear] Reloading submissions from API...');
+                    await loadSubmissionsFromAPI();
+                    console.log('[deleteClientByYear] Submissions reloaded. Current count:', allSubmissions.length);
+                } catch (err) {
+                    console.error('[deleteClientByYear] Failed to reload submissions:', err);
+                }
+            }
+            
+            // Refresh the view - use await to ensure it completes
+            console.log('[deleteClientByYear] Refreshing view...');
+            await renderInternalDBCityList();
+            console.log('[deleteClientByYear] View refreshed.');
         }
 
         function viewClientDetails(city) {
@@ -8118,6 +8449,11 @@
             html += `<button onclick=\"viewClientDetails('${city}')\" class=\"btn btn-secondary\" style=\"padding: 8px 16px; font-size: 12px;\">← Back to ${city}</button>`;
             html += `<h3 style=\"margin: 0;\">${projectArea} - ${year}</h3>`;
             html += `<div style=\"margin-left: auto; display:flex; gap:8px;\">`;
+            // Get submission ID - check multiple possible field names
+            const submissionId = submission.id || submission.submissionId || submission._id || '';
+            if (submissionId) {
+                html += `<button onclick=\"generateTIFReport('${submissionId}')\" class=\"btn btn-info\" style=\"background-color: #17a2b8; border-color: #17a2b8; color: white;\">📊 TIF Report</button>`;
+            }
             html += `<button id=\"edit-detail-btn\" class=\"btn btn-primary\">Edit</button>`;
             html += `<button id=\"save-detail-btn\" class=\"btn btn-success\" style=\"display:none;\">Save</button>`;
             html += `<button id=\"cancel-detail-btn\" class=\"btn btn-secondary\" style=\"display:none;\">Cancel</button>`;
@@ -11622,6 +11958,9 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                     `;
                 }
             }
+            
+            // Expose to global scope so it can be called from showTab()
+            window.loadMasterRatesDisplay = loadMasterRatesDisplay;
         }
 
         function updateTaxEntitiesTotal() {
@@ -12388,28 +12727,161 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             showNotification(`Excel file downloaded successfully for ${clientName}!`);
         }
 
+        /**
+         * Generate TIF Report (Excel)
+         * Downloads an Excel TIF report for a specific submission
+         */
+        async function generateTIFReport(submissionId) {
+            if (!submissionId) {
+                showNotification('Error: No submission ID provided', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('Generating TIF report...', 'info');
+                
+                // Get submission year for the report
+                const submission = allSubmissions.find(s => s.id === submissionId);
+                const year = submission?.year || submission?.fy || new Date().getFullYear();
+                
+                // Check authentication - use apiClient token if available
+                if (!window.apiClient || !window.currentUser) {
+                    showNotification('Error: Not authenticated. Please log in again.', 'error');
+                    // Redirect to login or refresh session
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    return;
+                }
+                
+                // Get token from apiClient (it manages its own token)
+                const token = localStorage.getItem('apiToken') || localStorage.getItem('authToken');
+                if (!token) {
+                    showNotification('Error: Not authenticated. Please log in again.', 'error');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    return;
+                }
+                
+                const API_BASE = window.API_BASE_URL || 'http://localhost:4000/api';
+                const response = await fetch(`${API_BASE}/reports/tif`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        submissionId: submissionId,
+                        year: year,
+                        projectionYears: 20
+                    })
+                });
+                
+                if (!response.ok) {
+                    // Handle 401 Unauthorized - try to get error message from response
+                    if (response.status === 401) {
+                        const errorData = await response.json().catch(() => ({}));
+                        showNotification('Error: Session expired. Please log in again.', 'error');
+                        // Clear tokens and trigger reload
+                        localStorage.removeItem('apiToken');
+                        localStorage.removeItem('authToken');
+                        // Dispatch unauthorized event if apiClient is available
+                        if (window.apiClient) {
+                            window.dispatchEvent(new CustomEvent('api:unauthorized', { 
+                                detail: { message: 'Session expired. Please log in again.' } 
+                            }));
+                        }
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                        return;
+                    }
+                    
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMessage = errorData.error || errorData.details || `HTTP ${response.status}: ${response.statusText}`;
+                    console.error('[generateTIFReport] Server error:', errorData);
+                    throw new Error(errorMessage);
+                }
+                
+                // Get the filename from Content-Disposition header or generate one
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'TIF_Report.xlsx';
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
+                    if (filenameMatch) {
+                        filename = filenameMatch[1];
+                    }
+                }
+                
+                // Download the file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showNotification(`TIF report generated successfully: ${filename}`, 'success');
+                
+            } catch (error) {
+                console.error('Error generating TIF report:', error);
+                showNotification(`Error generating TIF report: ${error.message}`, 'error');
+            }
+        }
+
         function generatePDFReport(city, year) {
+            console.log('=== GENERATE REPORT DEBUG START ===');
+            console.log('Function: generatePDFReport called');
+            console.log('Parameters:', { city, year });
+            console.log('Timestamp:', new Date().toISOString());
+            
             try {
                 // Get selected project IDs if they were set via the modal
                 const selectedProjectIds = window._selectedProjectIdsForReport || null;
+                console.log('Selected Project IDs:', selectedProjectIds);
                 if (selectedProjectIds) {
+                    console.log(`Found ${selectedProjectIds.length} selected project IDs`);
                     delete window._selectedProjectIdsForReport; // Clear after use
+                } else {
+                    console.log('No selected project IDs - will use all submissions for city/year');
+                }
+                
+                // Check allSubmissions availability
+                console.log('Checking allSubmissions...');
+                console.log('allSubmissions type:', typeof allSubmissions);
+                console.log('allSubmissions length:', typeof allSubmissions !== 'undefined' ? allSubmissions.length : 'UNDEFINED');
+                if (typeof allSubmissions !== 'undefined' && allSubmissions.length > 0) {
+                    console.log('Sample submission:', allSubmissions[0]);
+                } else {
+                    console.warn('⚠️ allSubmissions is empty or undefined!');
                 }
                 
                 console.log('Starting PDFMake generation for:', city, year, selectedProjectIds ? `with ${selectedProjectIds.length} selected projects` : '');
                 
                 // Wait for PDFMake and fonts to load if they're not available yet
                 const waitForPDFMake = (attempts = 0) => {
+                    console.log(`[waitForPDFMake] Attempt ${attempts + 1}/20`);
+                    console.log('  - typeof pdfMake:', typeof pdfMake);
+                    console.log('  - typeof pdfMake.vfs:', typeof pdfMake !== 'undefined' ? typeof pdfMake.vfs : 'N/A');
+                    console.log('  - window.pdfMake:', typeof window.pdfMake);
+                    
                     if (typeof pdfMake !== 'undefined' && typeof pdfMake.vfs !== 'undefined') {
-                        console.log('PDFMake and fonts are available, proceeding with generation');
+                        console.log('✓ PDFMake and fonts are available, proceeding with generation');
                         generatePDFReportInternal(city, year, selectedProjectIds);
                     } else if (attempts < 20) {
-                        console.log(`Waiting for PDFMake and fonts... attempt ${attempts + 1}`);
+                        console.log(`⏳ Waiting for PDFMake and fonts... attempt ${attempts + 1}/20`);
                         setTimeout(() => waitForPDFMake(attempts + 1), 500);
                     } else {
-                        console.error('PDFMake library or fonts not loaded after waiting');
-                        console.log('pdfMake available:', typeof pdfMake !== 'undefined');
-                        console.log('pdfMake.vfs available:', typeof pdfMake !== 'undefined' && typeof pdfMake.vfs !== 'undefined');
+                        console.error('✗ PDFMake library or fonts not loaded after waiting');
+                        console.error('  - pdfMake available:', typeof pdfMake !== 'undefined');
+                        console.error('  - pdfMake.vfs available:', typeof pdfMake !== 'undefined' && typeof pdfMake.vfs !== 'undefined');
+                        console.error('  - window.pdfMake:', typeof window.pdfMake);
+                        console.error('  - window.pdfmake:', typeof window.pdfmake);
+                        console.error('  - Available PDF-related globals:', Object.keys(window).filter(k => k.toLowerCase().includes('pdf')));
                         showNotification('PDF library or fonts not loaded. Please refresh the page and try again.');
                     }
                 };
@@ -12417,34 +12889,192 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 waitForPDFMake();
                 
             } catch (error) {
-                console.error('Error generating PDF:', error);
+                console.error('✗ ERROR in generatePDFReport:', error);
+                console.error('Error stack:', error.stack);
+                console.error('Error details:', {
+                    message: error.message,
+                    name: error.name,
+                    fileName: error.fileName,
+                    lineNumber: error.lineNumber
+                });
                 showNotification(`Error generating PDF report: ${error.message}. Please try again.`);
             }
         }
         
         function generatePDFReportInternal(city, year, selectedProjectIds = null) {
+            console.log('=== GENERATE PDF REPORT INTERNAL DEBUG ===');
+            console.log('Function: generatePDFReportInternal called');
+            console.log('Parameters:', { city, year, selectedProjectIds });
+            
             try {
+                // Check allSubmissions first
+                console.log('Step 1: Checking allSubmissions...');
+                if (typeof allSubmissions === 'undefined') {
+                    console.error('✗ allSubmissions is undefined!');
+                    showNotification('No submission data available. Please ensure data is loaded.');
+                    return;
+                }
+                console.log(`✓ allSubmissions exists with ${allSubmissions.length} total submissions`);
+                
                 // Get submissions for this city/year
+                console.log('Step 2: Filtering submissions by city/year...');
+                console.log('  - Filtering for city:', city);
+                console.log('  - Filtering for year:', year);
+                console.log('  - City type:', typeof city);
+                console.log('  - Year type:', typeof year);
+                
+                // Normalize city name for comparison (case-insensitive, trim whitespace)
+                const normalizedCity = String(city || '').trim().toLowerCase();
+                const normalizedYear = year !== null ? String(year).trim() : null;
+                
                 let cityYearSubmissions = allSubmissions.filter(submission => {
-                    const submissionCity = submission.cityCounty || submission.submitterName || submission.projectArea || 'Unknown';
-                    const submissionYear = submission.year || submission.fy || 'N/A';
-                    return submissionCity === city && (year === null || submissionYear === year);
+                    // Try multiple field names for city
+                    const submissionCity = submission.cityCounty || 
+                                         submission.submitterName || 
+                                         submission.client ||
+                                         submission.agency ||
+                                         submission.city ||
+                                         submission.projectArea || 
+                                         submission.projectAreaName ||
+                                         'Unknown';
+                    
+                    // Try multiple field names for year
+                    const submissionYear = submission.year || submission.fy || submission.ty || 'N/A';
+                    const submissionYearStr = String(submissionYear).trim();
+                    
+                    // Normalize submission city for comparison
+                    const normalizedSubmissionCity = String(submissionCity).trim().toLowerCase();
+                    
+                    // Check for city match (case-insensitive, partial match for flexibility)
+                    const cityMatch = normalizedSubmissionCity === normalizedCity || 
+                                    normalizedSubmissionCity.includes(normalizedCity) ||
+                                    normalizedCity.includes(normalizedSubmissionCity);
+                    
+                    // Check for year match
+                    const yearMatch = normalizedYear === null || 
+                                    normalizedYear === 'all' ||
+                                    submissionYearStr === normalizedYear ||
+                                    String(submission.year) === normalizedYear ||
+                                    String(submission.fy) === normalizedYear;
+                    
+                    const matches = cityMatch && yearMatch;
+                    
+                    // Log all comparisons for debugging
+                    if (matches) {
+                        console.log('  ✓ Match found:', {
+                            id: submission.id,
+                            city: submissionCity,
+                            normalizedCity: normalizedSubmissionCity,
+                            year: submissionYear,
+                            yearStr: submissionYearStr,
+                            projectArea: submission.projectAreaName || submission.projectArea
+                        });
+                    } else {
+                        // Log why it didn't match (first few non-matches for debugging)
+                        if (allSubmissions.indexOf(submission) < 3) {
+                            console.log('  ✗ No match:', {
+                                id: submission.id,
+                                submissionCity: submissionCity,
+                                normalizedSubmissionCity: normalizedSubmissionCity,
+                                targetCity: city,
+                                normalizedTargetCity: normalizedCity,
+                                cityMatch: cityMatch,
+                                submissionYear: submissionYear,
+                                submissionYearStr: submissionYearStr,
+                                targetYear: year,
+                                normalizedTargetYear: normalizedYear,
+                                yearMatch: yearMatch
+                            });
+                        }
+                    }
+                    
+                    return matches;
                 });
+
+                console.log(`Step 2 Result: Found ${cityYearSubmissions.length} submissions matching city/year`);
 
                 // Filter by selected project IDs if provided
                 if (selectedProjectIds && selectedProjectIds.length > 0) {
+                    console.log('Step 3: Filtering by selected project IDs...');
+                    console.log('  - Selected IDs:', selectedProjectIds);
+                    
+                    const beforeFilter = cityYearSubmissions.length;
                     cityYearSubmissions = cityYearSubmissions.filter(submission => {
                         const submissionId = submission.id || `submission-${allSubmissions.indexOf(submission)}`;
-                        return selectedProjectIds.includes(submissionId);
+                        const isSelected = selectedProjectIds.includes(submissionId);
+                        
+                        if (isSelected) {
+                            console.log('  ✓ Submission selected:', submissionId);
+                        }
+                        
+                        return isSelected;
                     });
+                    
+                    console.log(`Step 3 Result: Filtered from ${beforeFilter} to ${cityYearSubmissions.length} submissions`);
+                } else {
+                    console.log('Step 3: Skipped (no selected project IDs)');
                 }
 
-                console.log('Found submissions:', cityYearSubmissions.length, selectedProjectIds ? `(filtered from ${selectedProjectIds.length} selected)` : '');
+                // Deduplicate submissions by ID and project area to prevent duplicate projects in report
+                console.log('Step 4: Deduplicating submissions...');
+                const uniqueSubmissions = [];
+                const seenIds = new Set();
+                const seenProjectAreas = new Set();
+                
+                cityYearSubmissions.forEach(submission => {
+                    const submissionId = submission.id || `submission-${allSubmissions.indexOf(submission)}`;
+                    const projectArea = submission.projectAreaName || submission.projectArea || submission.id;
+                    const uniqueKey = `${submissionId}-${projectArea}`;
+                    
+                    if (!seenIds.has(submissionId) && !seenProjectAreas.has(uniqueKey)) {
+                        seenIds.add(submissionId);
+                        seenProjectAreas.add(uniqueKey);
+                        uniqueSubmissions.push(submission);
+                    } else {
+                        console.log('  ⚠️ Skipping duplicate submission:', {
+                            id: submissionId,
+                            projectArea: projectArea,
+                            reason: seenIds.has(submissionId) ? 'duplicate ID' : 'duplicate project area'
+                        });
+                    }
+                });
+                
+                console.log(`Step 4 Result: Deduplicated from ${cityYearSubmissions.length} to ${uniqueSubmissions.length} unique submissions`);
+                cityYearSubmissions = uniqueSubmissions;
+
+                console.log('Final submission count:', cityYearSubmissions.length, selectedProjectIds ? `(filtered from ${selectedProjectIds.length} selected)` : '');
 
                 if (cityYearSubmissions.length === 0) {
-                    showNotification(`No data found for ${city}${year ? ` - ${year}` : ''}.`);
+                    console.error('✗ No submissions found after filtering!');
+                    console.error('  - Searched for city:', city);
+                    console.error('  - Searched for year:', year);
+                    console.error('  - Total submissions available:', allSubmissions.length);
+                    
+                    // Show detailed sample of submissions for debugging
+                    console.error('  - Sample submissions (first 10):');
+                    allSubmissions.slice(0, 10).forEach((s, idx) => {
+                        const subCity = s.cityCounty || s.submitterName || s.client || s.agency || s.city || s.projectArea || 'N/A';
+                        const subYear = s.year || s.fy || s.ty || 'N/A';
+                        console.error(`    ${idx + 1}. City: "${subCity}" (normalized: "${String(subCity).trim().toLowerCase()}") | Year: "${subYear}" | ID: ${s.id || 'N/A'}`);
+                    });
+                    
+                    // Show all unique city names for reference
+                    const uniqueCities = [...new Set(allSubmissions.map(s => {
+                        return s.cityCounty || s.submitterName || s.client || s.agency || s.city || s.projectArea || 'Unknown';
+                    }))];
+                    console.error('  - All unique city names in submissions:', uniqueCities.slice(0, 20));
+                    
+                    // Show all unique years for reference
+                    const uniqueYears = [...new Set(allSubmissions.map(s => {
+                        return String(s.year || s.fy || s.ty || 'N/A');
+                    }))];
+                    console.error('  - All unique years in submissions:', uniqueYears.slice(0, 10));
+                    
+                    showNotification(`No data found for ${city}${year ? ` - ${year}` : ''}. Check console for available cities/years.`);
                     return;
                 }
+                
+                console.log('✓ Proceeding with PDF generation for', cityYearSubmissions.length, 'submissions');
 
                 // Build PDFMake document definition
                 // Note: PDFMake uses Roboto fonts from vfs_fonts by default
@@ -12472,58 +13102,97 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 };
                 
                 // Ensure fonts are available
+                console.log('Step 4: Checking PDFMake fonts...');
                 if (typeof pdfMake === 'undefined' || typeof pdfMake.vfs === 'undefined') {
+                    console.error('✗ PDF fonts not loaded!');
+                    console.error('  - pdfMake:', typeof pdfMake);
+                    console.error('  - pdfMake.vfs:', typeof pdfMake !== 'undefined' ? typeof pdfMake.vfs : 'N/A');
                     showNotification('PDF fonts not loaded. Please refresh the page and try again.');
                     return;
                 }
+                console.log('✓ PDFMake fonts are available');
                 
                 // Get submitter name from first submission
                 const submitterName = cityYearSubmissions.length > 0 
                     ? (cityYearSubmissions[0].submitterName || cityYearSubmissions[0].cityCounty || city)
                     : city;
+                console.log('Step 5: Building PDF document sections...');
+                console.log('  - Submitter name:', submitterName);
                 
                 // Add cover page
+                console.log('  - Adding cover page...');
                 addCoverPagePDFMake(docDefinition, city, year, submitterName);
                 
                 // Add table of contents
+                console.log('  - Adding table of contents...');
                 addTableOfContentsPDFMake(docDefinition, cityYearSubmissions);
                 
                 // Add executive summary intro page (black page with "EXECUTIVE SUMMARY")
+                console.log('  - Adding executive summary intro...');
                 addExecutiveSummaryIntroPDFMake(docDefinition);
                 
                 // Add executive summary
+                console.log('  - Adding executive summary...');
                 addExecutiveSummaryPDFMake(docDefinition, city, cityYearSubmissions);
                 
                 // Add governing board section
+                console.log('  - Adding governing board section...');
                 addGoverningBoardSectionPDFMake(docDefinition, cityYearSubmissions);
                 
                 // Add combined budget section
+                console.log('  - Adding combined budget section...');
                 addCombinedBudgetSectionPDFMake(docDefinition, cityYearSubmissions, year);
                 
                 // Add acreage overview section
+                console.log('  - Adding acreage overview section...');
                 addAcreageOverviewSectionPDFMake(docDefinition, cityYearSubmissions);
                 
                 // Add individual project sections
+                console.log('  - Adding individual project sections...');
                 addIndividualProjectSectionsPDFMake(docDefinition, cityYearSubmissions);
+                
+                console.log(`✓ All sections added. Total content items: ${docDefinition.content.length}`);
                 
                 // Generate and download the PDF
                 const filename = `LRB_Annual_Report_${city}_${year || 'all'}_${new Date().toISOString().split('T')[0]}.pdf`;
+                console.log('Step 6: Generating PDF file...');
+                console.log('  - Filename:', filename);
                 
                 try {
-                    console.log('Creating PDF with PDFMake...');
-                    console.log('docDefinition content length:', docDefinition.content.length);
+                    console.log('  - Calling pdfMake.createPdf()...');
+                    console.log('  - docDefinition content length:', docDefinition.content.length);
+                    console.log('  - docDefinition keys:', Object.keys(docDefinition));
                     
                     // Use download method directly - it should handle fonts automatically
-                    pdfMake.createPdf(docDefinition).download(filename, () => {
-                        console.log('PDF download initiated');
-                        showNotification(`PDF report generated successfully for ${city}${year ? ` - ${year}` : ''}!`);
-                    }, (error) => {
-                        console.error('PDF generation error in callback:', error);
-                        showNotification(`Error generating PDF: ${error.message || 'Unknown error'}. Please check console.`);
-                    });
+                    const pdfDoc = pdfMake.createPdf(docDefinition);
+                    console.log('  ✓ PDF document created, calling download()...');
+                    
+                    pdfDoc.download(filename, 
+                        () => {
+                            console.log('✓ PDF download initiated successfully');
+                            console.log('=== GENERATE REPORT DEBUG END (SUCCESS) ===');
+                            showNotification(`PDF report generated successfully for ${city}${year ? ` - ${year}` : ''}!`);
+                        }, 
+                        (error) => {
+                            console.error('✗ PDF generation error in callback:', error);
+                            console.error('  - Error message:', error.message);
+                            console.error('  - Error stack:', error.stack);
+                            console.error('  - Error name:', error.name);
+                            console.error('=== GENERATE REPORT DEBUG END (ERROR) ===');
+                            showNotification(`Error generating PDF: ${error.message || 'Unknown error'}. Please check console.`);
+                        }
+                    );
                 } catch (error) {
-                    console.error('PDF generation error (catch):', error);
-                    console.error('Error details:', error.stack);
+                    console.error('✗ PDF generation error (catch block):', error);
+                    console.error('  - Error message:', error.message);
+                    console.error('  - Error stack:', error.stack);
+                    console.error('  - Error name:', error.name);
+                    console.error('  - Error details:', {
+                        fileName: error.fileName,
+                        lineNumber: error.lineNumber,
+                        columnNumber: error.columnNumber
+                    });
+                    console.error('=== GENERATE REPORT DEBUG END (EXCEPTION) ===');
                     showNotification(`Error generating PDF: ${error.message}. Please check console for details.`);
                 }
                 
@@ -13483,7 +14152,10 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 { title: 'GENERAL OVERVIEW OF PROJECT AREAS AND ACREAGE', page: '8' }
             ];
             
-            // Add individual project area sections
+            // Add individual project area sections (deduplicate to prevent duplicates in TOC)
+            const uniqueProjectAreas = [];
+            const seenProjectAreas = new Set();
+            
             submissions.forEach((submission, index) => {
                 let projectArea = submission.projectAreaName || submission.projectArea;
                 if (!projectArea) {
@@ -13492,7 +14164,16 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 if (!projectArea) {
                     projectArea = `Project Area #${index + 1}`;
                 }
-                tocItems.push({ title: projectArea.toUpperCase(), page: `${8 + index + 1}` });
+                
+                const normalizedArea = projectArea.trim().toUpperCase();
+                if (!seenProjectAreas.has(normalizedArea)) {
+                    seenProjectAreas.add(normalizedArea);
+                    uniqueProjectAreas.push({ title: projectArea.toUpperCase(), index: uniqueProjectAreas.length });
+                }
+            });
+            
+            uniqueProjectAreas.forEach((item) => {
+                tocItems.push({ title: item.title, page: `${8 + item.index + 1}` });
             });
             
             // Build table body - compact layout to ensure it fits on one page
@@ -15711,7 +16392,26 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
         }
 
         function addIndividualProjectSectionsPDFMake(docDefinition, submissions) {
-            submissions.forEach((submission, index) => {
+            // Deduplicate submissions by ID and project area to prevent duplicate sections
+            const uniqueSubmissions = [];
+            const seenIds = new Set();
+            const seenProjectAreas = new Set();
+            
+            submissions.forEach(submission => {
+                const submissionId = submission.id || `submission-${submissions.indexOf(submission)}`;
+                const projectArea = submission.projectAreaName || submission.projectArea || submission.id;
+                const uniqueKey = `${submissionId}-${projectArea}`;
+                
+                if (!seenIds.has(submissionId) && !seenProjectAreas.has(uniqueKey)) {
+                    seenIds.add(submissionId);
+                    seenProjectAreas.add(uniqueKey);
+                    uniqueSubmissions.push(submission);
+                }
+            });
+            
+            console.log(`[addIndividualProjectSectionsPDFMake] Deduplicated from ${submissions.length} to ${uniqueSubmissions.length} unique submissions`);
+            
+            uniqueSubmissions.forEach((submission, index) => {
                 const projectNumber = index + 1;
                 
                 // PROJECT AREA HEADER PAGE (black page with blue text)
@@ -17859,21 +18559,80 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             const agencyDropdown = document.getElementById('external-agency-dropdown');
             const projectDropdown = document.getElementById('external-project-dropdown');
             
+            // Try to get real county/agency/project from tax rates database
+            let realCounty = null;
+            let realAgency = null;
+            let realProject = null;
+            
+            try {
+                if (window.apiClient && typeof window.apiClient.getMasterTaxRates === 'function') {
+                    const taxRates = await window.apiClient.getMasterTaxRates();
+                    if (taxRates && taxRates.length > 0) {
+                        // Get first available county/agency/project combination
+                        const firstRate = taxRates[0];
+                        if (firstRate.county && firstRate.agency && firstRate.project) {
+                            realCounty = firstRate.county;
+                            realAgency = firstRate.agency;
+                            realProject = firstRate.project;
+                            console.log(`Using real data: ${realCounty} > ${realAgency} > ${realProject}`);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not fetch real tax rate data, using defaults:', error);
+            }
+            
             if (countyDropdown) {
                 await populateExternalCountyDropdown();
-                if (countyDropdown.options.length > 1) {
+                if (realCounty) {
+                    // Try to find and select the real county
+                    const countyOption = Array.from(countyDropdown.options).find(opt => 
+                        opt.value === realCounty || opt.text.includes(realCounty)
+                    );
+                    if (countyOption) {
+                        countyDropdown.value = countyOption.value;
+                    } else if (countyDropdown.options.length > 1) {
+                        countyDropdown.value = countyDropdown.options[1].value;
+                    }
+                } else if (countyDropdown.options.length > 1) {
                     countyDropdown.value = countyDropdown.options[1].value;
                 }
                 await handleExternalCountyChange();
             }
             
-            if (agencyDropdown && agencyDropdown.options.length > 1) {
-                agencyDropdown.value = agencyDropdown.options[1].value;
+            if (agencyDropdown) {
+                if (realAgency) {
+                    // Wait for agency dropdown to populate
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    const agencyOption = Array.from(agencyDropdown.options).find(opt => 
+                        opt.value === realAgency || opt.text === realAgency
+                    );
+                    if (agencyOption) {
+                        agencyDropdown.value = agencyOption.value;
+                    } else if (agencyDropdown.options.length > 1) {
+                        agencyDropdown.value = agencyDropdown.options[1].value;
+                    }
+                } else if (agencyDropdown.options.length > 1) {
+                    agencyDropdown.value = agencyDropdown.options[1].value;
+                }
                 await populateExternalProjectDropdown();
             }
             
-            if (projectDropdown && projectDropdown.options.length > 1) {
-                projectDropdown.value = projectDropdown.options[1].value;
+            if (projectDropdown) {
+                if (realProject) {
+                    // Wait for project dropdown to populate
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    const projectOption = Array.from(projectDropdown.options).find(opt => 
+                        opt.value === realProject || opt.text === realProject
+                    );
+                    if (projectOption) {
+                        projectDropdown.value = projectOption.value;
+                    } else if (projectDropdown.options.length > 1) {
+                        projectDropdown.value = projectDropdown.options[1].value;
+                    }
+                } else if (projectDropdown.options.length > 1) {
+                    projectDropdown.value = projectDropdown.options[1].value;
+                }
             }
 
             // Basic info
@@ -17885,6 +18644,41 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             form.querySelector('input[name="expirationYear"]').value = '2045';
             form.querySelector('input[name="baseValue"]').value = '5000000';
             form.querySelector('input[name="fyIncrement"]').value = '250000';
+
+            // Property Values (TIF fields)
+            const realPropertyValueField = form.querySelector('input[name="realPropertyValue"]');
+            if (realPropertyValueField) realPropertyValueField.value = '50000000';
+            
+            const personalPropertyValueField = form.querySelector('input[name="personalPropertyValue"]');
+            if (personalPropertyValueField) personalPropertyValueField.value = '0';
+            
+            const centrallyAssessedValueField = form.querySelector('input[name="centrallyAssessedValue"]');
+            if (centrallyAssessedValueField) centrallyAssessedValueField.value = '10000000';
+            
+            setGrowthRatesForForm(form, [
+                { year: 2025, rate: 0.05 },
+                { year: 2026, rate: 0.04 },
+                { year: 2027, rate: 0.03 }
+            ]);
+            setGrowthRatesForForm(form, [
+                { year: 2025, rate: 0.05 },
+                { year: 2026, rate: 0.04 },
+                { year: 2027, rate: 0.03 }
+            ]);
+
+            // TIF Obligations
+            const housingRequirementField = form.querySelector('input[name="craHousingRequirement"]');
+            if (housingRequirementField) housingRequirementField.value = '150000';
+            const guaranteedPaymentField = form.querySelector('input[name="guaranteedDeveloperPayment"]');
+            if (guaranteedPaymentField) guaranteedPaymentField.value = '150000';
+            const guaranteedYearsField = form.querySelector('input[name="guaranteedDeveloperPaymentYears"]');
+            if (guaranteedYearsField) guaranteedYearsField.value = '15';
+            const reimbursementRateField = form.querySelector('input[name="developerReimbursementRate"]');
+            if (reimbursementRateField) reimbursementRateField.value = '95';
+            const reimbursementCapField = form.querySelector('input[name="developerReimbursementCap"]');
+            if (reimbursementCapField) reimbursementCapField.value = '4754000';
+            const reimbursementNoteField = form.querySelector('textarea[name="developerReimbursementNote"]');
+            if (reimbursementNoteField) reimbursementNoteField.value = 'Developer reimbursed at 95% of increment until cap is met.';
 
             // Financial
             form.querySelector('input[name="fundBalance"]').value = '1250000';
@@ -17960,6 +18754,20 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             form.querySelector('input[name="tyValue"]').value = '7500000';
             // valueIncrease is readonly/calculated, but trigger calculation if function exists
             if (typeof calculateValueIncrease === 'function') calculateValueIncrease();
+
+            // TIF Obligations
+            const internalHousingReq = form.querySelector('input[name="craHousingRequirement"]');
+            if (internalHousingReq) internalHousingReq.value = '150000';
+            const internalGuaranteedPayment = form.querySelector('input[name="guaranteedDeveloperPayment"]');
+            if (internalGuaranteedPayment) internalGuaranteedPayment.value = '150000';
+            const internalGuaranteedYears = form.querySelector('input[name="guaranteedDeveloperPaymentYears"]');
+            if (internalGuaranteedYears) internalGuaranteedYears.value = '15';
+            const internalReimbursementRate = form.querySelector('input[name="developerReimbursementRate"]');
+            if (internalReimbursementRate) internalReimbursementRate.value = '95';
+            const internalReimbursementCap = form.querySelector('input[name="developerReimbursementCap"]');
+            if (internalReimbursementCap) internalReimbursementCap.value = '4754000';
+            const internalReimbursementNote = form.querySelector('textarea[name="developerReimbursementNote"]');
+            if (internalReimbursementNote) internalReimbursementNote.value = 'Developer reimbursed at 95% of increment until cap is met.';
 
             // Tax Entities - fill first row if it exists
             const taxEntityName0 = form.querySelector('input[name="taxEntityName_0"]');
@@ -18067,11 +18875,377 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             alert('✓ Internal form filled with test data!');
         }
 
+        function setupGrowthRateSections() {
+            setupGrowthRateSection(document.getElementById('project-form'));
+            setupGrowthRateSection(document.getElementById('internal-data-request-form'));
+        }
+
+        function setupGrowthRateSection(form) {
+            if (!form) return;
+            const hiddenField = form.querySelector('[name="growthRates"][data-growth-container]');
+            if (!hiddenField) return;
+            const container = document.getElementById(hiddenField.dataset.growthContainer);
+            const addBtn = document.getElementById(hiddenField.dataset.addBtn);
+            if (!container || !addBtn) return;
+
+            addBtn.addEventListener('click', () => addGrowthRateRow(container, hiddenField));
+
+            const initialValue = parseGrowthRatesValue(hiddenField.value);
+            if (initialValue.length) {
+                setGrowthRatesForForm(form, initialValue);
+            } else if (!container.querySelector('.growth-rate-row')) {
+                addGrowthRateRow(container, hiddenField);
+            }
+        }
+
+        function addGrowthRateRow(container, hiddenField, preset = {}) {
+            const row = document.createElement('div');
+            row.className = 'growth-rate-row';
+
+            const yearWrapper = document.createElement('div');
+            yearWrapper.style.display = 'flex';
+            yearWrapper.style.flexDirection = 'column';
+            yearWrapper.style.gap = '6px';
+
+            const yearLabel = document.createElement('label');
+            yearLabel.textContent = 'Year';
+            const yearSelect = document.createElement('select');
+            yearSelect.className = 'growth-year-select';
+            populateGrowthYearOptions(yearSelect);
+            yearWrapper.appendChild(yearLabel);
+            yearWrapper.appendChild(yearSelect);
+
+            const rateWrapper = document.createElement('div');
+            rateWrapper.style.display = 'flex';
+            rateWrapper.style.flexDirection = 'column';
+            rateWrapper.style.gap = '6px';
+
+            const rateLabel = document.createElement('label');
+            rateLabel.textContent = 'Rate (%)';
+            const rateInput = document.createElement('input');
+            rateInput.type = 'number';
+            rateInput.step = '0.01';
+            rateInput.placeholder = '0.00';
+            rateInput.className = 'growth-rate-input';
+            rateWrapper.appendChild(rateLabel);
+            rateWrapper.appendChild(rateInput);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-secondary';
+            removeBtn.textContent = 'Remove';
+
+            row.appendChild(yearWrapper);
+            row.appendChild(rateWrapper);
+            row.appendChild(removeBtn);
+            container.appendChild(row);
+
+            if (preset.year) yearSelect.value = preset.year;
+            if (preset.rate !== undefined) rateInput.value = (preset.rate * 100).toFixed(3).replace(/\.?0+$/, '');
+
+            const sync = () => syncGrowthRates(hiddenField);
+            yearSelect.addEventListener('change', sync);
+            rateInput.addEventListener('input', sync);
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+                if (!container.querySelector('.growth-rate-row')) {
+                    addGrowthRateRow(container, hiddenField);
+                } else {
+                    syncGrowthRates(hiddenField);
+                }
+            });
+
+            syncGrowthRates(hiddenField);
+        }
+
+        function populateGrowthYearOptions(select) {
+            if (select.options.length > 0) return;
+            const startYear = 2000;
+            const endYear = 2075;
+            const fragment = document.createDocumentFragment();
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select Year';
+            fragment.appendChild(placeholder);
+            for (let year = startYear; year <= endYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                fragment.appendChild(option);
+            }
+            select.appendChild(fragment);
+        }
+
+        function syncGrowthRates(hiddenField) {
+            const container = document.getElementById(hiddenField.dataset.growthContainer);
+            if (!container) return;
+            const rows = container.querySelectorAll('.growth-rate-row');
+            const entries = [];
+            rows.forEach(row => {
+                const year = parseInt(row.querySelector('.growth-year-select')?.value, 10);
+                const ratePercent = parseFloat(row.querySelector('.growth-rate-input')?.value);
+                if (!Number.isNaN(year) && !Number.isNaN(ratePercent)) {
+                    entries.push({ year, rate: ratePercent / 100 });
+                }
+            });
+            hiddenField.value = entries.length ? JSON.stringify(entries) : '';
+        }
+
+        function setGrowthRatesForForm(form, entries = []) {
+            if (!form) return;
+            const hiddenField = form.querySelector('[name="growthRates"][data-growth-container]');
+            if (!hiddenField) return;
+            const container = document.getElementById(hiddenField.dataset.growthContainer);
+            if (!container) return;
+            container.innerHTML = '';
+            const values = Array.isArray(entries) && entries.length ? entries : [{}];
+            values.forEach(entry => addGrowthRateRow(container, hiddenField, entry));
+            syncGrowthRates(hiddenField);
+        }
+
+        function parseGrowthRatesValue(raw) {
+            if (!raw) return [];
+            if (Array.isArray(raw)) return raw;
+            if (typeof raw === 'string') {
+                try {
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch {
+                    return [];
+                }
+            }
+            return [];
+        }
+
+        // ========== LOAD PROJECT FUNCTIONALITY ==========
+        async function loadProjectIntoExternalForm() {
+            const form = document.getElementById('project-form');
+            if (!form) {
+                alert('External form not found. Make sure you are on the External Data Request tab.');
+                return;
+            }
+
+            try {
+                // Load submissions from API
+                if (!window.apiClient) {
+                    alert('API client not available. Please log in first.');
+                    return;
+                }
+
+                const result = await apiClient.listSubmissions();
+                if (!result || !result.submissions || result.submissions.length === 0) {
+                    alert('No projects found. Please create a project first or use "Fill Test Data" to create a test submission.');
+                    return;
+                }
+
+                // Parse submissions and format for selection
+                const projects = result.submissions.map(sub => {
+                    try {
+                        const payload = typeof sub.payload_json === 'string' 
+                            ? JSON.parse(sub.payload_json) 
+                            : sub.payload_json || {};
+                        
+                        return {
+                            id: sub.id,
+                            year: sub.year || payload.year || payload.fy,
+                            county: payload.county || '',
+                            agency: payload.submitterName || payload.cityCounty || payload.city || '',
+                            project: payload.projectAreaName || payload.projectArea || '',
+                            displayName: `${payload.projectAreaName || payload.projectArea || 'Unnamed Project'} (${payload.county || ''} - ${payload.submitterName || payload.cityCounty || ''} - ${sub.year || payload.year || 'N/A'})`,
+                            payload: payload
+                        };
+                    } catch (e) {
+                        console.error('Error parsing submission:', e);
+                        return null;
+                    }
+                }).filter(p => p !== null);
+
+                if (projects.length === 0) {
+                    alert('No valid projects found.');
+                    return;
+                }
+
+                // Show selection dialog
+                const projectList = projects.map((p, idx) => 
+                    `${idx + 1}. ${p.displayName}`
+                ).join('\n');
+
+                const selection = prompt(
+                    `Select a project to load (enter number 1-${projects.length}):\n\n${projectList}\n\nOr enter 0 to cancel.`,
+                    '1'
+                );
+
+                if (!selection || selection === '0' || selection.trim() === '') {
+                    return;
+                }
+
+                const selectedIndex = parseInt(selection) - 1;
+                if (selectedIndex < 0 || selectedIndex >= projects.length) {
+                    alert('Invalid selection.');
+                    return;
+                }
+
+                const selectedProject = projects[selectedIndex];
+                const payload = selectedProject.payload;
+
+                // Confirm loading
+                if (!confirm(`Load project "${selectedProject.displayName}"?\n\nThis will populate the form with this project's data.`)) {
+                    return;
+                }
+
+                // Clear form first
+                form.reset();
+                setGrowthRatesForForm(form, parseGrowthRatesValue(payload.growthRates));
+
+                // Set year
+                const yearSelect = document.getElementById('external-year-select');
+                if (yearSelect && selectedProject.year) {
+                    yearSelect.value = selectedProject.year.toString();
+                }
+
+                // Set county, agency, project dropdowns
+                const countyDropdown = document.getElementById('external-county-dropdown');
+                const agencyDropdown = document.getElementById('external-agency-dropdown');
+                const projectDropdown = document.getElementById('external-project-dropdown');
+
+                if (countyDropdown && payload.county) {
+                    await populateExternalCountyDropdown();
+                    // Try to set the county value
+                    const countyOption = Array.from(countyDropdown.options).find(opt => 
+                        opt.value === payload.county || opt.text.includes(payload.county)
+                    );
+                    if (countyOption) {
+                        countyDropdown.value = countyOption.value;
+                        await handleExternalCountyChange();
+                    } else if (payload.county) {
+                        // Add new county option
+                        const newOption = document.createElement('option');
+                        newOption.value = payload.county;
+                        newOption.textContent = payload.county;
+                        countyDropdown.appendChild(newOption);
+                        countyDropdown.value = payload.county;
+                        await handleExternalCountyChange();
+                    }
+                }
+
+                if (agencyDropdown && (payload.submitterName || payload.cityCounty || payload.city)) {
+                    const agencyName = payload.submitterName || payload.cityCounty || payload.city;
+                    await new Promise(resolve => setTimeout(resolve, 300)); // Wait for agency dropdown to populate
+                    const agencyOption = Array.from(agencyDropdown.options).find(opt => 
+                        opt.value === agencyName || opt.text === agencyName
+                    );
+                    if (agencyOption) {
+                        agencyDropdown.value = agencyOption.value;
+                        await populateExternalProjectDropdown();
+                    } else if (agencyName) {
+                        // Add new agency option
+                        const newOption = document.createElement('option');
+                        newOption.value = agencyName;
+                        newOption.textContent = agencyName;
+                        agencyDropdown.appendChild(newOption);
+                        agencyDropdown.value = agencyName;
+                        await populateExternalProjectDropdown();
+                    }
+                }
+
+                if (projectDropdown && (payload.projectAreaName || payload.projectArea)) {
+                    const projectName = payload.projectAreaName || payload.projectArea;
+                    await new Promise(resolve => setTimeout(resolve, 300)); // Wait for project dropdown to populate
+                    const projectOption = Array.from(projectDropdown.options).find(opt => 
+                        opt.value === projectName || opt.text === projectName
+                    );
+                    if (projectOption) {
+                        projectDropdown.value = projectOption.value;
+                    } else if (projectName) {
+                        // Add new project option
+                        const newOption = document.createElement('option');
+                        newOption.value = projectName;
+                        newOption.textContent = projectName;
+                        projectDropdown.appendChild(newOption);
+                        projectDropdown.value = projectName;
+                    }
+                }
+
+                // Populate all other form fields
+                Object.keys(payload).forEach(key => {
+                    // Skip special fields we already handled
+                    if (key === 'id' || key === 'county' || key === 'submitterName' || 
+                        key === 'cityCounty' || key === 'city' || key === 'projectAreaName' || 
+                        key === 'projectArea' || key === 'year' || key === 'fy' ||
+                        key === 'createdAt' || key === 'updatedAt' || key === 'status') {
+                        return;
+                    }
+
+                    const field = form.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        if (field.type === 'checkbox') {
+                            field.checked = payload[key];
+                        } else if (field.tagName === 'SELECT') {
+                            field.value = payload[key] || '';
+                        } else if (field.tagName === 'TEXTAREA') {
+                            field.value = payload[key] || '';
+                        } else {
+                            field.value = payload[key] || '';
+                        }
+                    }
+                });
+
+                // Handle dynamic expense rows
+                if (payload.expenseTitle_0 || payload.tyExpense_0) {
+                    // Find or create expense rows
+                    let expenseIndex = 0;
+                    while (payload[`expenseTitle_${expenseIndex}`] || 
+                           payload[`tyExpense_${expenseIndex}`] || 
+                           payload[`cyExpense_${expenseIndex}`] || 
+                           payload[`nyExpense_${expenseIndex}`]) {
+                        const titleField = form.querySelector(`input[name="expenseTitle_${expenseIndex}"]`);
+                        const tyField = form.querySelector(`input[name="tyExpense_${expenseIndex}"]`);
+                        const cyField = form.querySelector(`input[name="cyExpense_${expenseIndex}"]`);
+                        const nyField = form.querySelector(`input[name="nyExpense_${expenseIndex}"]`);
+                        
+                        if (titleField) titleField.value = payload[`expenseTitle_${expenseIndex}`] || '';
+                        if (tyField) tyField.value = payload[`tyExpense_${expenseIndex}`] || '';
+                        if (cyField) cyField.value = payload[`cyExpense_${expenseIndex}`] || '';
+                        if (nyField) nyField.value = payload[`nyExpense_${expenseIndex}`] || '';
+                        
+                        expenseIndex++;
+                        
+                        // If we need more rows, trigger add expense (if function exists)
+                        if (expenseIndex > 0 && typeof addExpenseRow === 'function' && 
+                            (payload[`expenseTitle_${expenseIndex}`] || payload[`tyExpense_${expenseIndex}`])) {
+                            addExpenseRow();
+                        }
+                    }
+                }
+
+                // Trigger calculations
+                if (typeof calculateRemainingLife === 'function') calculateRemainingLife();
+                if (typeof calculateExpenseTotal === 'function') {
+                    for (let i = 0; i < 10; i++) {
+                        calculateExpenseTotal(i);
+                    }
+                }
+                if (typeof calculatePercentResidential === 'function') calculatePercentResidential();
+
+                showNotification(`✓ Project "${selectedProject.displayName}" loaded successfully!`, 'success');
+
+            } catch (error) {
+                console.error('Error loading project:', error);
+                alert(`Error loading project: ${error.message}`);
+            }
+        }
+
         function setupTestDataFillers() {
             // External form test data button
             const externalTestBtn = document.getElementById('fill-test-data-external-btn');
             if (externalTestBtn) {
                 externalTestBtn.onclick = fillExternalFormTestData;
+            }
+
+            // External form load project button
+            const loadProjectBtn = document.getElementById('load-project-external-btn');
+            if (loadProjectBtn) {
+                loadProjectBtn.onclick = loadProjectIntoExternalForm;
             }
 
             // Internal form test data button
@@ -18083,8 +19257,9 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             // Also expose to window for console access
             window.fillExternalTestData = fillExternalFormTestData;
             window.fillInternalTestData = fillInternalFormTestData;
+            window.loadProjectIntoExternalForm = loadProjectIntoExternalForm;
             
-            console.log('🧪 Test data fillers ready! Use fillExternalTestData() or fillInternalTestData() in console, or click the 🧪 buttons on the forms.');
+            console.log('🧪 Test data fillers ready! Use fillExternalTestData(), fillInternalTestData(), or loadProjectIntoExternalForm() in console, or click the buttons on the forms.');
         }
 
         // Initialize test data fillers
@@ -18096,26 +19271,123 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
 
         // ========== PROJECT SELECTION MODAL FOR REPORT GENERATION ==========
         function showProjectSelectionModal(city, year) {
+            console.log('=== PROJECT SELECTION MODAL DEBUG START ===');
+            console.log('Function: showProjectSelectionModal called');
+            console.log('Parameters:', { city, year });
+            console.log('Timestamp:', new Date().toISOString());
+            
+            // Check allSubmissions
+            console.log('Checking allSubmissions...');
+            console.log('  - allSubmissions type:', typeof allSubmissions);
+            console.log('  - allSubmissions length:', typeof allSubmissions !== 'undefined' ? allSubmissions.length : 'UNDEFINED');
+            
+            if (typeof allSubmissions === 'undefined' || allSubmissions.length === 0) {
+                console.error('✗ allSubmissions is empty or undefined!');
+                showNotification('No submission data available. Please ensure data is loaded.');
+                return;
+            }
+            
             // Get all projects for this client/year
+            console.log('Filtering submissions for city/year...');
+            console.log('  - Filtering for city:', city);
+            console.log('  - Filtering for year:', year || 'all');
+            
+            // Normalize city name for comparison (case-insensitive, trim whitespace)
+            const normalizedCity = String(city || '').trim().toLowerCase();
+            const normalizedYear = year !== null ? String(year).trim() : 'all';
+            
             const cityYearSubmissions = allSubmissions.filter(submission => {
+                // Try multiple field names for city
                 const submissionCity = submission.cityCounty || 
                                      submission.submitterName || 
                                      submission.client ||
                                      submission.agency ||
+                                     submission.city ||
                                      submission.projectArea || 
                                      submission.projectAreaName ||
                                      'Unknown';
-                const submissionYear = String(submission.year || submission.fy || submission.ty || 'Unknown');
-                const targetYear = String(year || 'all');
-                const cityMatch = submissionCity.toString().trim().toLowerCase() === city.toString().trim().toLowerCase();
-                const yearMatch = targetYear === 'all' || submissionYear === targetYear;
-                return cityMatch && yearMatch;
+                
+                // Try multiple field names for year
+                const submissionYear = String(submission.year || submission.fy || submission.ty || 'Unknown').trim();
+                
+                // Normalize submission city for comparison
+                const normalizedSubmissionCity = String(submissionCity).trim().toLowerCase();
+                
+                // Check for city match (case-insensitive, partial match for flexibility)
+                const cityMatch = normalizedSubmissionCity === normalizedCity || 
+                                normalizedSubmissionCity.includes(normalizedCity) ||
+                                normalizedCity.includes(normalizedSubmissionCity);
+                
+                // Check for year match
+                const yearMatch = normalizedYear === 'all' || 
+                                submissionYear === normalizedYear ||
+                                String(submission.year) === normalizedYear ||
+                                String(submission.fy) === normalizedYear;
+                
+                const matches = cityMatch && yearMatch;
+                
+                if (matches) {
+                    console.log('  ✓ Match found:', {
+                        id: submission.id,
+                        city: submissionCity,
+                        normalizedCity: normalizedSubmissionCity,
+                        year: submissionYear,
+                        projectArea: submission.projectAreaName || submission.projectArea
+                    });
+                }
+                
+                return matches;
             });
 
+            console.log(`Found ${cityYearSubmissions.length} submissions matching criteria`);
+
             if (cityYearSubmissions.length === 0) {
-                showNotification(`No projects found for ${city}${year ? ` - ${year}` : ''}.`);
+                console.error('✗ No projects found after filtering!');
+                console.error('  - Searched for city:', city);
+                console.error('  - Searched for year:', year || 'all');
+                console.error('  - Total submissions available:', allSubmissions.length);
+                console.error('  - Sample submission cities:', allSubmissions.slice(0, 5).map(s => ({
+                    city: s.cityCounty || s.submitterName || s.projectArea,
+                    year: s.year || s.fy,
+                    id: s.id
+                })));
+                showNotification(`No projects found for ${city}${year ? ` - ${year}` : ''}. Check console for details.`);
                 return;
             }
+            
+            // Deduplicate submissions by ID to prevent duplicate projects in modal
+            console.log('Deduplicating submissions by ID...');
+            const uniqueSubmissions = [];
+            const seenIds = new Set();
+            const seenProjectAreas = new Set();
+            
+            cityYearSubmissions.forEach(submission => {
+                const submissionId = submission.id || `submission-${allSubmissions.indexOf(submission)}`;
+                const projectArea = submission.projectAreaName || submission.projectArea || submission.id;
+                const uniqueKey = `${submissionId}-${projectArea}`;
+                
+                if (!seenIds.has(submissionId) && !seenProjectAreas.has(uniqueKey)) {
+                    seenIds.add(submissionId);
+                    seenProjectAreas.add(uniqueKey);
+                    uniqueSubmissions.push(submission);
+                } else {
+                    console.log('  ⚠️ Skipping duplicate:', {
+                        id: submissionId,
+                        projectArea: projectArea,
+                        reason: seenIds.has(submissionId) ? 'duplicate ID' : 'duplicate project area'
+                    });
+                }
+            });
+            
+            console.log(`✓ Deduplicated from ${cityYearSubmissions.length} to ${uniqueSubmissions.length} unique submissions`);
+            
+            if (uniqueSubmissions.length === 0) {
+                console.error('✗ No unique projects found after deduplication!');
+                showNotification(`No unique projects found for ${city}${year ? ` - ${year}` : ''}.`);
+                return;
+            }
+            
+            console.log('✓ Proceeding to show modal with', uniqueSubmissions.length, 'unique projects');
 
             // Create modal
             const modal = document.createElement('div');
@@ -18155,12 +19427,13 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                     </label>
                 </div>
                 <div id="project-selection-list" style="margin-bottom: 20px; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 12px;">
-                    ${cityYearSubmissions.map((submission, idx) => {
+                    ${uniqueSubmissions.map((submission, idx) => {
                         const projectArea = submission.projectArea || submission.projectAreaName || 'N/A';
                         const submissionYear = submission.year || submission.fy || submission.ty || year || 'N/A';
-                        const type = submission.type || 'N/A';
-                        const purpose = submission.purpose || 'N/A';
+                        const type = submission.type || submission.projectType || 'N/A';
+                        const purpose = submission.purpose || submission.projectPurpose || 'N/A';
                         const submissionId = submission.id || `submission-${idx}`;
+                        console.log(`  - Adding project to modal: ${submissionId} - ${projectArea}`);
                         return `
                             <label style="display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;" 
                                    onmouseover="this.style.background='#f5f5f5'" 
@@ -18209,21 +19482,31 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
 
         // Wrapper function to call generatePDFReport with selected projects
         function generateReportWithSelectedProjects(city, year) {
+            console.log('=== GENERATE REPORT WITH SELECTED PROJECTS DEBUG ===');
+            console.log('Function: generateReportWithSelectedProjects called');
+            console.log('Parameters:', { city, year });
+            
             const checkboxes = document.querySelectorAll('.project-checkbox:checked');
+            console.log('  - Found checkboxes:', checkboxes.length);
             const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+            console.log('  - Selected project IDs:', selectedIds);
 
             if (selectedIds.length === 0) {
+                console.error('✗ No projects selected!');
                 showNotification('Please select at least one project to include in the report.');
                 return;
             }
 
+            console.log('✓ Closing modal and storing selected IDs...');
             closeProjectSelectionModal();
             
             // Call the existing generatePDFReport function, but we need to modify it to accept selected IDs
             // For now, store selected IDs in a closure variable
             window._selectedProjectIdsForReport = selectedIds;
+            console.log('  - Stored in window._selectedProjectIdsForReport:', window._selectedProjectIdsForReport);
             
             // Call the original generatePDFReport
+            console.log('  - Calling generatePDFReport...');
             generatePDFReport(city, year);
         }
 
