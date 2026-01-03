@@ -48,6 +48,61 @@ function Assert-Tool([string]$toolName, [string]$wingetId) {
   }
 }
 
+function Install-PortableNode([string]$installDir) {
+  # Keep this pinned for reproducible installs (Node 20 LTS)
+  $nodeVersion = "20.11.1"
+  $arch = "x64"
+  $baseName = "node-v$nodeVersion-win-$arch"
+  $zipName = "$baseName.zip"
+  $url = "https://nodejs.org/dist/v$nodeVersion/$zipName"
+
+  $toolsDir = Join-Path $installDir "tools"
+  $nodeRoot = Join-Path $toolsDir "node"
+  $tmpDir = Join-Path $env:TEMP ("lrb-node-" + [Guid]::NewGuid().ToString("N"))
+  New-Item -ItemType Directory -Force $tmpDir | Out-Null
+  New-Item -ItemType Directory -Force $toolsDir | Out-Null
+
+  try {
+    Write-Info "Downloading portable Node.js LTS (no admin) ..."
+    $zipPath = Join-Path $tmpDir $zipName
+    Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
+
+    Write-Info "Extracting Node to $nodeRoot ..."
+    if (Test-Path $nodeRoot) { Remove-Item -Recurse -Force $nodeRoot }
+    New-Item -ItemType Directory -Force $nodeRoot | Out-Null
+    Expand-Archive -LiteralPath $zipPath -DestinationPath $tmpDir -Force
+
+    $extracted = Join-Path $tmpDir $baseName
+    if (-not (Test-Path $extracted)) {
+      throw "Unexpected Node archive layout. Missing: $extracted"
+    }
+    Copy-Item -LiteralPath (Join-Path $extracted "*") -Destination $nodeRoot -Recurse -Force
+
+    $npmCmd = Join-Path $nodeRoot "npm.cmd"
+    $nodeExe = Join-Path $nodeRoot "node.exe"
+    if (-not (Test-Path $nodeExe)) { throw "Portable node.exe not found at $nodeExe" }
+    if (-not (Test-Path $npmCmd)) { throw "Portable npm.cmd not found at $npmCmd" }
+
+    Write-Info "Portable Node installed."
+    return $nodeRoot
+  } finally {
+    try { Remove-Item -Recurse -Force $tmpDir } catch {}
+  }
+}
+
+function Resolve-NpmCommand([string]$installDir) {
+  # Prefer system npm if available, else portable npm under installDir\tools\node\npm.cmd
+  if (Test-Command "npm") {
+    return @{ Type="system"; Cmd="npm"; NodeHome=$null }
+  }
+
+  $npmCmd = Join-Path $installDir "tools\node\npm.cmd"
+  if (Test-Path $npmCmd) {
+    return @{ Type="portable"; Cmd=$npmCmd; NodeHome=(Split-Path -Parent $npmCmd) }
+  }
+  return $null
+}
+
 function Copy-Project([string]$src, [string]$dst) {
   Write-Info "Creating install folder: $dst"
   New-Item -ItemType Directory -Force $dst | Out-Null
@@ -93,10 +148,17 @@ function Install-ServerDeps([string]$installDir) {
   if (-not (Test-Path $serverDir)) {
     throw "server folder not found at: $serverDir"
   }
+  $npm = Resolve-NpmCommand -installDir $installDir
+  if (-not $npm) { throw "npm not available. Install Node.js or allow the installer to install portable Node." }
+
   Write-Info "Installing server dependencies (npm install)..."
   Push-Location $serverDir
   try {
-    npm install --no-audit --no-fund | Out-Host
+    if ($npm.Type -eq "portable") {
+      & $npm.Cmd install --no-audit --no-fund | Out-Host
+    } else {
+      npm install --no-audit --no-fund | Out-Host
+    }
   } finally {
     Pop-Location
   }
@@ -111,7 +173,12 @@ function Write-StartScripts([string]$installDir) {
 @echo off
 cd /d "%~dp0server"
 echo Starting LRB API on http://localhost:4000 ...
-start "LRB API" cmd /k "npm start"
+set "PORTABLE_NPM=%~dp0tools\node\npm.cmd"
+if exist "%PORTABLE_NPM%" (
+  start "LRB API" cmd /k "\"%PORTABLE_NPM%\" start"
+) else (
+  start "LRB API" cmd /k "npm start"
+)
 "@ | Set-Content -LiteralPath $startServer -Encoding ASCII
 
   @"
@@ -159,13 +226,22 @@ try {
   if (-not $installDir) { $installDir = $InstallRoot }
   else { $installDir = $installDir.Path }
 
-  # Prereqs
-  Assert-Tool -toolName "git" -wingetId "Git.Git"
-  Assert-Tool -toolName "node" -wingetId "OpenJS.NodeJS.LTS"
-  if (-not (Test-Command "npm")) { throw "npm not found after Node install." }
-
-  # Copy & install
+  # Copy first so we can place portable tools into the install folder if needed
   Copy-Project -src $sourceDir -dst $installDir
+
+  # Node.js prerequisite:
+  # - If Node/npm exists already, use it.
+  # - Else if winget exists, install Node LTS silently.
+  # - Else download portable Node into the install folder (no admin).
+  if (-not (Test-Command "node") -or -not (Test-Command "npm")) {
+    if (Test-Command "winget") {
+      Assert-Tool -toolName "node" -wingetId "OpenJS.NodeJS.LTS"
+    } else {
+      Write-Warn "winget not available. Falling back to portable Node (no admin required)."
+      Install-PortableNode -installDir $installDir | Out-Null
+    }
+  }
+
   Initialize-ServerEnv -installDir $installDir
   Install-ServerDeps -installDir $installDir
   Write-StartScripts -installDir $installDir
