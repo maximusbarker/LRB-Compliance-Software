@@ -55,11 +55,11 @@ function findOrgByCode(code) {
   return db.prepare('SELECT * FROM organizations WHERE code = ?').get(code);
 }
 
-function createUser({ email, password_hash, role = 'user', org_id }) {
+function createUser({ email, password_hash, role = 'user', org_id, county = null, agency = null }) {
   const id = uuid();
   db.prepare(
-    'INSERT INTO users (id, email, password_hash, role, org_id) VALUES (?, ?, ?, ?, ?)'
-  ).run(id, email, password_hash, role, org_id);
+    'INSERT INTO users (id, email, password_hash, role, org_id, county, agency) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(id, email, password_hash, role, org_id, county, agency);
   return db.prepare('SELECT * FROM users WHERE id = ?').get(id);
 }
 

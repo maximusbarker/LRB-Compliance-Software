@@ -21,6 +21,7 @@ const config = {
   port: parseInt(process.env.PORT || '4000', 10),
   jwtSecret: process.env.JWT_SECRET || 'change-me',
   uploadDir: path.resolve(__dirname, '..', process.env.UPLOAD_DIR || '../uploads'),
+  reportsDir: path.resolve(__dirname, '..', process.env.REPORTS_DIR || '../reports'),
   allowOrigin: process.env.ALLOW_ORIGIN || '*',
   emailMode: (process.env.EMAIL_MODE || 'manual').toLowerCase(), // manual | smtp
   smtp: {

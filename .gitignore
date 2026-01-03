@@ -48,3 +48,9 @@ build/
 *.temp
 .cache/
 
+# Local scratch/output
+tmp/
+
+# Accidental duplicated workspace mirror (do not commit)
+LRB/
+

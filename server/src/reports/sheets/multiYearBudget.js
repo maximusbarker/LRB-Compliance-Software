@@ -22,22 +22,32 @@ import {
  * @param {number} projectionYears - Number of years to project
  */
 export async function generateMultiYearBudgetSheet(worksheet, submission, taxRates, baseYear, projectionYears = 20) {
-  const projectAreaName = submission.projectAreaName || submission.projectArea || submission.submitterName || 'Project Area';
-  const currentYear = new Date().getFullYear();
-  const startYear = baseYear || currentYear;
-  
-  // Parse growth rates
-  const growthRates = parseGrowthRates(submission.growthRates);
-  const growthRateMap = {};
-  growthRates.forEach(gr => {
-    growthRateMap[gr.year] = gr.rate;
-  });
-  
-  // Get base values
-  const realPropertyBase = parseFloat(submission.realPropertyValue || submission.tyValue || 0);
-  const personalPropertyBase = parseFloat(submission.personalPropertyValue || 0);
-  const centrallyAssessedBase = parseFloat(submission.centrallyAssessedValue || 0);
-  const baseYearValue = parseFloat(submission.baseValue || 0);
+  try {
+    // Validate inputs
+    if (!submission) {
+      throw new Error('Submission data is required');
+    }
+    if (!Array.isArray(taxRates)) {
+      console.warn('[generateMultiYearBudgetSheet] taxRates is not an array, using empty array');
+      taxRates = [];
+    }
+    
+    const projectAreaName = submission.projectAreaName || submission.projectArea || submission.submitterName || 'Project Area';
+    const currentYear = new Date().getFullYear();
+    const startYear = baseYear || currentYear;
+    
+    // Parse growth rates
+    const growthRates = parseGrowthRates(submission.growthRates);
+    const growthRateMap = {};
+    growthRates.forEach(gr => {
+      growthRateMap[gr.year] = gr.rate;
+    });
+    
+    // Get base values
+    const realPropertyBase = parseFloat(submission.realPropertyValue || submission.tyValue || 0);
+    const personalPropertyBase = parseFloat(submission.personalPropertyValue || 0);
+    const centrallyAssessedBase = parseFloat(submission.centrallyAssessedValue || 0);
+    const baseYearValue = parseFloat(submission.baseValue || 0);
   
   // Header rows
   worksheet.mergeCells('A1:E1');
@@ -151,8 +161,20 @@ export async function generateMultiYearBudgetSheet(worksheet, submission, taxRat
   // Calculate totals for each year
   for (let i = -1; i < Math.min(projectionYears, 20); i++) {
     const col = i === -1 ? 'C' : String.fromCharCode(68 + i);
-    const formula = `=${col}${realPropertyRow}+${col}${personalPropertyRow}+${col}${centrallyAssessedRow}`;
-    worksheet.getCell(`${col}${totalAssessedRow}`).formula = formula;
+    // Calculate total directly instead of using formula to avoid parsing issues
+    let realProp = realPropertyBase;
+    if (i >= 0) {
+      // Calculate projected value for this year
+      for (let j = 0; j <= i; j++) {
+        const yr = startYear + j;
+        const growthRate = growthRateMap[yr] || 0;
+        realProp = calculateRealPropertyGrowth(realProp, growthRate);
+      }
+    }
+    const personalProp = personalPropertyBase;
+    const centralProp = centrallyAssessedBase;
+    const total = realProp + personalProp + centralProp;
+    worksheet.getCell(`${col}${totalAssessedRow}`).value = total;
     worksheet.getCell(`${col}${totalAssessedRow}`).numFmt = '$#,##0';
   }
   
@@ -173,7 +195,9 @@ export async function generateMultiYearBudgetSheet(worksheet, submission, taxRat
   worksheet.getCell(`A${taxRatesStartRow}`).font = { bold: true };
   
   // Get unique entities from tax rates
-  const entities = [...new Set(taxRates.map(tr => tr.entity_name))];
+  const entities = [...new Set(taxRates
+    .filter(tr => tr && tr.entity_name) // Filter out null/undefined and missing entity_name
+    .map(tr => tr.entity_name))];
   let taxRateRow = taxRatesStartRow + 1;
   
   entities.forEach(entity => {
@@ -182,14 +206,14 @@ export async function generateMultiYearBudgetSheet(worksheet, submission, taxRat
     for (let i = -1; i < Math.min(projectionYears, 20); i++) {
       const col = i === -1 ? 'C' : String.fromCharCode(68 + i);
       const year = i === -1 ? startYear - 1 : startYear + i;
-      const rate = taxRates.find(tr => tr.entity_name === entity && tr.year === year);
-      if (rate) {
+      const rate = taxRates.find(tr => tr && tr.entity_name === entity && tr.year === year);
+      if (rate && rate.rate !== undefined && rate.rate !== null) {
         worksheet.getCell(`${col}${taxRateRow}`).value = rate.rate;
         worksheet.getCell(`${col}${taxRateRow}`).numFmt = '0.000000';
       }
     }
     taxRateRow++;
-  }
+  });
   
   // Total Tax Rate row
   worksheet.getCell(`A${taxRateRow}`).value = 'Total Tax Rate';
@@ -208,6 +232,12 @@ export async function generateMultiYearBudgetSheet(worksheet, submission, taxRat
   for (let i = 0; i < Math.min(projectionYears + 1, 21); i++) {
     const col = i === 0 ? 'C' : String.fromCharCode(68 + i);
     worksheet.getColumn(col).width = 15;
+  }
+  } catch (error) {
+    console.error('[generateMultiYearBudgetSheet] Error:', error);
+    console.error('[generateMultiYearBudgetSheet] Submission keys:', Object.keys(submission || {}));
+    console.error('[generateMultiYearBudgetSheet] Tax rates type:', typeof taxRates, 'isArray:', Array.isArray(taxRates));
+    throw error;
   }
 }
 

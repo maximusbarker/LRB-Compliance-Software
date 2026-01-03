@@ -80,7 +80,6 @@ export async function generateGrowthAnalysisSheet(worksheet, submission, multiYe
   const actualRevenue = parseFloat(submission.tyActualRevenue || 0);
   const baseYearRevenue = parseFloat(submission.tyBaseYearRevenue || 0);
   
-  worksheet.getCell('C17').value = `Tax Year ${currentYear}`;
   worksheet.getCell('C17').value = originalBudget;
   worksheet.getCell('C17').numFmt = '$#,##0';
   worksheet.getCell('D17').value = actualRevenue;
@@ -108,7 +107,6 @@ export async function generateGrowthAnalysisSheet(worksheet, submission, multiYe
   worksheet.getCell('C21').value = 'PASS THROUGH INCREMENT (ABOVE BASE)';
   worksheet.getCell('C21').font = { bold: true };
   
-  worksheet.getCell('C22').value = `Tax Year ${currentYear}`;
   const passThrough = actualRevenue - baseYearRevenue;
   worksheet.getCell('C22').value = passThrough;
   worksheet.getCell('C22').numFmt = '$#,##0';

@@ -504,6 +504,11 @@
             font-size: 14px;
         }
 
+        /* Ensure action buttons stay on one line */
+        .table td[style*="white-space: nowrap"] {
+            white-space: nowrap !important;
+        }
+
         .table.master-rates-table {
             table-layout: fixed;
         }
@@ -1731,6 +1736,107 @@
     </div>
 </div>
 
+<!-- Final Submit Attestation Modal (External) -->
+<div id="final-submit-modal" class="modal hidden">
+    <div class="modal-content" style="max-width: 680px;">
+        <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <h3 class="modal-title" style="margin:0;">Final Submission Certification</h3>
+            <button class="modal-close" id="final-submit-cancel-x" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px 24px;">
+            <p style="margin:0 0 12px 0; color: var(--text-secondary); line-height:1.4;">
+                By typing your full name below, you certify that, to the best of your knowledge and belief, the information provided in this submission is
+                complete, accurate, and true. You understand this submission will be treated as your organization’s official filing and may be relied upon
+                by LRB Public Finance Advisors and the applicable agency.
+            </p>
+            <div style="padding: 12px; border: 1px solid var(--border-gray); border-radius: 8px; background: #fafafa; margin-bottom: 14px;">
+                <div style="font-weight:600; margin-bottom:6px;">Certification</div>
+                <label style="display:flex; gap:10px; align-items:flex-start; font-size: 14px; color: var(--text-secondary);">
+                    <input type="checkbox" id="final-submit-checkbox" style="margin-top:3px;">
+                    <span>I certify the information provided is complete and accurate, and I am authorized to submit this data on behalf of my organization.</span>
+                </label>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="final-submit-name" style="display:block; margin-bottom:6px; font-weight:600;">Type your full name:</label>
+                <input type="text" id="final-submit-name" class="form-control" placeholder="Full legal name">
+                <small style="color: var(--text-secondary);">Your typed name acts as an electronic signature.</small>
+            </div>
+            <div id="final-submit-error" class="hidden" style="color: var(--error-red); margin-top: 10px;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top: 18px;">
+                <button type="button" id="final-submit-cancel" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="final-submit-confirm" class="btn btn-primary">Submit Final</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Submissions Picker Modal (External) -->
+<div id="submission-picker-modal" class="modal hidden">
+    <div class="modal-content" style="max-width: 920px;">
+        <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <h3 class="modal-title" style="margin:0;">My Submissions</h3>
+            <button class="modal-close" id="submission-picker-cancel-x" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 16px 18px;">
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom: 12px;">
+                <div style="flex: 2; min-width: 240px;">
+                    <label style="display:block; font-weight:600; margin-bottom:6px;">Search</label>
+                    <input id="submission-picker-search" class="form-control" placeholder="Search by project, county, agency, year..." />
+                </div>
+                <div style="flex: 0 0 auto; min-width: 160px;">
+                    <label style="display:block; font-weight:600; margin-bottom:6px;">Status</label>
+                    <select id="submission-picker-status" class="form-control">
+                        <option value="all">All</option>
+                        <option value="draft">Draft</option>
+                        <option value="final">Final</option>
+                    </select>
+                </div>
+                <div style="flex: 0 0 auto; min-width: 220px;">
+                    <label style="display:block; font-weight:600; margin-bottom:6px;">Sort</label>
+                    <select id="submission-picker-sort" class="form-control">
+                        <option value="updated_desc">Most recently updated</option>
+                        <option value="created_desc">Most recently created</option>
+                        <option value="year_desc">Year (newest first)</option>
+                        <option value="project_asc">Project (A–Z)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; color: var(--text-secondary); font-size: 13px;">
+                <div id="submission-picker-count">0 results</div>
+                <div style="font-size: 12px;">Tip: Double‑click a row to load</div>
+            </div>
+
+            <div id="submission-picker-list" style="border: 1px solid var(--border-gray); border-radius: 10px; overflow:hidden; max-height: 420px; overflow-y:auto; background: #fff;"></div>
+
+            <div id="submission-picker-error" class="hidden" style="color: var(--error-red); margin-top: 10px;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top: 14px; flex-wrap:wrap;">
+                <button type="button" id="submission-picker-auto" class="btn btn-secondary" title="Automatically load your most recently updated draft">Auto (Latest Draft)</button>
+                <button type="button" id="submission-picker-cancel" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="submission-picker-load" class="btn btn-primary">Load Selected</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Documents Modal (Admin/Internal) -->
+<div id="documents-modal" class="modal hidden">
+    <div class="modal-content" style="max-width: 760px;">
+        <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <h3 class="modal-title" style="margin:0;" id="documents-modal-title">Project Documents</h3>
+            <button class="modal-close" id="documents-cancel-x" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 16px 18px;">
+            <div id="documents-modal-meta" style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;"></div>
+            <div id="documents-modal-list" style="border: 1px solid var(--border-gray); border-radius: 10px; overflow:hidden; background:#fff;"></div>
+            <div id="documents-modal-error" class="hidden" style="color: var(--error-red); margin-top: 10px;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top: 14px;">
+                <button type="button" id="documents-close" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
             <!-- Client Login Page -->
             <div id="client-login-container" class="hidden">
                 <div class="card" style="max-width: 450px; margin: 60px auto;">
@@ -1772,6 +1878,7 @@
                                 <div style="display:flex; gap:8px; align-items:center;">
                                     <input type="password" id="client-signup-password" class="form-control" placeholder="Enter password" required style="flex:1;">
                                     <button type="button" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px;" onclick="toggleInputVisibility('client-signup-password', this)">Show</button>
+                                    <button type="button" id="client-signup-generate-password" class="btn btn-primary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;">Generate</button>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 20px;">
@@ -1779,6 +1886,32 @@
                                 <div style="display:flex; gap:8px; align-items:center;">
                                     <input type="password" id="client-signup-confirm" class="form-control" placeholder="Confirm password" required style="flex:1;">
                                     <button type="button" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px;" onclick="toggleInputVisibility('client-signup-confirm', this)">Show</button>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label for="client-signup-county" style="display: block; margin-bottom: 8px; font-weight: 500;">County:</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <select id="client-signup-county" class="form-control" required style="flex: 1;">
+                                        <option value="">Select County</option>
+                                    </select>
+                                    <button type="button" id="client-signup-county-add" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Add new county">+ Add</button>
+                                </div>
+                                <div id="client-signup-county-manual" style="display: none; margin-top: 8px;">
+                                    <input type="text" id="client-signup-county-manual-input" class="form-control" placeholder="Enter county name">
+                                    <button type="button" id="client-signup-county-manual-save" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">Save</button>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label for="client-signup-agency" style="display: block; margin-bottom: 8px; font-weight: 500;">Agency:</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <select id="client-signup-agency" class="form-control" required style="flex: 1;" disabled>
+                                        <option value="">Select County first</option>
+                                    </select>
+                                    <button type="button" id="client-signup-agency-add" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Add new agency">+ Add</button>
+                                </div>
+                                <div id="client-signup-agency-manual" style="display: none; margin-top: 8px;">
+                                    <input type="text" id="client-signup-agency-manual-input" class="form-control" placeholder="Enter agency name">
+                                    <button type="button" id="client-signup-agency-manual-save" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">Save</button>
                                 </div>
                             </div>
                             <div id="client-signup-error" class="hidden" style="color: var(--error-red); margin-bottom: 16px; padding: 12px; background: rgba(220, 53, 69, 0.1); border-radius: 4px;"></div>
@@ -2223,11 +2356,12 @@
                                 <div id="uploaded-maps-list" style="margin-top: 16px;"></div>
                             </div>
                             
-                            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                                <button type="button" id="save-progress-btn" class="btn btn-secondary" style="flex: 1;">Save Progress</button>
-                                <button type="button" id="load-project-external-btn" class="btn" style="flex: 0 0 auto; background: #007bff; color: white; padding: 8px 12px; font-size: 12px;" title="Load existing project">📂 Load Project</button>
-                                <button type="button" id="fill-test-data-external-btn" class="btn" style="flex: 0 0 auto; background: #6c757d; color: white; padding: 8px 12px; font-size: 12px;" title="Fill form with test data">🧪 Fill Test Data</button>
-                                <button type="submit" class="add-btn" style="flex: 1;">Add Project Area</button>
+                            <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+                                <button type="button" id="external-new-draft-btn" class="btn btn-secondary" style="flex: 0 0 auto; white-space: nowrap;" title="Start a new draft (clears the form)">New Draft</button>
+                                <button type="button" id="load-project-external-btn" class="btn" style="flex: 0 0 auto; background: #007bff; color: white; padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Open a prior submission (draft or final)">📂 My Submissions</button>
+                                <button type="button" id="save-progress-btn" class="btn btn-primary" style="flex: 1; min-width: 160px;" title="Save this submission as a draft (you can continue later)">Save Draft</button>
+                                <button type="button" id="submit-final-external-btn" class="btn btn-primary" style="flex: 0 0 auto; display:none; white-space: nowrap;" title="Submit as final with certification">Submit Final</button>
+                                <button type="button" id="fill-test-data-external-btn" class="btn" style="flex: 0 0 auto; background: #6c757d; color: white; padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Fill form with test data (admin/internal only)">🧪 Fill Test Data</button>
                             </div>
                             <div id="auto-save-indicator-external" style="display: none; margin-top: 8px; padding: 8px; background: #e7f3ff; border-left: 4px solid #00B0F0; border-radius: 4px; font-size: 12px; color: #0066cc;">
                                 <span id="auto-save-status-external">Auto-save active. Last saved: <span id="last-saved-time-external">Never</span></span>
@@ -3341,13 +3475,37 @@
                     </div>
                     <div class="form-group">
                         <label for="external-signup-password">Password:</label>
-                        <input type="password" id="external-signup-password" class="form-control" placeholder="Create a password" required minlength="8">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="password" id="external-signup-password" class="form-control" placeholder="Create a password" required minlength="8" style="flex:1;">
+                            <button type="button" id="external-signup-generate-password" class="btn btn-primary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;">Generate</button>
+                        </div>
                         <small style="color: var(--text-muted); font-size: 12px;">Must be at least 8 characters</small>
                     </div>
                     <div class="form-group">
-                        <label for="external-signup-org-code">Organization Code:</label>
-                        <input type="text" id="external-signup-org-code" class="form-control" placeholder="Ask your administrator for this code" required>
-                        <small style="color: var(--text-muted); font-size: 12px;">Required to create an account</small>
+                        <label for="external-signup-county">County:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="external-signup-county" class="form-control" required style="flex: 1;">
+                                <option value="">Select County</option>
+                            </select>
+                            <button type="button" id="external-signup-county-add" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Add new county">+ Add</button>
+                        </div>
+                        <div id="external-signup-county-manual" style="display: none; margin-top: 8px;">
+                            <input type="text" id="external-signup-county-manual-input" class="form-control" placeholder="Enter county name">
+                            <button type="button" id="external-signup-county-manual-save" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">Save</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="external-signup-agency">Agency:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="external-signup-agency" class="form-control" required style="flex: 1;" disabled>
+                                <option value="">Select County first</option>
+                            </select>
+                            <button type="button" id="external-signup-agency-add" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Add new agency">+ Add</button>
+                        </div>
+                        <div id="external-signup-agency-manual" style="display: none; margin-top: 8px;">
+                            <input type="text" id="external-signup-agency-manual-input" class="form-control" placeholder="Enter agency name">
+                            <button type="button" id="external-signup-agency-manual-save" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">Save</button>
+                        </div>
                     </div>
                     <div id="external-signup-error" class="hidden" style="color: var(--error-red); margin-bottom: 16px; font-size: 14px;"></div>
                     <div style="display: flex; justify-content: center;">
@@ -3385,6 +3543,7 @@
                         <div style="display:flex; gap:8px; align-items:center;">
                             <input type="password" id="new-account-password" class="form-control" required placeholder="Enter strong password" style="flex:1;">
                             <button type="button" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px;" onclick="toggleInputVisibility('new-account-password', this)">Show</button>
+                            <button type="button" id="new-account-generate-password" class="btn btn-primary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;">Generate</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -3392,6 +3551,32 @@
                         <div style="display:flex; gap:8px; align-items:center;">
                             <input type="password" id="new-account-password-confirm" class="form-control" required placeholder="Confirm password" style="flex:1;">
                             <button type="button" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px;" onclick="toggleInputVisibility('new-account-password-confirm', this)">Show</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>County:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="new-account-county" class="form-control" required style="flex: 1;">
+                                <option value="">Select County</option>
+                            </select>
+                            <button type="button" id="new-account-county-add" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Add new county">+ Add</button>
+                        </div>
+                        <div id="new-account-county-manual" style="display: none; margin-top: 8px;">
+                            <input type="text" id="new-account-county-manual-input" class="form-control" placeholder="Enter county name">
+                            <button type="button" id="new-account-county-manual-save" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">Save</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Agency:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="new-account-agency" class="form-control" required style="flex: 1;" disabled>
+                                <option value="">Select County first</option>
+                            </select>
+                            <button type="button" id="new-account-agency-add" class="btn btn-secondary" style="padding: 8px 12px; font-size: 12px; white-space: nowrap;" title="Add new agency">+ Add</button>
+                        </div>
+                        <div id="new-account-agency-manual" style="display: none; margin-top: 8px;">
+                            <input type="text" id="new-account-agency-manual-input" class="form-control" placeholder="Enter agency name">
+                            <button type="button" id="new-account-agency-manual-save" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">Save</button>
                         </div>
                     </div>
                     <div id="add-account-error" class="hidden" style="color: var(--error-red); margin-bottom: 16px;"></div>
@@ -3574,8 +3759,10 @@
                     console.log('jsPDF fallback loaded successfully');
                     // Try to set global reference again
                     window.jsPDF = window.jsPDF || window.jspdf?.jsPDF;
-                    // Test if it works
-                    setTimeout(() => testJsPDF(), 100);
+                    // Test if it works (guarded)
+                    if (typeof testJsPDF === 'function') {
+                        setTimeout(() => testJsPDF(), 100);
+                    }
                 };
                 script.onerror = function() {
                     console.error('Failed to load jsPDF fallback');
@@ -3583,17 +3770,22 @@
                 document.head.appendChild(script);
             }
             
-            // Test jsPDF after a short delay
-            setTimeout(() => testJsPDF(), 1000);
+            // Test jsPDF after a short delay (guarded)
+            if (typeof testJsPDF === 'function') {
+                setTimeout(() => testJsPDF(), 1000);
+            }
             
             // Auto-convert r@teambarker.com to internal if needed (after DOM is ready)
             setTimeout(() => {
                 const email = 'r@teambarker.com';
                 const emailLower = email.toLowerCase();
                 try {
-                    // Use window versions to ensure functions are accessible
-                    const getMeta = window.getAccountMeta || getAccountMeta;
-                    const getClient = window.getClientCredentials || getClientCredentials;
+                    // Guard: skip auto-conversion if account helpers aren't loaded
+                    const getMeta = window.getAccountMeta;
+                    const getClient = window.getClientCredentials;
+                    if (typeof getMeta !== 'function' || typeof getClient !== 'function') {
+                        return;
+                    }
                     const getInternal = window.getInternalCredentials || getInternalCredentials;
                     const convert = window.convertClientToInternal || convertClientToInternal;
                     
@@ -4142,7 +4334,9 @@
             // Enterprise Build: Auto-restore session if user is already logged in
             let hasActiveSession = false;
             try {
-                if (window.apiClient) {
+                // Only check for session if there's a token in storage
+                const hasToken = localStorage.getItem('apiToken');
+                if (window.apiClient && hasToken) {
                     const result = await apiClient.me();
                     if (result && result.user) {
                         console.log('Session restored for user:', result.user.email);
@@ -4155,7 +4349,10 @@
                 // No valid session, show landing page as normal
                 // This is expected if user is not logged in - don't trigger unauthorized handler
                 // The unauthorized event will be suppressed during initial load
-                console.log('No active session, showing landing page:', err.message);
+                // Only log if it's not a 401 (which is expected when not logged in)
+                if (!err.message || !err.message.includes('Unauthorized')) {
+                    console.log('No active session, showing landing page:', err.message);
+                }
             } finally {
                 // Mark initial load as complete after session check (give it a moment for any pending events)
                 setTimeout(() => {
@@ -4447,7 +4644,8 @@
                         const year = parseInt(draft.year || new Date().getFullYear());
                         await apiClient.createSubmission({ 
                             year, 
-                            payload: { ...draft.data, _draft: true, _draftId: draft.id }
+                            payload: { ...draft.data, _draft: true, _draftId: draft.id },
+                            status: 'draft'
                         });
                         console.log('Draft saved to server:', draft.id);
                     } catch (err) {
@@ -4704,7 +4902,10 @@
                         console.error('[LOGIN] Login error:', err);
                         let errorMsg = err.message || 'Invalid email or password';
                         
-                        if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+                        // Handle rate limiting errors (429)
+                        if (err.message && (err.message.includes('Too many') || err.message.includes('blocked'))) {
+                            errorMsg = err.message;
+                        } else if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
                             errorMsg = 'Cannot connect to server. Make sure the server is running (npm run dev in server folder).';
                         }
 
@@ -4767,6 +4968,9 @@
                     resetPuzzle();
                     if (puzzleModal) puzzleModal.classList.remove('hidden');
                 }
+                
+                // Expose for other signup flows (external signup modal)
+                window.openPuzzleModal = openPuzzleModal;
 
                 function closePuzzleModal() {
                     pendingSignup = null;
@@ -4779,11 +4983,21 @@
                     puzzlePiece.style.left = `${px}px`;
                 }
 
-                function markPuzzleSolved() {
+                async function finalizeSignupApi(signupData) {
+                    if (!signupData) throw new Error('Missing signup data');
+                    if (!window.apiClient) throw new Error('API client not available');
+                    const { email, pwd, county, agency } = signupData;
+                    if (!email || !pwd || !county || !agency) throw new Error('Missing required signup fields');
+                    const result = await window.apiClient.signup({ email, password: pwd, county, agency });
+                    if (!result?.user || !result?.token) throw new Error('Invalid response from server');
+                    return result;
+                }
+
+                async function markPuzzleSolved() {
                     puzzleSolved = true;
                     if (puzzleSlider) puzzleSlider.disabled = true;
                     if (puzzleStatus) {
-                        puzzleStatus.textContent = 'Logo aligned. Submitting...';
+                        puzzleStatus.textContent = 'Logo aligned. Creating account...';
                         puzzleStatus.style.color = '#0a8f2a';
                     }
                     if (puzzleFlash) {
@@ -4798,14 +5012,19 @@
                         puzzleToast.classList.add('visible');
                         setTimeout(() => puzzleToast.classList.remove('visible'), 1400);
                     }
-                    // Finalize signup (with error handling)
+                    // Finalize signup (API) with error handling
                     let signupResult = null;
                     if (pendingSignup) {
                         try {
-                            signupResult = finalizeSignup(pendingSignup);
+                            const result = await finalizeSignupApi(pendingSignup);
+                            signupResult = { success: true, result };
                         } catch (err) {
                             console.error('Signup finalization error:', err);
                             signupResult = { success: false, error: err.message };
+                            if (puzzleStatus) {
+                                puzzleStatus.textContent = err.message || 'Signup failed';
+                                puzzleStatus.style.color = 'var(--error-red)';
+                            }
                         }
                     }
                     
@@ -4814,32 +5033,35 @@
                         if (puzzleModal) puzzleModal.classList.add('hidden');
                         
                         if (signupResult && signupResult.success) {
-                            showSignupSuccessModal(signupResult.smtpConfigured);
-                        } else if (signupResult && signupResult.error === 'Email already exists') {
-                            // Show error and return to login
-                            setTimeout(() => {
-                                returnToLanding();
-                            }, 2000);
+                            try {
+                                if (pendingSignup?.afterSuccess) {
+                                    pendingSignup.afterSuccess(signupResult.result);
+                                } else {
+                                    showSignupSuccessModal(true);
+                                }
+                            } catch (e) {
+                                console.error('afterSuccess handler error:', e);
+                                showSignupSuccessModal(true);
+                            }
                         } else {
-                            // Default: return to landing
+                            // Notify error to calling flow (if provided) and return to landing
+                            if (pendingSignup?.afterError) {
+                                try { pendingSignup.afterError(signupResult?.error || 'Signup failed'); } catch (_) {}
+                            }
                             returnToLanding();
                         }
                     }, 1500);
                 }
                 
-                function showSignupSuccessModal(smtpConfigured) {
+                function showSignupSuccessModal(_smtpConfigured) {
                     const successModal = document.getElementById('signup-success-modal');
                     const successMessage = document.getElementById('signup-success-message');
                     const countdownDiv = document.getElementById('signup-success-countdown');
                     
                     if (!successModal || !successMessage) return;
                     
-                    // Set message based on SMTP status
-                    if (smtpConfigured) {
-                        successMessage.textContent = 'Account created successfully! An email will be sent to you shortly with your login credentials.';
-                    } else {
-                        successMessage.textContent = 'LRB will review your submission shortly and respond by email shortly.';
-                    }
+                    // Enterprise build: generic message (API signup)
+                    successMessage.textContent = 'Account created successfully!';
                     
                     // Show modal
                     successModal.classList.remove('hidden');
@@ -4968,12 +5190,110 @@
                     }
                 }
 
+                // Setup password generator for client signup
+                const clientSignupGeneratePassword = document.getElementById('client-signup-generate-password');
+                const clientSignupPassword = document.getElementById('client-signup-password');
+                const clientSignupConfirm = document.getElementById('client-signup-confirm');
+                
+                if (clientSignupGeneratePassword && typeof generateSecurePassword === 'function') {
+                    clientSignupGeneratePassword.addEventListener('click', function() {
+                        const newPassword = generateSecurePassword();
+                        if (clientSignupPassword) {
+                            clientSignupPassword.value = newPassword;
+                            clientSignupPassword.type = 'text';
+                        }
+                        if (clientSignupConfirm) {
+                            clientSignupConfirm.value = newPassword;
+                            clientSignupConfirm.type = 'text';
+                        }
+                        if (typeof showNotification === 'function') {
+                            showNotification('Password generated! Both fields have been filled.', 'success');
+                        }
+                    });
+                }
+
+                // Setup county/agency dropdowns for client signup
+                const clientSignupCounty = document.getElementById('client-signup-county');
+                const clientSignupAgency = document.getElementById('client-signup-agency');
+                
+                if (clientSignupCounty) {
+                    if (typeof window.loadCountiesForSignup === 'function') {
+                        window.loadCountiesForSignup('client-signup-county');
+                    }
+                    
+                    clientSignupCounty.addEventListener('change', function() {
+                        if (typeof window.loadAgenciesForSignup === 'function') {
+                            window.loadAgenciesForSignup('client-signup-agency', this.value);
+                        }
+                    });
+                }
+
+                // Setup manual entry for client signup
+                const clientSignupCountyAdd = document.getElementById('client-signup-county-add');
+                const clientSignupCountyManual = document.getElementById('client-signup-county-manual');
+                const clientSignupCountyManualInput = document.getElementById('client-signup-county-manual-input');
+                const clientSignupCountyManualSave = document.getElementById('client-signup-county-manual-save');
+                
+                if (clientSignupCountyAdd) {
+                    clientSignupCountyAdd.onclick = function() {
+                        clientSignupCountyManual.style.display = 'block';
+                        clientSignupCountyManualInput.focus();
+                    };
+                }
+                
+                if (clientSignupCountyManualSave) {
+                    clientSignupCountyManualSave.onclick = function() {
+                        const manualCounty = clientSignupCountyManualInput.value.trim();
+                        if (manualCounty) {
+                            const option = document.createElement('option');
+                            option.value = manualCounty;
+                            option.textContent = manualCounty;
+                            clientSignupCounty.appendChild(option);
+                            clientSignupCounty.value = manualCounty;
+                            clientSignupCountyManual.style.display = 'none';
+                            clientSignupCountyManualInput.value = '';
+                            if (typeof window.loadAgenciesForSignup === 'function') {
+                                window.loadAgenciesForSignup('client-signup-agency', manualCounty);
+                            }
+                        }
+                    };
+                }
+
+                const clientSignupAgencyAdd = document.getElementById('client-signup-agency-add');
+                const clientSignupAgencyManual = document.getElementById('client-signup-agency-manual');
+                const clientSignupAgencyManualInput = document.getElementById('client-signup-agency-manual-input');
+                const clientSignupAgencyManualSave = document.getElementById('client-signup-agency-manual-save');
+                
+                if (clientSignupAgencyAdd) {
+                    clientSignupAgencyAdd.onclick = function() {
+                        clientSignupAgencyManual.style.display = 'block';
+                        clientSignupAgencyManualInput.focus();
+                    };
+                }
+                
+                if (clientSignupAgencyManualSave) {
+                    clientSignupAgencyManualSave.onclick = function() {
+                        const manualAgency = clientSignupAgencyManualInput.value.trim();
+                        if (manualAgency) {
+                            const option = document.createElement('option');
+                            option.value = manualAgency;
+                            option.textContent = manualAgency;
+                            clientSignupAgency.appendChild(option);
+                            clientSignupAgency.value = manualAgency;
+                            clientSignupAgencyManual.style.display = 'none';
+                            clientSignupAgencyManualInput.value = '';
+                        }
+                    };
+                }
+
                 if (signupForm) {
                     signupForm.addEventListener('submit', function(e) {
                         e.preventDefault();
                         const email = (document.getElementById('client-signup-email')?.value || '').trim().toLowerCase();
                         const pwd = document.getElementById('client-signup-password')?.value || '';
                         const confirm = document.getElementById('client-signup-confirm')?.value || '';
+                        const county = clientSignupCounty?.value || '';
+                        const agency = clientSignupAgency?.value || '';
 
                         if (!emailRegex.test(email)) {
                             errorDiv.textContent = 'Enter a valid email address.';
@@ -4993,8 +5313,48 @@
                             successDiv.classList.add('hidden');
                             return;
                         }
+                        if (!county || !agency) {
+                            errorDiv.textContent = 'County and Agency are required.';
+                            errorDiv.classList.remove('hidden');
+                            successDiv.classList.add('hidden');
+                            return;
+                        }
 
-                        openPuzzleModal({ email, pwd, signupForm });
+                        // Human slider check (puzzle) before creating account
+                        if (typeof openPuzzleModal !== 'function') {
+                            errorDiv.textContent = 'Human check not available. Please refresh the page.';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+
+                        errorDiv.classList.add('hidden');
+                        openPuzzleModal({
+                            email,
+                            pwd,
+                            county,
+                            agency,
+                            signupForm,
+                            afterSuccess: (result) => {
+                                try {
+                                    successDiv.textContent = 'Account created successfully!';
+                                    successDiv.classList.remove('hidden');
+                                    signupForm.reset();
+                                    setTimeout(() => {
+                                        hideSignup();
+                                        if (typeof handleLoggedInUser === 'function') {
+                                            handleLoggedInUser(result.user);
+                                        }
+                                    }, 500);
+                                } catch (e) {
+                                    console.error('Client signup afterSuccess error:', e);
+                                }
+                            },
+                            afterError: (message) => {
+                                errorDiv.textContent = message || 'Failed to create account.';
+                                errorDiv.classList.remove('hidden');
+                                successDiv.classList.add('hidden');
+                            }
+                        });
                     });
                 }
             }
@@ -5092,19 +5452,7 @@
                 const saveBtn = document.getElementById('save-progress-btn');
                 if (saveBtn) {
                     saveBtn.onclick = async function() {
-                        if (currentEditingSubmissionId) {
-                            // In edit mode, save the current form
-                            await saveCurrentForm(currentEditingSubmissionId, false);
-                            showNotification('Changes saved successfully!');
-                        } else {
-                            // Normal draft save
-                            const projectForm = document.getElementById('project-form');
-                            const draftId = projectForm ? projectForm.dataset.draftId : null;
-                            const newDraftId = saveFormProgress(draftId);
-                            if (newDraftId && projectForm) {
-                                projectForm.dataset.draftId = newDraftId;
-                            }
-                        }
+                        await saveExternalDraft();
                     };
                 }
                 
@@ -5169,6 +5517,7 @@
             renderLoginAudit();
             renderClientGroups();
             setupEmailConfig();
+            setupDocumentsModal();
 
                 // Internal database functionality
                 setupInternalDatabase();
@@ -5524,6 +5873,16 @@
                 // Regular users only see external data request
                 document.getElementById('external-tab-btn').style.display = 'inline-block';
                 showTab('external');
+
+                // Hide admin-only utilities in external view
+                const externalTestBtn = document.getElementById('fill-test-data-external-btn');
+                if (externalTestBtn) externalTestBtn.style.display = 'none';
+
+                // Hide the session-based table UI (clients use "My Submissions" instead)
+                const externalTable = document.querySelector('.external-table-container');
+                if (externalTable) externalTable.style.display = 'none';
+                const submitAllBtn = document.getElementById('external-submit-all-btn');
+                if (submitAllBtn) submitAllBtn.style.display = 'none';
             }
         }
 
@@ -5592,8 +5951,10 @@
                     console.error('Login error:', err);
                     let errorMsg = err.message || 'Incorrect email or password';
                     
-                    // Provide helpful error messages
-                    if (err.message && err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                    // Handle rate limiting errors (429)
+                    if (err.message && (err.message.includes('Too many') || err.message.includes('blocked'))) {
+                        errorMsg = err.message;
+                    } else if (err.message && err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
                         errorMsg = 'Cannot connect to server. Make sure the server is running (npm run dev in server folder) and you opened this file through http://localhost (not file://).';
                     } else if (err.message && err.message.includes('API client not loaded')) {
                         errorMsg = err.message;
@@ -5636,7 +5997,6 @@
             // Signup form elements
             const externalSignupEmail = document.getElementById('external-signup-email');
             const externalSignupPassword = document.getElementById('external-signup-password');
-            const externalSignupOrgCode = document.getElementById('external-signup-org-code');
             const externalSignupSubmit = document.getElementById('external-signup-submit');
             const externalSignupError = document.getElementById('external-signup-error');
             
@@ -5722,15 +6082,237 @@
                 }
             };
 
+            function collectCountiesFromLocalData() {
+                const counties = new Set();
+                if (Array.isArray(window.allSubmissions)) {
+                    window.allSubmissions.forEach(sub => {
+                        if (sub?.county) counties.add(sub.county);
+                        else if (sub?.payload_json) {
+                            try {
+                                const payload = typeof sub.payload_json === 'string' ? JSON.parse(sub.payload_json) : sub.payload_json;
+                                if (payload?.county) counties.add(payload.county);
+                            } catch (_) {}
+                        }
+                    });
+                }
+                if (Array.isArray(window.masterTaxRates?.rates)) {
+                    window.masterTaxRates.rates.forEach(rate => {
+                        if (rate?.county) counties.add(rate.county);
+                    });
+                }
+                return Array.from(counties).sort();
+            }
+
+            function collectAgenciesFromLocalData(county) {
+                const agencies = new Set();
+                if (!county) return [];
+                
+                if (Array.isArray(window.allSubmissions)) {
+                    window.allSubmissions.forEach(sub => {
+                        let payload = null;
+                        let subCounty = sub?.county;
+                        if (sub?.payload_json) {
+                            try {
+                                payload = typeof sub.payload_json === 'string' ? JSON.parse(sub.payload_json) : sub.payload_json;
+                                if (!subCounty && payload?.county) {
+                                    subCounty = payload.county;
+                                }
+                            } catch (_) {}
+                        }
+                        
+                        if (subCounty !== county) return;
+                        
+                        const agencyName =
+                            sub?.submitterName ||
+                            sub?.cityCounty ||
+                            sub?.agency ||
+                            payload?.submitterName ||
+                            payload?.cityCounty ||
+                            payload?.agency ||
+                            payload?.projectAreaName ||
+                            payload?.projectArea;
+                        
+                        if (agencyName) agencies.add(agencyName);
+                    });
+                }
+                
+                if (Array.isArray(window.masterTaxRates?.rates)) {
+                    window.masterTaxRates.rates.forEach(rate => {
+                        if (rate?.county === county && rate?.agency) {
+                            agencies.add(rate.agency);
+                        }
+                    });
+                }
+                
+                return Array.from(agencies).sort();
+            }
+
+            // Load counties for signup forms (shared function)
+            window.loadCountiesForSignup = async function(countySelectId) {
+                const countySelect = document.getElementById(countySelectId);
+                if (!countySelect) return;
+                
+                let counties = [];
+                try {
+                    if (window.apiClient && typeof window.apiClient.getCounties === 'function') {
+                        const result = await window.apiClient.getCounties();
+                        counties = result.counties || [];
+                    }
+                } catch (error) {
+                    // If server is down, apiClient will already back off; just fall back quietly.
+                }
+                
+                if (!counties || counties.length === 0) {
+                    counties = collectCountiesFromLocalData();
+                }
+                
+                countySelect.innerHTML = '<option value="">Select County</option>';
+                counties.forEach(county => {
+                    const option = document.createElement('option');
+                    option.value = county;
+                    option.textContent = county;
+                    countySelect.appendChild(option);
+                });
+            };
+
+            // Load agencies for a county (shared function)
+            window.loadAgenciesForSignup = async function(agencySelectId, county) {
+                const agencySelect = document.getElementById(agencySelectId);
+                if (!agencySelect) return;
+                
+                if (!county) {
+                    agencySelect.innerHTML = '<option value="">Select County first</option>';
+                    agencySelect.disabled = true;
+                    return;
+                }
+                
+                let agencies = [];
+                try {
+                    if (window.apiClient && typeof window.apiClient.getAgencies === 'function') {
+                        const result = await window.apiClient.getAgencies(county);
+                        agencies = result.agencies || [];
+                    }
+                } catch (error) {
+                    // If server is down, apiClient will already back off; just fall back quietly.
+                }
+                
+                if (!agencies || agencies.length === 0) {
+                    agencies = collectAgenciesFromLocalData(county);
+                }
+                
+                agencySelect.innerHTML = agencies.length > 0 ? '<option value="">Select Agency</option>' : '<option value="">No agencies found</option>';
+                agencySelect.disabled = agencies.length === 0;
+                agencies.forEach(agency => {
+                    const option = document.createElement('option');
+                    option.value = agency;
+                    option.textContent = agency;
+                    agencySelect.appendChild(option);
+                });
+            };
+
+            // Setup county/agency dropdowns for external signup
+            const externalSignupCounty = document.getElementById('external-signup-county');
+            const externalSignupAgency = document.getElementById('external-signup-agency');
+            
+            if (externalSignupCounty) {
+                if (typeof window.loadCountiesForSignup === 'function') {
+                    window.loadCountiesForSignup('external-signup-county');
+                }
+                
+                externalSignupCounty.addEventListener('change', function() {
+                    if (typeof window.loadAgenciesForSignup === 'function') {
+                        window.loadAgenciesForSignup('external-signup-agency', this.value);
+                    }
+                });
+            }
+
+            // Setup manual entry for external signup
+            const externalSignupCountyAdd = document.getElementById('external-signup-county-add');
+            const externalSignupCountyManual = document.getElementById('external-signup-county-manual');
+            const externalSignupCountyManualInput = document.getElementById('external-signup-county-manual-input');
+            const externalSignupCountyManualSave = document.getElementById('external-signup-county-manual-save');
+            
+            if (externalSignupCountyAdd) {
+                externalSignupCountyAdd.onclick = function() {
+                    externalSignupCountyManual.style.display = 'block';
+                    externalSignupCountyManualInput.focus();
+                };
+            }
+            
+            if (externalSignupCountyManualSave) {
+                externalSignupCountyManualSave.onclick = function() {
+                    const manualCounty = externalSignupCountyManualInput.value.trim();
+                    if (manualCounty) {
+                        // Add to dropdown
+                        const option = document.createElement('option');
+                        option.value = manualCounty;
+                        option.textContent = manualCounty;
+                        externalSignupCounty.appendChild(option);
+                        externalSignupCounty.value = manualCounty;
+                        externalSignupCountyManual.style.display = 'none';
+                        externalSignupCountyManualInput.value = '';
+                        // Trigger agency load
+                        if (typeof window.loadAgenciesForSignup === 'function') {
+                            window.loadAgenciesForSignup('external-signup-agency', manualCounty);
+                        }
+                    }
+                };
+            }
+
+            const externalSignupAgencyAdd = document.getElementById('external-signup-agency-add');
+            const externalSignupAgencyManual = document.getElementById('external-signup-agency-manual');
+            const externalSignupAgencyManualInput = document.getElementById('external-signup-agency-manual-input');
+            const externalSignupAgencyManualSave = document.getElementById('external-signup-agency-manual-save');
+            
+            if (externalSignupAgencyAdd) {
+                externalSignupAgencyAdd.onclick = function() {
+                    externalSignupAgencyManual.style.display = 'block';
+                    externalSignupAgencyManualInput.focus();
+                };
+            }
+            
+            if (externalSignupAgencyManualSave) {
+                externalSignupAgencyManualSave.onclick = function() {
+                    const manualAgency = externalSignupAgencyManualInput.value.trim();
+                    if (manualAgency) {
+                        // Add to dropdown
+                        const option = document.createElement('option');
+                        option.value = manualAgency;
+                        option.textContent = manualAgency;
+                        externalSignupAgency.appendChild(option);
+                        externalSignupAgency.value = manualAgency;
+                        externalSignupAgencyManual.style.display = 'none';
+                        externalSignupAgencyManualInput.value = '';
+                    }
+                };
+            }
+
+            // Setup password generator for external signup
+            const externalSignupGeneratePassword = document.getElementById('external-signup-generate-password');
+            
+            if (externalSignupGeneratePassword && typeof generateSecurePassword === 'function') {
+                externalSignupGeneratePassword.addEventListener('click', function() {
+                    const newPassword = generateSecurePassword();
+                    if (externalSignupPassword) {
+                        externalSignupPassword.value = newPassword;
+                        externalSignupPassword.type = 'text';
+                    }
+                    if (typeof showNotification === 'function') {
+                        showNotification('Password generated!', 'success');
+                    }
+                });
+            }
+
             // Enterprise Build: External signup with API
             if (externalSignupSubmit) {
                 externalSignupSubmit.onclick = async function() {
                     const email = (externalSignupEmail?.value || '').trim().toLowerCase();
                     const password = externalSignupPassword?.value || '';
-                    const orgCode = (externalSignupOrgCode?.value || '').trim();
+                    const county = externalSignupCounty?.value || '';
+                    const agency = externalSignupAgency?.value || '';
                     
-                    if (!email || !password || !orgCode) {
-                        externalSignupError.textContent = 'Please fill in all fields';
+                    if (!email || !password || !county || !agency) {
+                        externalSignupError.textContent = 'Please fill in all fields including County and Agency';
                         externalSignupError.classList.remove('hidden');
                         return;
                     }
@@ -5741,38 +6323,43 @@
                         return;
                     }
                     
-                    // Disable button during request
-                    externalSignupSubmit.disabled = true;
-                    externalSignupSubmit.textContent = 'Creating account...';
-                    
-                    try {
-                        const result = await apiClient.signup({ email, password, orgCode });
-                        
-                        if (result.user && result.token) {
-                            // Success - close modal and route user
-                            externalPasswordModal.classList.add('hidden');
-                            externalSignupEmail.value = '';
-                            externalSignupPassword.value = '';
-                            externalSignupOrgCode.value = '';
-                            externalSignupError.classList.add('hidden');
-                            
-                            // Show success message
-                            if (typeof showNotification === 'function') {
-                                showNotification('Account created successfully!');
-                            }
-                            
-                            // Route based on role (should be 'user' for new signups)
-                            handleLoggedInUser(result.user);
-                        } else {
-                            throw new Error('Invalid response from server');
-                        }
-                    } catch (err) {
-                        externalSignupError.textContent = err.message || 'Failed to create account. Please check your organization code.';
+                    // Human slider check (puzzle) before creating account
+                    if (typeof window.openPuzzleModal !== 'function') {
+                        externalSignupError.textContent = 'Human check not available. Please refresh the page.';
                         externalSignupError.classList.remove('hidden');
-                    } finally {
-                        externalSignupSubmit.disabled = false;
-                        externalSignupSubmit.textContent = 'Create Account';
+                        return;
                     }
+
+                    externalSignupError.classList.add('hidden');
+                    window.openPuzzleModal({
+                        email,
+                        pwd: password,
+                        county,
+                        agency,
+                        afterSuccess: (result) => {
+                            try {
+                                // Success - close modal and route user
+                                externalPasswordModal.classList.add('hidden');
+                                externalSignupEmail.value = '';
+                                externalSignupPassword.value = '';
+                                externalSignupCounty.value = '';
+                                externalSignupAgency.value = '';
+                                externalSignupError.classList.add('hidden');
+                                
+                                if (typeof showNotification === 'function') {
+                                    showNotification('Account created successfully!');
+                                }
+                                
+                                handleLoggedInUser(result.user);
+                            } catch (e) {
+                                console.error('External signup afterSuccess error:', e);
+                            }
+                        },
+                        afterError: (message) => {
+                            externalSignupError.textContent = message || 'Failed to create account.';
+                            externalSignupError.classList.remove('hidden');
+                        }
+                    });
                 };
             }
 
@@ -5802,13 +6389,6 @@
                 });
             }
             
-            if (externalSignupOrgCode) {
-                externalSignupOrgCode.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        externalSignupSubmit?.click();
-                    }
-                });
-            }
 
             externalPasswordCancel.onclick = function() {
                 externalPasswordModal.classList.add('hidden');
@@ -5844,7 +6424,16 @@
             // Tab buttons and profile menu handle logout now
         }
 
-        function showTab(tabName) {
+            function showTab(tabName) {
+                const protectedTabs = ['internal', 'internal-data', 'account-management'];
+                if (protectedTabs.includes(tabName)) {
+                    const hasToken = localStorage.getItem('apiToken');
+                    if (!hasToken || !window.currentUser) {
+                        handleLogout();
+                        return;
+                    }
+                }
+
             // Hide all containers
             document.getElementById('main-container').classList.add('hidden');
             document.getElementById('internal-container').classList.add('hidden');
@@ -5922,252 +6511,9 @@
                     }
                     
                     console.log('Form validation passed, processing submission');
-                    
-                    // Check if we're in edit mode
-                    if (currentEditingSubmissionId) {
-                        // Update existing submission
-                        await saveCurrentForm(currentEditingSubmissionId, false);
-                        showNotification('Project updated successfully!');
-                        
-                        // Clear edit mode
-                        currentEditingSubmissionId = null;
-                        if (autoSaveInterval) {
-                            clearInterval(autoSaveInterval);
-                            autoSaveInterval = null;
-                        }
-                        const indicator = document.getElementById('auto-save-indicator-external');
-                        if (indicator) indicator.style.display = 'none';
-                        
-                        // Re-enable Client/Project dropdowns
-                        const agencyDropdown = document.getElementById('external-agency-dropdown');
-                        const projectDropdown = document.getElementById('external-project-dropdown');
-                        if (agencyDropdown) {
-                            agencyDropdown.disabled = false;
-                            agencyDropdown.style.backgroundColor = '';
-                            agencyDropdown.style.cursor = '';
-                        }
-                        if (projectDropdown) {
-                            projectDropdown.disabled = false;
-                            projectDropdown.style.backgroundColor = '';
-                            projectDropdown.style.cursor = '';
-                        }
-                        
-                        // Reset button text
-                        const submitBtn = projectForm.querySelector('button[type="submit"]');
-                        if (submitBtn) {
-                            submitBtn.textContent = 'Add Project Area';
-                            delete submitBtn.dataset.editMode;
-                        }
-                        
-                        // Go back to Internal Database
-                        showTab('internal');
-                        return false;
-                    }
-                    
-                    const formData = new FormData(projectForm);
-                    const submission = {};
-                    
-                    // Declare variables at function scope so they're available later
-                    const countyDropdown = document.getElementById('external-county-dropdown');
-                    const newCountyInput = document.getElementById('external-new-county-input');
-                    const newAgencyInput = document.getElementById('external-new-agency-input');
-                    const newProjectInput = document.getElementById('external-new-project-input');
-                    
-                    if (countyDropdown && countyDropdown.value && countyDropdown.value !== '__ADD_NEW_COUNTY__') {
-                        submission.county = countyDropdown.value;
-                    } else if (newCountyInput && newCountyInput.value.trim()) {
-                        submission.county = newCountyInput.value.trim();
-                    }
-                    
-                    // Get agency/submitter name from dropdown (should be set after saving)
-                    const agencyDropdown = document.getElementById('external-agency-dropdown');
-                    if (agencyDropdown && agencyDropdown.value && agencyDropdown.value !== '__ADD_NEW_AGENCY__') {
-                        submission.submitterName = agencyDropdown.value;
-                    } else {
-                        // Fallback: check if there's a value in the new input (shouldn't happen if saved properly)
-                        if (newAgencyInput && newAgencyInput.value) {
-                            submission.submitterName = newAgencyInput.value.trim();
-                        }
-                    }
-                    
-                    // Get project area name from dropdown (should be set after saving)
-                    const projectDropdown = document.getElementById('external-project-dropdown');
-                    if (projectDropdown && projectDropdown.value && projectDropdown.value !== '__ADD_NEW_PROJECT__') {
-                        submission.projectAreaName = projectDropdown.value;
-                    } else {
-                        // Fallback: check if there's a value in the new input (shouldn't happen if saved properly)
-                        if (newProjectInput && newProjectInput.value) {
-                            submission.projectAreaName = newProjectInput.value.trim();
-                        }
-                    }
-                    
-                    // Capture all other form data
-                    for (let [key, value] of formData.entries()) {
-                        // Skip the special dropdown values and new input fields (we already handled them)
-                        if (key !== 'county' && key !== 'submitterName' && key !== 'projectAreaName' && 
-                            key !== 'newAgencyName' && key !== 'newProjectAreaName' &&
-                            value !== '__ADD_NEW_AGENCY__' && value !== '__ADD_NEW_PROJECT__') {
-                            submission[key] = value;
-                        }
-                    }
-                    
-                    // Capture all dynamic expense data
-                    const expenseRows = document.querySelectorAll('.expense-row');
-                    expenseRows.forEach((row, index) => {
-                        const expenseTitle = row.querySelector(`input[name="expenseTitle_${index}"]`)?.value;
-                        const tyExpense = row.querySelector(`input[name="tyExpense_${index}"]`)?.value;
-                        const cyExpense = row.querySelector(`input[name="cyExpense_${index}"]`)?.value;
-                        const nyExpense = row.querySelector(`input[name="nyExpense_${index}"]`)?.value;
-                        
-                        if (expenseTitle || tyExpense || cyExpense || nyExpense) {
-                            submission[`expenseTitle_${index}`] = expenseTitle;
-                            submission[`tyExpense_${index}`] = tyExpense;
-                            submission[`cyExpense_${index}`] = cyExpense;
-                            submission[`nyExpense_${index}`] = nyExpense;
-                        }
-                    });
-                    
-                    // Also keep the expenses array for compatibility
-                    const expenses = [];
-                    expenseRows.forEach((row, index) => {
-                        const expenseTitle = row.querySelector(`input[name="expenseTitle_${index}"]`)?.value;
-                        const tyExpense = row.querySelector(`input[name="tyExpense_${index}"]`)?.value;
-                        const cyExpense = row.querySelector(`input[name="cyExpense_${index}"]`)?.value;
-                        const nyExpense = row.querySelector(`input[name="nyExpense_${index}"]`)?.value;
-                        
-                        if (expenseTitle || tyExpense || cyExpense || nyExpense) {
-                            expenses.push({
-                                title: expenseTitle,
-                                tyExpense: tyExpense,
-                                cyExpense: cyExpense,
-                                nyExpense: nyExpense
-                            });
-                        }
-                    });
-                    
-                    submission.expenses = expenses;
-                    
-                    // Capture PDF data
-                    submission.projectAreaMaps = uploadedPDFs;
-                    
-                    submission.timestamp = new Date().toISOString();
-                    
-                    // Add to current submission
-                    if (!currentSubmission.projectAreas) {
-                        currentSubmission.projectAreas = [];
-                    }
-                    currentSubmission.projectAreas.push(submission);
-                    console.log('Project area added to currentSubmission:', submission);
-                    console.log('Total project areas now:', currentSubmission.projectAreas.length);
-                    
-                    // Clear form
-                    projectForm.reset();
-                    
-                    // Reset dropdowns and hide new input containers (reuse variables already declared above)
-                    const newCountyContainer = document.getElementById('external-new-county-container');
-                    const newAgencyContainer = document.getElementById('external-new-agency-container');
-                    const newProjectContainer = document.getElementById('external-new-project-container');
-                    
-                    if (newCountyContainer) {
-                        newCountyContainer.style.display = 'none';
-                    }
-                    if (newCountyInput) {
-                        newCountyInput.value = '';
-                        newCountyInput.required = false;
-                    }
-                    if (newAgencyContainer) {
-                        newAgencyContainer.style.display = 'none';
-                    }
-                    if (newAgencyInput) {
-                        newAgencyInput.value = '';
-                        newAgencyInput.required = false;
-                    }
-                    if (newProjectContainer) {
-                        newProjectContainer.style.display = 'none';
-                    }
-                    if (newProjectInput) {
-                        newProjectInput.value = '';
-                        newProjectInput.required = false;
-                    }
-                    
-                    // Repopulate dropdowns
-                    await populateExternalCountyDropdown(false);
-                    await handleExternalCountyChange();
-                    
-                    // Clear uploaded PDFs
-                    uploadedPDFs = [];
-                    updateUploadedMapsList();
-                    
-                    // Clear expense rows and add default
-                    const expenseContainer = document.getElementById('expense-container');
-                    if (expenseContainer) {
-                        expenseContainer.innerHTML = '';
-                        // Add back the default expense row
-                        addExpenseRow();
-                    }
-                    
-                    // Show table
-                    try {
-                        renderTable();
-                        console.log('Table rendered successfully');
-                    } catch (error) {
-                        console.error('Error rendering table:', error);
-                    }
-                    
-                    // Show notification
-                    try {
-                        showNotification('Project area added successfully!');
-                        showNotification('Project area submitted.');
-                    } catch (error) {
-                        console.error('Error showing notification:', error);
-                        alert('Project area added successfully!');
-                    }
-                    
-                    console.log('Project area added:', submission);
 
-                    // Enterprise Build: Save to backend API
-                    if (window.apiClient && window.currentUser) {
-                        try {
-                            const year = parseInt(submission.year || formData.get('year') || new Date().getFullYear());
-                            const result = await apiClient.createSubmission({ 
-                                year, 
-                                payload: submission 
-                            });
-                            
-                            console.log('Submission saved to server:', result);
-                            
-                            // Upload PDFs if any were added
-                            if (uploadedPDFs.length > 0 && result.submission && result.submission.id) {
-                                console.log(`Uploading ${uploadedPDFs.length} PDF file(s)...`);
-                                for (const pdf of uploadedPDFs) {
-                                    if (pdf.file) {
-                                        try {
-                                            await apiClient.uploadFile({
-                                                submissionId: result.submission.id,
-                                                file: pdf.file
-                                            });
-                                            console.log(`✓ Uploaded: ${pdf.name}`);
-                                        } catch (uploadErr) {
-                                            console.error(`Failed to upload ${pdf.name}:`, uploadErr);
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            // Show success message
-                            showNotification('Submission saved to server successfully!');
-                            
-                            // Reset form after successful submission
-                            projectForm.reset();
-                            
-                        } catch (err) {
-                            console.error('Failed to save submission to server:', err);
-                            // Still show success for local storage, but warn about server
-                            showNotification('Saved locally, but server save failed. Check your connection.');
-                        }
-                    } else {
-                        console.warn('API client or user not available - submission only saved locally');
-                    }
+                    await saveExternalDraft();
+                    return false;
                 };
             } else {
                 console.error('External form not found!');
@@ -6414,7 +6760,8 @@
                             const year = parseInt(submission.fy || submission.year || new Date().getFullYear());
                             const result = await apiClient.createSubmission({ 
                                 year, 
-                                payload: submission 
+                                payload: submission,
+                                status: 'submitted'
                             });
                             
                             console.log('Internal submission saved to server:', result);
@@ -6909,6 +7256,7 @@
                     document.getElementById('main-container').classList.add('hidden');
                     document.getElementById('internal-container').classList.add('hidden');
                     document.getElementById('internal-data-request-container').classList.add('hidden');
+                    document.getElementById('account-management-container').classList.add('hidden');
                     document.getElementById('external-thankyou').classList.add('hidden');
                     document.getElementById('client-login-container').classList.add('hidden');
                     document.getElementById('client-dashboard-container').classList.add('hidden');
@@ -6942,6 +7290,18 @@
                     document.getElementById('client-login-container').classList.add('hidden');
                     document.getElementById('client-dashboard-container').classList.add('hidden');
                 }
+
+                window.currentUser = null;
+                try {
+                    localStorage.removeItem('apiToken');
+                } catch (_) {}
+                if (window.apiClient && typeof window.apiClient.setToken === 'function') {
+                    window.apiClient.setToken(null);
+                }
+
+                setTimeout(() => {
+                    document.getElementById('landing-container').scrollIntoView({ behavior: 'smooth' });
+                }, 50);
             }
 
             window.handleLogout = handleLogout;
@@ -7217,12 +7577,12 @@
             html += `<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">`;
             html += `<button onclick="renderInternalDBCityList()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">← Back to Clients</button>`;
             html += `<h3 style="margin: 0; color: var(--primary-blue);">${city} - ${year} Projects</h3>`;
-            html += `<button onclick="showProjectSelectionModal('${city}', '${year}')" class="btn btn-success" style="margin-left: auto; margin-right: 8px;">Generate Report</button>`;
+            html += `<button onclick="showProjectSelectionModal('${city}', '${year}')" class="btn btn-success" style="margin-left: auto; margin-right: 8px;">JUN30 Report</button>`;
             html += `<button onclick="downloadExcelForClient('${city}')" class="btn btn-primary">Download Excel</button>`;
             html += `</div>`;
             html += '<div style="max-height: 600px; overflow-y: auto;">';
             html += '<table class="table">';
-            html += '<thead><tr><th>Project Area</th><th>Year</th><th>Type</th><th>Purpose</th><th>Status</th><th>Governing Board</th><th>Agency Staff</th><th>Actions</th></tr></thead><tbody>';
+            html += '<thead><tr><th>Project Area</th><th>Year</th><th>Type</th><th>Purpose</th><th>Status</th><th>Governing Board</th><th>Agency Staff</th><th style="min-width: 380px; white-space: nowrap;">Actions</th></tr></thead><tbody>';
             
             if (cityYearSubmissions.length === 0) {
                 html += '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #666;">';
@@ -7285,11 +7645,13 @@
                         <td><span class="status-badge ${statusClass}">${status}</span></td>
                         <td style="font-size: 12px; max-width: 200px;">${governingBoardText}</td>
                         <td style="font-size: 12px; max-width: 200px;">${agencyStaffText}</td>
-                        <td>
-                            <button onclick="event.stopPropagation(); generateTIFReport('${submissionId}')" class="btn btn-info" style="background-color: #17a2b8; border-color: #17a2b8; color: white; padding: 6px 12px; font-size: 12px; margin-right: 4px;" title="Generate TIF Excel Report">📊 TIF</button>
-                            <button onclick="event.stopPropagation(); viewProjectDetails('${city}', '${projectArea}', '${year}')" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; margin-right: 4px;" title="View Project Details">Details</button>
-                            <button onclick="event.stopPropagation(); editProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; margin-right: 4px;">Edit</button>
-                            <button onclick="event.stopPropagation(); deleteProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">Delete</button>
+                        <td style="white-space: nowrap; padding: 8px 4px;">
+                            <button onclick="event.stopPropagation(); generateTIFReport('${submissionId}')" class="btn btn-info" style="background-color: #17a2b8; border-color: #17a2b8; color: white; padding: 4px 8px; font-size: 11px; margin-right: 3px; white-space: nowrap;" title="Generate TIF Excel Report">📊 TIF</button>
+                            <button onclick="event.stopPropagation(); generateJUN30Report('${submissionId}')" class="btn btn-success" style="background-color: #28a745; border-color: #28a745; color: white; padding: 4px 8px; font-size: 11px; margin-right: 3px; white-space: nowrap;" title="Generate JUN30 Report">📄 JUN30</button>
+                            <button onclick="event.stopPropagation(); viewProjectDetails('${city}', '${projectArea}', '${year}')" class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; margin-right: 3px; white-space: nowrap;" title="View Project Details">Details</button>
+                            <button onclick="event.stopPropagation(); openProjectDocuments('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; margin-right: 3px; white-space: nowrap;" title="View uploaded PDFs">Docs</button>
+                            <button onclick="event.stopPropagation(); editProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-primary" style="padding: 4px 8px; font-size: 11px; margin-right: 3px; white-space: nowrap;">Edit</button>
+                            <button onclick="event.stopPropagation(); deleteProjectSubmission('${submissionId}', '${city}', '${projectArea}', '${year}')" class="btn btn-danger" style="padding: 4px 8px; font-size: 11px; white-space: nowrap;">Delete</button>
                         </td>
                     </tr>`;
                 });
@@ -7358,7 +7720,7 @@
             html += `<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">`;
             html += `<button onclick="renderInternalDBCityList()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">← Back to Clients</button>`;
             html += `<h3 style="margin: 0; color: var(--primary-blue);">${city} - ${year} Project Areas</h3>`;
-            html += `<button onclick="showProjectSelectionModal('${city}', '${year}')" class="btn btn-success" style="margin-left: auto; margin-right: 8px;">Generate Report</button>`;
+            html += `<button onclick="showProjectSelectionModal('${city}', '${year}')" class="btn btn-success" style="margin-left: auto; margin-right: 8px;">JUN30 Report</button>`;
             html += `<button onclick="downloadExcelForClient('${city}')" class="btn btn-primary">Download Excel</button>`;
             html += `</div>`;
             html += '<div style="max-height: 600px; overflow-y: auto;">';
@@ -7912,7 +8274,8 @@
                             console.log(`[saveCurrentForm] Creating new submission (local ID: ${submission.id})`);
                             const result = await apiClient.createSubmission({
                                 year,
-                                payload: submission
+                                payload: submission,
+                                status: 'draft'
                             });
                             // Update local submission with server ID
                             if (result.submission && result.submission.id) {
@@ -7948,6 +8311,205 @@
             if (isAutoSave) {
                 console.log('Auto-saved submission:', submissionId);
             }
+        }
+
+        function isDatabaseUuid(id) {
+            return (
+                typeof id === 'string' &&
+                id.length === 36 &&
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+            );
+        }
+
+        function buildExternalSubmissionPayload() {
+            const form = document.getElementById('project-form');
+            if (!form) throw new Error('External form not found');
+
+            const formData = new FormData(form);
+            const submission = {};
+
+            const countyDropdown = document.getElementById('external-county-dropdown');
+            const newCountyInput = document.getElementById('external-new-county-input');
+            const newAgencyInput = document.getElementById('external-new-agency-input');
+            const newProjectInput = document.getElementById('external-new-project-input');
+
+            if (countyDropdown && countyDropdown.value && countyDropdown.value !== '__ADD_NEW_COUNTY__') {
+                submission.county = countyDropdown.value;
+            } else if (newCountyInput && newCountyInput.value.trim()) {
+                submission.county = newCountyInput.value.trim();
+            }
+
+            const agencyDropdown = document.getElementById('external-agency-dropdown');
+            if (agencyDropdown && agencyDropdown.value && agencyDropdown.value !== '__ADD_NEW_AGENCY__') {
+                submission.submitterName = agencyDropdown.value;
+            } else if (newAgencyInput && newAgencyInput.value.trim()) {
+                submission.submitterName = newAgencyInput.value.trim();
+            }
+
+            const projectDropdown = document.getElementById('external-project-dropdown');
+            if (projectDropdown && projectDropdown.value && projectDropdown.value !== '__ADD_NEW_PROJECT__') {
+                submission.projectAreaName = projectDropdown.value;
+            } else if (newProjectInput && newProjectInput.value.trim()) {
+                submission.projectAreaName = newProjectInput.value.trim();
+            }
+
+            for (let [key, value] of formData.entries()) {
+                if (
+                    key !== 'county' &&
+                    key !== 'submitterName' &&
+                    key !== 'projectAreaName' &&
+                    key !== 'newAgencyName' &&
+                    key !== 'newProjectAreaName' &&
+                    value !== '__ADD_NEW_AGENCY__' &&
+                    value !== '__ADD_NEW_PROJECT__'
+                ) {
+                    submission[key] = value;
+                }
+            }
+
+            // Expenses (normalized)
+            const expenses = [];
+            document.querySelectorAll('.expense-row').forEach((row, index) => {
+                const title = row.querySelector(`input[name="expenseTitle_${index}"]`)?.value;
+                const tyExpense = row.querySelector(`input[name="tyExpense_${index}"]`)?.value;
+                const cyExpense = row.querySelector(`input[name="cyExpense_${index}"]`)?.value;
+                const nyExpense = row.querySelector(`input[name="nyExpense_${index}"]`)?.value;
+                if (title || tyExpense || cyExpense || nyExpense) {
+                    expenses.push({ title, tyExpense, cyExpense, nyExpense });
+                }
+            });
+            submission.expenses = expenses;
+
+            // PDFs metadata (files are uploaded separately)
+            submission.projectAreaMaps = Array.isArray(uploadedPDFs) ? uploadedPDFs.map(p => ({ name: p.name })) : [];
+
+            submission.timestamp = new Date().toISOString();
+            return submission;
+        }
+
+        async function saveExternalDraft() {
+            const form = document.getElementById('project-form');
+            if (!form) return false;
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
+
+            const submission = buildExternalSubmissionPayload();
+            const year = parseInt(submission.year || submission.fy || new Date().getFullYear());
+
+            // Prefer server save
+            if (window.apiClient && window.currentUser) {
+                try {
+                    if (currentEditingSubmissionId && isDatabaseUuid(currentEditingSubmissionId)) {
+                        await apiClient.updateSubmission({
+                            submissionId: currentEditingSubmissionId,
+                            year,
+                            payload: submission
+                        });
+                        showNotification('Draft saved.');
+                    } else {
+                        const result = await apiClient.createSubmission({
+                            year,
+                            payload: submission,
+                            status: 'draft'
+                        });
+                        if (result?.submission?.id) {
+                            currentEditingSubmissionId = result.submission.id;
+                            setupAutoSave(currentEditingSubmissionId);
+                        }
+
+                        // Upload PDFs if any were added (best-effort)
+                        if (uploadedPDFs?.length && result?.submission?.id) {
+                            for (const pdf of uploadedPDFs) {
+                                if (pdf?.file) {
+                                    try {
+                                        await apiClient.uploadFile({ submissionId: result.submission.id, file: pdf.file });
+                                    } catch (e) {
+                                        console.warn('PDF upload failed:', e?.message || e);
+                                    }
+                                }
+                            }
+                        }
+
+                        showNotification('Draft created and saved.');
+                    }
+
+                    // Enable final submit for external users once we have a saved draft ID
+                    const finalBtn = document.getElementById('submit-final-external-btn');
+                    if (finalBtn) {
+                        finalBtn.style.display = (window.currentUser?.role === 'user' && currentEditingSubmissionId) ? 'inline-block' : 'none';
+                    }
+
+                    const saveStatus = document.getElementById('save-status');
+                    if (saveStatus) {
+                        saveStatus.textContent = `Last saved: ${new Date().toLocaleString()} (server)`;
+                        saveStatus.style.color = 'var(--success-green, #28a745)';
+                    }
+
+                    return false;
+                } catch (err) {
+                    console.error('Failed to save draft to server:', err);
+                    showNotification('Server save failed. Saved locally instead.');
+                }
+            }
+
+            // Local fallback
+            try {
+                const draftId = form.dataset.draftId || null;
+                const newDraftId = saveFormProgress(draftId);
+                if (newDraftId) form.dataset.draftId = newDraftId;
+                const saveStatus = document.getElementById('save-status');
+                if (saveStatus) {
+                    saveStatus.textContent = `Last saved: ${new Date().toLocaleString()} (local)`;
+                    saveStatus.style.color = 'var(--warning-yellow, #f59e0b)';
+                }
+            } catch (e) {
+                console.error('Local save failed:', e);
+            }
+            return false;
+        }
+
+        function resetExternalDraft() {
+            const form = document.getElementById('project-form');
+            if (form) {
+                form.reset();
+                delete form.dataset.draftId;
+            }
+
+            // Stop edit mode / autosave
+            currentEditingSubmissionId = null;
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+                autoSaveInterval = null;
+            }
+            const indicator = document.getElementById('auto-save-indicator-external');
+            if (indicator) indicator.style.display = 'none';
+
+            // Clear uploads
+            uploadedPDFs = [];
+            if (typeof updateUploadedMapsList === 'function') updateUploadedMapsList();
+
+            // Reset expenses UI
+            const expenseContainer = document.getElementById('expense-container');
+            if (expenseContainer) {
+                expenseContainer.innerHTML = '';
+                if (typeof addExpenseRow === 'function') addExpenseRow();
+            }
+
+            // Re-enable fields
+            document.querySelectorAll('#project-form input, #project-form select, #project-form textarea, #project-form button.add-expense-btn').forEach(el => {
+                if (el) el.disabled = false;
+            });
+            const saveBtn = document.getElementById('save-progress-btn');
+            if (saveBtn) saveBtn.disabled = false;
+
+            const finalBtn = document.getElementById('submit-final-external-btn');
+            if (finalBtn) finalBtn.style.display = 'none';
+
+            const saveStatus = document.getElementById('save-status');
+            if (saveStatus) saveStatus.textContent = '';
         }
         
         // Delete project with double confirmation
@@ -8293,11 +8855,11 @@
             html += `<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">`;
             html += `<button onclick="renderInternalDBCityList()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">← Back to Clients</button>`;
             html += `<h3 style="margin: 0; color: var(--primary-blue);">${city} - Project Areas</h3>`;
-            html += `<button onclick="generatePDFReport('${city}', null)" class="btn btn-success" style="margin-left: auto; margin-right: 8px;">Generate Report</button>`;
+            html += `<button onclick="generatePDFReport('${city}', null)" class="btn btn-success" style="margin-left: auto; margin-right: 8px;">JUN30 Report</button>`;
             html += `<button onclick="downloadExcelForClient('${city}')" class="btn btn-primary">Download Excel</button>`;
             html += `</div>`;
             html += '<table class="table">';
-            html += '<thead><tr><th>Project Area</th><th>Year</th><th>Type</th><th>Purpose</th><th>Status</th><th>Total Project Areas</th><th>Governing Board</th><th>Agency Staff</th><th>Actions</th></tr></thead><tbody>';
+            html += '<thead><tr><th>Project Area</th><th>Year</th><th>Type</th><th>Purpose</th><th>Status</th><th>Total Project Areas</th><th>Governing Board</th><th>Agency Staff</th><th style="min-width: 380px; white-space: nowrap;">Actions</th></tr></thead><tbody>';
 
             // Calculate total project areas for this city (across all years)
             const totalProjectAreas = citySubmissions.length;
@@ -8889,71 +9451,57 @@
             }
 
 
-            // Project Area Maps
-            if (submission.projectAreaMaps && submission.projectAreaMaps.length > 0) {
-                html += '<div class="section-title">Project Area Maps</div>';
-                html += '<div style="display: grid; gap: 12px; margin-top: 16px;">';
-                
-                submission.projectAreaMaps.forEach((map, index) => {
-                    html += `<div style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        background: #00B0F0;
-                        border: 1px solid #00B0F0;
-                        border-radius: 12px;
-                        padding: 16px 20px;
-                        transition: all 0.3s ease;
-                        box-shadow: 0 2px 8px rgba(0,176,240,0.1);
-                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(0,176,240,0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,176,240,0.1)'">
-                        <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
-                            <div style="
-                                width: 48px;
-                                height: 48px;
-                                background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-                                border-radius: 12px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                color: white;
-                                font-size: 20px;
-                                font-weight: bold;
-                                box-shadow: 0 2px 8px rgba(220,53,69,0.3);
-                            ">PDF</div>
-                            <div>
-                                <div style="font-weight: 600; color: #333; margin-bottom: 4px; font-size: 16px;">${map.name}</div>
-                                <div style="font-size: 13px; color: #666; display: flex; align-items: center; gap: 8px;">
-                                    <span>📊</span>
-                                    <span>${(map.size / 1024).toFixed(1)} KB</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button onclick="downloadPDF('${map.name}', '${map.data}')" style="
-                            background: #00B0F0;
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            padding: 10px 16px;
-                            font-size: 14px;
-                            font-weight: 500;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                            display: flex;
-                            align-items: center;
-                            gap: 8px;
-                            box-shadow: 0 2px 8px rgba(0,176,240,0.3);
-                        " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 16px rgba(0,176,240,0.4)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,176,240,0.3)'">
-                            <span>⬇️</span>
-                            <span>Download</span>
-                        </button>
-                    </div>`;
-                });
-                
-                html += '</div>';
+            // Documents (uploaded PDFs)
+            if (submissionId) {
+                html += '<div class="section-title" style="display:flex; align-items:center; gap:8px;">Documents'
+                    + `<div style="margin-left:auto;"><button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="openProjectDocuments('${submissionId}', '${city}', '${projectArea}', '${year}')">Open Docs</button></div>`
+                    + '</div>';
+                html += `<div id="project-documents-panel" style="border: 1px solid var(--border-gray); border-radius: 10px; overflow:hidden; background:#fff;">`
+                    + `<div style="padding: 12px 14px; color: var(--text-secondary);">Loading documents…</div>`
+                    + `</div>`;
             }
             
             html += '</div></div>';
             container.innerHTML = html;
+
+            // Load documents list (server uploads) into the details page
+            if (submissionId && window.apiClient && window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'internal')) {
+                (async () => {
+                    const panel = document.getElementById('project-documents-panel');
+                    if (!panel) return;
+                    try {
+                        const result = await apiClient.listUploads(submissionId);
+                        const uploads = result?.uploads || [];
+                        if (!uploads.length) {
+                            panel.innerHTML = `<div style="padding: 12px 14px; color: var(--text-secondary);">No documents uploaded for this project.</div>`;
+                            return;
+                        }
+                        const origin = (typeof getApiOrigin === 'function') ? getApiOrigin() : '';
+                        panel.innerHTML = uploads.map(u => {
+                            const sizeKb = u.size ? `${(u.size / 1024).toFixed(1)} KB` : '';
+                            const when = u.createdAt ? new Date(u.createdAt).toLocaleString() : '';
+                            const href = origin ? `${origin}${u.url}` : u.url;
+                            const name = (u.originalName || u.storedName || 'Document').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            return `
+                              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 10px 12px; border-bottom: 1px solid var(--border-gray);">
+                                <div style="min-width:0;">
+                                  <div style="font-weight: 700; color: var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name}</div>
+                                  <div style="margin-top:4px; color: var(--text-secondary); font-size: 12px;">
+                                    ${[sizeKb, when].filter(Boolean).join(' • ')}
+                                  </div>
+                                </div>
+                                <div style="flex:0 0 auto; display:flex; gap:8px;">
+                                  <a class="btn btn-primary" style="padding: 6px 10px; font-size: 12px; text-decoration:none; white-space:nowrap;" href="${href}" target="_blank" rel="noopener">Open</a>
+                                  <a class="btn btn-secondary" style="padding: 6px 10px; font-size: 12px; text-decoration:none; white-space:nowrap;" href="${href}" download>Download</a>
+                                </div>
+                              </div>
+                            `;
+                        }).join('');
+                    } catch (e) {
+                        panel.innerHTML = `<div style="padding: 12px 14px; color: var(--error-red);">Failed to load documents: ${(e?.message || 'error')}</div>`;
+                    }
+                })();
+            }
 
             // Wire up inline edit controls
             const editBtn = document.getElementById('edit-detail-btn');
@@ -11070,7 +11618,10 @@
 
         async function ensureProjectLocationCache() {
             if (!projectLocationCache) {
-                await loadMasterTaxRates();
+                // Only try to load if user is authenticated
+                if (window.apiClient && localStorage.getItem('apiToken')) {
+                    await loadMasterTaxRates();
+                }
                 projectLocationCache = buildProjectLocationCache();
             }
             return projectLocationCache;
@@ -11153,6 +11704,12 @@
         async function loadMasterTaxRates() {
             if (masterRatesLoaded) return masterTaxRates;
             
+            // Check if user is authenticated before making API call
+            if (!window.apiClient || !localStorage.getItem('apiToken')) {
+                // User not logged in - return empty array silently
+                return [];
+            }
+            
             try {
                 const response = await apiClient.getMasterTaxRates();
                 if (response && response.rates) {
@@ -11161,7 +11718,10 @@
                     return masterTaxRates;
                 }
             } catch (error) {
-                console.error('Error loading master tax rates:', error);
+                // Only log non-401 errors (401 means not authenticated, which is expected on initial load)
+                if (!error.message || !error.message.includes('Unauthorized')) {
+                    console.error('Error loading master tax rates:', error);
+                }
             }
             return [];
         }
@@ -11169,6 +11729,11 @@
         async function loadMasterRatesForRow(rowIndex) {
             const masterSelect = document.querySelector(`select[name="taxEntityRateMaster_${rowIndex}"]`);
             if (!masterSelect) return;
+            
+            // Check if user is authenticated before loading
+            if (!window.apiClient || !localStorage.getItem('apiToken')) {
+                return;
+            }
             
             // Load master rates if not already loaded
             await loadMasterTaxRates();
@@ -11723,6 +12288,12 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 const container = document.getElementById('tax-rate-master-rates-container');
                 if (!container) return;
                 
+                // Check if user is authenticated before making API call
+                if (!window.apiClient || !localStorage.getItem('apiToken')) {
+                    // User not logged in - return silently
+                    return;
+                }
+                
                 container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 24px;">Loading project tax rates...</p>';
                 
                 try {
@@ -11950,12 +12521,18 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                     renderFilterOptions();
                     filterTable();
                 } catch (error) {
-                    console.error('Error loading project tax rates:', error);
-                    container.innerHTML = `
-                        <p style="color: #dc3545; text-align: center; padding: 24px;">
-                            Error loading project tax rates: ${error.message || 'Unknown error'}
-                        </p>
-                    `;
+                    // Only log non-401 errors (401 means not authenticated, which is expected on initial load)
+                    if (!error.message || !error.message.includes('Unauthorized')) {
+                        console.error('Error loading project tax rates:', error);
+                        container.innerHTML = `
+                            <p style="color: #dc3545; text-align: center; padding: 24px;">
+                                Error loading project tax rates: ${error.message || 'Unknown error'}
+                            </p>
+                        `;
+                    } else {
+                        // User not authenticated - clear the loading message
+                        container.innerHTML = '';
+                    }
                 }
             }
             
@@ -12833,6 +13410,261 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             }
         }
 
+        /**
+         * Generate JUN30 Report for a single project (PDF)
+         * Generates and saves a JUN30 report for a specific submission
+         */
+        async function generateJUN30Report(submissionId) {
+            if (!submissionId) {
+                showNotification('Error: No submission ID provided', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('Generating JUN30 report...', 'info');
+                
+                // Find the submission
+                const submission = allSubmissions.find(s => s.id === submissionId);
+                if (!submission) {
+                    showNotification('Error: Submission not found', 'error');
+                    return;
+                }
+                
+                // Get city and year from submission
+                const city = submission.cityCounty || 
+                           submission.submitterName || 
+                           submission.client ||
+                           submission.agency ||
+                           submission.projectArea || 
+                           submission.projectAreaName ||
+                           'Unknown';
+                const year = submission.year || submission.fy || new Date().getFullYear();
+                
+                // Filter to just this submission
+                const singleSubmission = [submission];
+                
+                // Wait for PDFMake to be available
+                const waitForPDFMake = (attempts = 0) => {
+                    if (typeof pdfMake !== 'undefined' && typeof pdfMake.vfs !== 'undefined') {
+                        generateJUN30ReportInternal(singleSubmission, city, year, submissionId);
+                    } else if (attempts < 20) {
+                        setTimeout(() => waitForPDFMake(attempts + 1), 500);
+                    } else {
+                        showNotification('PDF library not loaded. Please refresh the page and try again.', 'error');
+                    }
+                };
+                
+                waitForPDFMake();
+                
+            } catch (error) {
+                console.error('Error generating JUN30 report:', error);
+                showNotification(`Error generating JUN30 report: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Internal function to generate JUN30 PDF for a single project
+         */
+        async function generateJUN30ReportInternal(submissions, city, year, submissionId) {
+            try {
+                // Create PDF document definition (simplified version for single project)
+                const docDefinition = {
+                    content: [],
+                    defaultStyle: {
+                        font: 'Roboto'
+                    }
+                };
+                
+                // Add cover page
+                addCoverPagePDFMake(docDefinition, city, year);
+                
+                // Add table of contents
+                addTableOfContentsPDFMake(docDefinition, submissions);
+                
+                // Add executive summary intro
+                addExecutiveSummaryIntroPDFMake(docDefinition);
+                
+                // Add executive summary
+                addExecutiveSummaryPDFMake(docDefinition, city, submissions);
+                
+                // Add governing board section
+                addGoverningBoardSectionPDFMake(docDefinition, submissions);
+                
+                // Add combined budget section
+                addCombinedBudgetSectionPDFMake(docDefinition, submissions);
+                
+                // Add acreage overview section
+                addAcreageOverviewSectionPDFMake(docDefinition, submissions);
+                
+                // Add individual project sections
+                addIndividualProjectSectionsPDFMake(docDefinition, submissions);
+                
+                // Generate PDF and get buffer
+                const pdfDoc = pdfMake.createPdf(docDefinition);
+                
+                // Get PDF as buffer
+                pdfDoc.getBuffer(async (buffer) => {
+                    try {
+                        // Convert buffer to base64 (browser-compatible)
+                        const uint8Array = new Uint8Array(buffer);
+                        const binaryString = Array.from(uint8Array, byte => String.fromCharCode(byte)).join('');
+                        const base64Pdf = btoa(binaryString);
+                        
+                        // Get token
+                        const token = localStorage.getItem('apiToken') || localStorage.getItem('authToken');
+                        if (!token) {
+                            showNotification('Error: Not authenticated. Please log in again.', 'error');
+                            return;
+                        }
+                        
+                        // Get submission data for metadata
+                        const submission = submissions[0];
+                        const county = submission.county;
+                        const agency = submission.submitterName || submission.cityCounty || submission.city;
+                        const project = submission.projectAreaName || submission.projectArea || 'Project';
+                        const reportYear = submission.year || submission.fy || new Date().getFullYear();
+                        
+                        // Save to backend
+                        const API_BASE = window.API_BASE_URL || 'http://localhost:4000/api';
+                        const response = await fetch(`${API_BASE}/reports/jun30`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                submissionId: submissionId,
+                                pdfBuffer: base64Pdf,
+                                county: county,
+                                agency: agency,
+                                project: project,
+                                year: reportYear
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.error || errorData.details || 'Failed to save report');
+                        }
+                        
+                        const result = await response.json();
+                        
+                        // Also download the file
+                        const filename = `JUN30_Report_${project.replace(/\s+/g, '_')}_${reportYear}_${new Date().toISOString().split('T')[0]}.pdf`;
+                        const blob = new Blob([buffer], { type: 'application/pdf' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                        showNotification(`JUN30 report generated and saved: ${result.filename}`, 'success');
+                        
+                    } catch (error) {
+                        console.error('Error saving JUN30 report:', error);
+                        showNotification(`Error saving JUN30 report: ${error.message}`, 'error');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error generating JUN30 report:', error);
+                showNotification(`Error generating JUN30 report: ${error.message}`, 'error');
+            }
+        }
+
+        // ========== DOCUMENTS (ADMIN/INTERNAL) ==========
+        function getApiOrigin() {
+            const base = (window.API_BASE_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
+            return base.endsWith('/api') ? base.slice(0, -4) : base;
+        }
+
+        function closeDocumentsModal() {
+            const modal = document.getElementById('documents-modal');
+            if (modal) modal.classList.add('hidden');
+            const list = document.getElementById('documents-modal-list');
+            if (list) list.innerHTML = '';
+            const err = document.getElementById('documents-modal-error');
+            if (err) {
+                err.textContent = '';
+                err.classList.add('hidden');
+            }
+        }
+
+        function setupDocumentsModal() {
+            const modal = document.getElementById('documents-modal');
+            if (!modal) return;
+            document.getElementById('documents-close')?.addEventListener('click', closeDocumentsModal);
+            document.getElementById('documents-cancel-x')?.addEventListener('click', closeDocumentsModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeDocumentsModal();
+            });
+        }
+
+        async function openProjectDocuments(submissionId, city, projectArea, year) {
+            if (!window.apiClient || !window.currentUser) {
+                showNotification('Please log in first.');
+                return;
+            }
+            // Only admin/internal should use this entry point
+            if (!(window.currentUser.role === 'admin' || window.currentUser.role === 'internal')) {
+                showNotification('Documents are available to internal/admin users only.');
+                return;
+            }
+
+            const modal = document.getElementById('documents-modal');
+            const title = document.getElementById('documents-modal-title');
+            const meta = document.getElementById('documents-modal-meta');
+            const list = document.getElementById('documents-modal-list');
+            const err = document.getElementById('documents-modal-error');
+            if (!modal || !list) return;
+
+            if (title) title.textContent = `Project Documents`;
+            if (meta) meta.textContent = `${city || ''}${projectArea ? ` • ${projectArea}` : ''}${year ? ` • ${year}` : ''}`;
+            list.innerHTML = `<div style="padding: 14px; color: var(--text-secondary);">Loading documents…</div>`;
+            modal.classList.remove('hidden');
+
+            try {
+                const result = await apiClient.listUploads(submissionId);
+                const uploads = result?.uploads || [];
+                if (!uploads.length) {
+                    list.innerHTML = `<div style="padding: 14px; color: var(--text-secondary);">No documents uploaded for this project.</div>`;
+                    return;
+                }
+
+                const origin = getApiOrigin();
+                let html = '';
+                uploads.forEach((u) => {
+                    const sizeKb = u.size ? `${(u.size / 1024).toFixed(1)} KB` : '';
+                    const when = u.createdAt ? new Date(u.createdAt).toLocaleString() : '';
+                    const href = `${origin}${u.url}`;
+                    html += `
+                      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 12px 14px; border-bottom: 1px solid var(--border-gray);">
+                        <div style="min-width:0;">
+                          <div style="font-weight: 700; color: var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${u.originalName || u.storedName}</div>
+                          <div style="margin-top:4px; color: var(--text-secondary); font-size: 12px;">
+                            ${[sizeKb, when].filter(Boolean).join(' • ')}
+                          </div>
+                        </div>
+                        <div style="flex:0 0 auto; display:flex; gap:8px;">
+                          <a class="btn btn-primary" style="padding: 6px 10px; font-size: 12px; text-decoration:none; white-space:nowrap;" href="${href}" target="_blank" rel="noopener">Open</a>
+                          <a class="btn btn-secondary" style="padding: 6px 10px; font-size: 12px; text-decoration:none; white-space:nowrap;" href="${href}" download>Download</a>
+                        </div>
+                      </div>
+                    `;
+                });
+                list.innerHTML = html;
+            } catch (e) {
+                if (err) {
+                    err.textContent = e?.message || 'Failed to load documents.';
+                    err.classList.remove('hidden');
+                }
+                list.innerHTML = '';
+            }
+        }
+
         function generatePDFReport(city, year) {
             console.log('=== GENERATE REPORT DEBUG START ===');
             console.log('Function: generatePDFReport called');
@@ -13167,11 +13999,68 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                     const pdfDoc = pdfMake.createPdf(docDefinition);
                     console.log('  ✓ PDF document created, calling download()...');
                     
+                    // Get PDF buffer to save to backend
+                    pdfDoc.getBuffer(async (buffer) => {
+                        try {
+                            // Convert buffer to base64 (browser-compatible)
+                            const uint8Array = new Uint8Array(buffer);
+                            const binaryString = Array.from(uint8Array, byte => String.fromCharCode(byte)).join('');
+                            const base64Pdf = btoa(binaryString);
+                            
+                            // Get token
+                            const token = localStorage.getItem('apiToken') || localStorage.getItem('authToken');
+                            if (token) {
+                                // Get submission data for metadata (use first submission as representative)
+                                const firstSubmission = cityYearSubmissions[0];
+                                if (firstSubmission) {
+                                    const submissionId = firstSubmission.id;
+                                    const county = firstSubmission.county;
+                                    const agency = firstSubmission.submitterName || firstSubmission.cityCounty || firstSubmission.city || city;
+                                    const project = firstSubmission.projectAreaName || firstSubmission.projectArea || city;
+                                    const reportYear = firstSubmission.year || firstSubmission.fy || year || new Date().getFullYear();
+                                    
+                                    // Save to backend
+                                    const API_BASE = window.API_BASE_URL || 'http://localhost:4000/api';
+                                    try {
+                                        const response = await fetch(`${API_BASE}/reports/jun30`, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Authorization': `Bearer ${token}`,
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                submissionId: submissionId,
+                                                pdfBuffer: base64Pdf,
+                                                county: county,
+                                                agency: agency,
+                                                project: project,
+                                                year: reportYear
+                                            })
+                                        });
+                                        
+                                        if (response.ok) {
+                                            const result = await response.json();
+                                            console.log('✓ JUN30 report saved to database:', result.filename);
+                                        } else {
+                                            console.warn('⚠ Failed to save JUN30 report to database (non-critical)');
+                                        }
+                                    } catch (saveError) {
+                                        console.warn('⚠ Error saving JUN30 report to database (non-critical):', saveError);
+                                        // Continue even if save fails
+                                    }
+                                }
+                            }
+                        } catch (bufferError) {
+                            console.warn('⚠ Error processing PDF buffer (non-critical):', bufferError);
+                            // Continue even if buffer processing fails
+                        }
+                    });
+                    
                     pdfDoc.download(filename, 
                         () => {
                             console.log('✓ PDF download initiated successfully');
                             console.log('=== GENERATE REPORT DEBUG END (SUCCESS) ===');
-                            showNotification(`PDF report generated successfully for ${city}${year ? ` - ${year}` : ''}!`);
+                            showNotification(`JUN30 report generated successfully for ${city}${year ? ` - ${year}` : ''}!`);
                         }, 
                         (error) => {
                             console.error('✗ PDF generation error in callback:', error);
@@ -18043,13 +18932,107 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             // Add account form submission
             const addAccountForm = document.getElementById('add-account-form');
             if (addAccountForm) {
-                addAccountForm.addEventListener('submit', function(e) {
+                // Setup password generator for new account
+                const newAccountGeneratePassword = document.getElementById('new-account-generate-password');
+                const newAccountPassword = document.getElementById('new-account-password');
+                const newAccountPasswordConfirm = document.getElementById('new-account-password-confirm');
+                
+                if (newAccountGeneratePassword && typeof generateSecurePassword === 'function') {
+                    newAccountGeneratePassword.addEventListener('click', function() {
+                        const newPassword = generateSecurePassword();
+                        if (newAccountPassword) {
+                            newAccountPassword.value = newPassword;
+                            newAccountPassword.type = 'text';
+                        }
+                        if (newAccountPasswordConfirm) {
+                            newAccountPasswordConfirm.value = newPassword;
+                            newAccountPasswordConfirm.type = 'text';
+                        }
+                        if (typeof showNotification === 'function') {
+                            showNotification('Password generated! Both fields have been filled.', 'success');
+                        }
+                    });
+                }
+
+                // Setup county/agency dropdowns for new account
+                const newAccountCounty = document.getElementById('new-account-county');
+                const newAccountAgency = document.getElementById('new-account-agency');
+                
+                if (newAccountCounty) {
+                    newAccountCounty.addEventListener('change', function() {
+                        if (typeof window.loadAgenciesForSignup === 'function') {
+                            window.loadAgenciesForSignup('new-account-agency', this.value);
+                        }
+                    });
+                }
+
+                // Setup manual entry for new account
+                const newAccountCountyAdd = document.getElementById('new-account-county-add');
+                const newAccountCountyManual = document.getElementById('new-account-county-manual');
+                const newAccountCountyManualInput = document.getElementById('new-account-county-manual-input');
+                const newAccountCountyManualSave = document.getElementById('new-account-county-manual-save');
+                
+                if (newAccountCountyAdd) {
+                    newAccountCountyAdd.onclick = function() {
+                        newAccountCountyManual.style.display = 'block';
+                        newAccountCountyManualInput.focus();
+                    };
+                }
+                
+                if (newAccountCountyManualSave) {
+                    newAccountCountyManualSave.onclick = function() {
+                        const manualCounty = newAccountCountyManualInput.value.trim();
+                        if (manualCounty) {
+                            const option = document.createElement('option');
+                            option.value = manualCounty;
+                            option.textContent = manualCounty;
+                            newAccountCounty.appendChild(option);
+                            newAccountCounty.value = manualCounty;
+                            newAccountCountyManual.style.display = 'none';
+                            newAccountCountyManualInput.value = '';
+                            if (typeof window.loadAgenciesForSignup === 'function') {
+                                window.loadAgenciesForSignup('new-account-agency', manualCounty);
+                            }
+                        }
+                    };
+                }
+
+                const newAccountAgencyAdd = document.getElementById('new-account-agency-add');
+                const newAccountAgencyManual = document.getElementById('new-account-agency-manual');
+                const newAccountAgencyManualInput = document.getElementById('new-account-agency-manual-input');
+                const newAccountAgencyManualSave = document.getElementById('new-account-agency-manual-save');
+                
+                if (newAccountAgencyAdd) {
+                    newAccountAgencyAdd.onclick = function() {
+                        newAccountAgencyManual.style.display = 'block';
+                        newAccountAgencyManualInput.focus();
+                    };
+                }
+                
+                if (newAccountAgencyManualSave) {
+                    newAccountAgencyManualSave.onclick = function() {
+                        const manualAgency = newAccountAgencyManualInput.value.trim();
+                        if (manualAgency) {
+                            const option = document.createElement('option');
+                            option.value = manualAgency;
+                            option.textContent = manualAgency;
+                            newAccountAgency.appendChild(option);
+                            newAccountAgency.value = manualAgency;
+                            newAccountAgencyManual.style.display = 'none';
+                            newAccountAgencyManualInput.value = '';
+                        }
+                    };
+                }
+
+                addAccountForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     const username = document.getElementById('new-account-username').value.trim();
                     const password = document.getElementById('new-account-password').value;
                     const passwordConfirm = document.getElementById('new-account-password-confirm').value;
                     const role = (document.getElementById('new-account-role')?.value || 'client').toLowerCase();
+                    const county = newAccountCounty?.value || '';
+                    const agency = newAccountAgency?.value || '';
                     const errorDiv = document.getElementById('add-account-error');
                     const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
                     // Require 8+ chars, at least one letter and one digit; allow symbols
@@ -18086,40 +19069,86 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                         return;
                     }
                     
-                    // Check if account already exists in either role
-                    let credentials = {};
-                    let internalCreds = {};
-                    try { credentials = getClientCredentials(); } catch (e) { credentials = JSON.parse(localStorage.getItem('clientCredentials') || '{}'); }
-                    try { internalCreds = getInternalCredentials(); } catch (e) { internalCreds = JSON.parse(localStorage.getItem('internalCredentials') || '{}'); }
-                    
-                    if (credentials[username.toLowerCase()] || internalCreds[username.toLowerCase()]) {
-                        errorDiv.textContent = 'An account with this email already exists.';
+                    if (!county || !agency) {
+                        errorDiv.textContent = 'County and Agency are required.';
                         errorDiv.classList.remove('hidden');
                         return;
                     }
                     
-                    // Create account in appropriate store
-                    if (role === 'internal') {
-                        internalCreds[username.toLowerCase()] = password;
-                        saveInternalCredentials(internalCreds);
+                    // Try to create account via API if available
+                    if (window.apiClient) {
+                        try {
+                            errorDiv.classList.add('hidden');
+                            const submitBtn = addAccountForm.querySelector('button[type="submit"]');
+                            const originalText = submitBtn.textContent;
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'Creating account...';
+                            
+                            const result = await window.apiClient.signup({ 
+                                email: username, 
+                                password, 
+                                county, 
+                                agency 
+                            });
+                            
+                            if (result.user && result.token) {
+                                // Success - close modal and refresh table
+                                document.getElementById('add-account-modal').classList.add('hidden');
+                                renderAccountsTable();
+                                showNotification('Account created successfully!');
+                                addAccountForm.reset();
+                            } else {
+                                throw new Error('Invalid response from server');
+                            }
+                        } catch (err) {
+                            errorDiv.textContent = err.message || 'Failed to create account. Please check your organization code.';
+                            errorDiv.classList.remove('hidden');
+                        } finally {
+                            const submitBtn = addAccountForm.querySelector('button[type="submit"]');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'Create Account';
+                            }
+                        }
                     } else {
-                        credentials[username.toLowerCase()] = password;
-                        localStorage.setItem('clientCredentials', JSON.stringify(credentials));
-                    }
+                        // Fallback to local storage if API not available
+                        // Check if account already exists in either role
+                        let credentials = {};
+                        let internalCreds = {};
+                        try { credentials = getClientCredentials(); } catch (e) { credentials = JSON.parse(localStorage.getItem('clientCredentials') || '{}'); }
+                        try { internalCreds = getInternalCredentials(); } catch (e) { internalCreds = JSON.parse(localStorage.getItem('internalCredentials') || '{}'); }
+                        
+                        if (credentials[username.toLowerCase()] || internalCreds[username.toLowerCase()]) {
+                            errorDiv.textContent = 'An account with this email already exists.';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+                        
+                        // Create account in appropriate store
+                        if (role === 'internal') {
+                            internalCreds[username.toLowerCase()] = password;
+                            saveInternalCredentials(internalCreds);
+                        } else {
+                            credentials[username.toLowerCase()] = password;
+                            localStorage.setItem('clientCredentials', JSON.stringify(credentials));
+                        }
 
-                    // Save meta
-                    const meta = getAccountMeta();
-                    meta[username.toLowerCase()] = {
-                        role,
-                        status: 'active',
-                        createdAt: new Date().toISOString()
-                    };
-                    saveAccountMeta(meta);
-                    
-                    // Close modal and refresh table
-                    document.getElementById('add-account-modal').classList.add('hidden');
-                    renderAccountsTable();
-                    showNotification('Account created successfully!');
+                        // Save meta
+                        const meta = getAccountMeta();
+                        meta[username.toLowerCase()] = {
+                            role,
+                            status: 'active',
+                            createdAt: new Date().toISOString(),
+                            county,
+                            agency
+                        };
+                        saveAccountMeta(meta);
+                        
+                        // Close modal and refresh table
+                        document.getElementById('add-account-modal').classList.add('hidden');
+                        renderAccountsTable();
+                        showNotification('Account created successfully!');
+                    }
                 });
             }
 
@@ -18368,6 +19397,9 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             // Shuffle the password
             return password.split('').sort(() => Math.random() - 0.5).join('');
         }
+        
+        // Make password generator globally accessible
+        window.generateSecurePassword = generateSecurePassword;
         
         function saveAccountPassword(username, newPassword) {
             let credentials = {};
@@ -18835,17 +19867,77 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             form.querySelector('input[name="totalAggregateExpense"]').value = '500000';
             form.querySelector('input[name="totalAggregateExpenseAtNpv"]').value = '475000';
 
-            // Governing Board of Trustees
+            // Governing Board of Trustees (add multiple members)
             const governingBoardName0 = form.querySelector('input[name="governingBoardName_0"]');
             const governingBoardTitle0 = form.querySelector('input[name="governingBoardTitle_0"]');
             if (governingBoardName0) governingBoardName0.value = 'John Smith';
             if (governingBoardTitle0) governingBoardTitle0.value = 'Chairman';
+            
+            // Add second board member if row exists
+            const governingBoardName1 = form.querySelector('input[name="governingBoardName_1"]');
+            const governingBoardTitle1 = form.querySelector('input[name="governingBoardTitle_1"]');
+            if (governingBoardName1) {
+                governingBoardName1.value = 'Jane Doe';
+                governingBoardTitle1.value = 'Vice Chairman';
+            } else {
+                // Add a new row if add button exists
+                const addBoardBtn = form.querySelector('button[onclick*="addGoverningBoardRow"]');
+                if (addBoardBtn) {
+                    addBoardBtn.click();
+                    setTimeout(() => {
+                        const name1 = form.querySelector('input[name="governingBoardName_1"]');
+                        const title1 = form.querySelector('input[name="governingBoardTitle_1"]');
+                        if (name1) name1.value = 'Jane Doe';
+                        if (title1) title1.value = 'Vice Chairman';
+                    }, 100);
+                }
+            }
+            
+            // Add third board member if possible
+            const governingBoardName2 = form.querySelector('input[name="governingBoardName_2"]');
+            const governingBoardTitle2 = form.querySelector('input[name="governingBoardTitle_2"]');
+            if (governingBoardName2) {
+                governingBoardName2.value = 'Bob Johnson';
+                governingBoardTitle2.value = 'Secretary';
+            } else if (governingBoardName1) {
+                // Add another row
+                const addBoardBtn = form.querySelector('button[onclick*="addGoverningBoardRow"]');
+                if (addBoardBtn) {
+                    addBoardBtn.click();
+                    setTimeout(() => {
+                        const name2 = form.querySelector('input[name="governingBoardName_2"]');
+                        const title2 = form.querySelector('input[name="governingBoardTitle_2"]');
+                        if (name2) name2.value = 'Bob Johnson';
+                        if (title2) title2.value = 'Secretary';
+                    }, 200);
+                }
+            }
 
-            // Agency Staff
+            // Agency Staff (add multiple members)
             const agencyStaffName0 = form.querySelector('input[name="agencyStaffName_0"]');
             const agencyStaffTitle0 = form.querySelector('input[name="agencyStaffTitle_0"]');
-            if (agencyStaffName0) agencyStaffName0.value = 'Jane Doe';
+            if (agencyStaffName0) agencyStaffName0.value = 'Alice Williams';
             if (agencyStaffTitle0) agencyStaffTitle0.value = 'Executive Director';
+            
+            // Add second staff member if row exists
+            const agencyStaffName1 = form.querySelector('input[name="agencyStaffName_1"]');
+            const agencyStaffTitle1 = form.querySelector('input[name="agencyStaffTitle_1"]');
+            if (agencyStaffName1) {
+                agencyStaffName1.value = 'Tom Brown';
+                agencyStaffTitle1.value = 'Finance Director';
+            } else {
+                // Add a new row if add button exists
+                const addStaffBtn = form.querySelector('button[onclick*="addAgencyStaffRow"]');
+                if (addStaffBtn) {
+                    addStaffBtn.click();
+                    setTimeout(() => {
+                        const name1 = form.querySelector('input[name="agencyStaffName_1"]');
+                        const title1 = form.querySelector('input[name="agencyStaffTitle_1"]');
+                        if (name1) name1.value = 'Tom Brown';
+                        if (title1) title1.value = 'Finance Director';
+                    }, 100);
+                }
+            }
 
             // Increment Distribution
             const incrementEntity0 = form.querySelector('input[name="incrementEntity_0"]');
@@ -19017,6 +20109,206 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             return [];
         }
 
+        // ========== SUBMISSION PICKER (EXTERNAL) ==========
+        let submissionPickerState = {
+            resolve: null,
+            projects: [],
+            filtered: [],
+            selectedId: null
+        };
+
+        function getSubmissionCardMeta(p) {
+            const status = (p.status || 'submitted').toLowerCase();
+            const project = p.project || p.payload?.projectAreaName || p.payload?.projectArea || 'Unnamed Project';
+            const county = p.county || p.payload?.county || '';
+            const agency = p.agency || p.payload?.submitterName || p.payload?.cityCounty || '';
+            const year = p.year || p.payload?.year || p.payload?.fy || '';
+            const updatedAt = p.updatedAt || p.updated_at || null;
+            const createdAt = p.createdAt || p.created_at || null;
+            const updatedTs = updatedAt ? Date.parse(updatedAt) : NaN;
+            const createdTs = createdAt ? Date.parse(createdAt) : NaN;
+            const sortTs = !Number.isNaN(updatedTs) ? updatedTs : (!Number.isNaN(createdTs) ? createdTs : 0);
+            return { status, project, county, agency, year, updatedAt, createdAt, sortTs };
+        }
+
+        function closeSubmissionPickerModal(result = null) {
+            const modal = document.getElementById('submission-picker-modal');
+            if (modal) modal.classList.add('hidden');
+            const resolve = submissionPickerState.resolve;
+            submissionPickerState = { resolve: null, projects: [], filtered: [], selectedId: null };
+            if (typeof resolve === 'function') resolve(result);
+        }
+
+        function renderSubmissionPickerList() {
+            const list = document.getElementById('submission-picker-list');
+            const count = document.getElementById('submission-picker-count');
+            if (!list || !count) return;
+
+            const search = (document.getElementById('submission-picker-search')?.value || '').trim().toLowerCase();
+            const statusFilter = (document.getElementById('submission-picker-status')?.value || 'all').toLowerCase();
+            const sortMode = (document.getElementById('submission-picker-sort')?.value || 'updated_desc').toLowerCase();
+
+            let filtered = submissionPickerState.projects.slice();
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(p => getSubmissionCardMeta(p).status === statusFilter);
+            }
+            if (search) {
+                filtered = filtered.filter(p => {
+                    const m = getSubmissionCardMeta(p);
+                    const hay = `${m.project} ${m.county} ${m.agency} ${m.year} ${m.status}`.toLowerCase();
+                    return hay.includes(search);
+                });
+            }
+
+            const compare = {
+                updated_desc: (a, b) => getSubmissionCardMeta(b).sortTs - getSubmissionCardMeta(a).sortTs,
+                created_desc: (a, b) => {
+                    const aTs = Date.parse(getSubmissionCardMeta(a).createdAt || '') || 0;
+                    const bTs = Date.parse(getSubmissionCardMeta(b).createdAt || '') || 0;
+                    return bTs - aTs;
+                },
+                year_desc: (a, b) => (parseInt(getSubmissionCardMeta(b).year) || 0) - (parseInt(getSubmissionCardMeta(a).year) || 0),
+                project_asc: (a, b) => (getSubmissionCardMeta(a).project || '').localeCompare(getSubmissionCardMeta(b).project || '')
+            }[sortMode] || ((a, b) => getSubmissionCardMeta(b).sortTs - getSubmissionCardMeta(a).sortTs);
+
+            filtered.sort(compare);
+            submissionPickerState.filtered = filtered;
+
+            count.textContent = `${filtered.length} result${filtered.length === 1 ? '' : 's'}`;
+            list.innerHTML = '';
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div style="padding: 16px; color: var(--text-secondary);">No submissions match your filters.</div>`;
+                return;
+            }
+
+            filtered.forEach((p) => {
+                const m = getSubmissionCardMeta(p);
+                const isSelected = submissionPickerState.selectedId === p.id;
+                const statusColor = m.status === 'final' ? '#16a34a' : (m.status === 'draft' ? '#f59e0b' : '#2563eb');
+                const statusLabel = m.status.toUpperCase();
+                const when = m.updatedAt || m.createdAt || '';
+                const whenLabel = when ? new Date(when).toLocaleString() : '';
+
+                const row = document.createElement('div');
+                row.setAttribute('role', 'button');
+                row.tabIndex = 0;
+                row.style.cssText = `display:flex; gap:12px; padding: 12px 14px; border-bottom: 1px solid var(--border-gray); cursor:pointer; align-items:flex-start; background:${isSelected ? '#eef7ff' : '#fff'};`;
+                row.innerHTML = `
+                    <div style="flex:1; min-width:0;">
+                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                            <div style="font-weight:700; color: var(--text-primary);">${m.project}</div>
+                            <span style="font-size:11px; font-weight:700; color:#fff; background:${statusColor}; padding: 4px 8px; border-radius: 999px;">${statusLabel}</span>
+                        </div>
+                        <div style="margin-top:4px; color: var(--text-secondary); font-size: 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                            ${[m.county, m.agency].filter(Boolean).join(' • ')}${m.year ? ` • ${m.year}` : ''}
+                        </div>
+                    </div>
+                    <div style="flex:0 0 auto; color: var(--text-secondary); font-size: 12px; text-align:right;">
+                        ${whenLabel ? `<div style="font-weight:600;">${whenLabel}</div>` : ''}
+                    </div>
+                `;
+
+                function select() {
+                    submissionPickerState.selectedId = p.id;
+                    renderSubmissionPickerList();
+                }
+
+                row.addEventListener('click', select);
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        select();
+                    }
+                });
+                row.addEventListener('dblclick', () => closeSubmissionPickerModal(p));
+                list.appendChild(row);
+            });
+
+            // Default-select first row if nothing selected
+            if (!submissionPickerState.selectedId && filtered[0]?.id) {
+                submissionPickerState.selectedId = filtered[0].id;
+                // Render once more to show highlight without infinite loop
+                setTimeout(() => renderSubmissionPickerList(), 0);
+            }
+        }
+
+        function pickSubmissionFromModal(projects) {
+            return new Promise((resolve) => {
+                submissionPickerState.resolve = resolve;
+                submissionPickerState.projects = Array.isArray(projects) ? projects : [];
+                submissionPickerState.filtered = [];
+                submissionPickerState.selectedId = null;
+
+                const modal = document.getElementById('submission-picker-modal');
+                const err = document.getElementById('submission-picker-error');
+                if (err) {
+                    err.textContent = '';
+                    err.classList.add('hidden');
+                }
+
+                if (!modal) return resolve(null);
+                modal.classList.remove('hidden');
+
+                const search = document.getElementById('submission-picker-search');
+                if (search) search.value = '';
+                const status = document.getElementById('submission-picker-status');
+                if (status) status.value = 'all';
+                const sort = document.getElementById('submission-picker-sort');
+                if (sort) sort.value = 'updated_desc';
+
+                const cancel = document.getElementById('submission-picker-cancel');
+                const cancelX = document.getElementById('submission-picker-cancel-x');
+                const load = document.getElementById('submission-picker-load');
+                const auto = document.getElementById('submission-picker-auto');
+
+                const cleanupAndClose = (result) => closeSubmissionPickerModal(result);
+
+                if (cancel) cancel.onclick = () => cleanupAndClose(null);
+                if (cancelX) cancelX.onclick = () => cleanupAndClose(null);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) cleanupAndClose(null);
+                }, { once: true });
+
+                function getSelected() {
+                    const id = submissionPickerState.selectedId;
+                    return submissionPickerState.projects.find(p => p.id === id) || submissionPickerState.filtered.find(p => p.id === id) || null;
+                }
+
+                if (load) {
+                    load.onclick = () => {
+                        const selected = getSelected();
+                        if (!selected) {
+                            if (err) {
+                                err.textContent = 'Please select a submission to load.';
+                                err.classList.remove('hidden');
+                            }
+                            return;
+                        }
+                        cleanupAndClose(selected);
+                    };
+                }
+
+                if (auto) {
+                    auto.onclick = () => {
+                        const drafts = submissionPickerState.projects.filter(p => getSubmissionCardMeta(p).status === 'draft');
+                        const pool = drafts.length ? drafts : submissionPickerState.projects;
+                        if (!pool.length) return cleanupAndClose(null);
+                        pool.sort((a, b) => getSubmissionCardMeta(b).sortTs - getSubmissionCardMeta(a).sortTs);
+                        cleanupAndClose(pool[0]);
+                    };
+                }
+
+                function onChange() { renderSubmissionPickerList(); }
+                if (search) search.oninput = onChange;
+                if (status) status.onchange = onChange;
+                if (sort) sort.onchange = onChange;
+
+                renderSubmissionPickerList();
+                if (search) setTimeout(() => search.focus(), 0);
+            });
+        }
+
         // ========== LOAD PROJECT FUNCTIONALITY ==========
         async function loadProjectIntoExternalForm() {
             const form = document.getElementById('project-form');
@@ -19051,7 +20343,10 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                             county: payload.county || '',
                             agency: payload.submitterName || payload.cityCounty || payload.city || '',
                             project: payload.projectAreaName || payload.projectArea || '',
-                            displayName: `${payload.projectAreaName || payload.projectArea || 'Unnamed Project'} (${payload.county || ''} - ${payload.submitterName || payload.cityCounty || ''} - ${sub.year || payload.year || 'N/A'})`,
+                            status: sub.status || 'submitted',
+                            createdAt: sub.created_at,
+                            updatedAt: sub.updated_at,
+                            displayName: `${(sub.status === 'final' ? '[FINAL] ' : '')}${payload.projectAreaName || payload.projectArea || 'Unnamed Project'} (${payload.county || ''} - ${payload.submitterName || payload.cityCounty || ''} - ${sub.year || payload.year || 'N/A'})`,
                             payload: payload
                         };
                     } catch (e) {
@@ -19065,33 +20360,9 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                     return;
                 }
 
-                // Show selection dialog
-                const projectList = projects.map((p, idx) => 
-                    `${idx + 1}. ${p.displayName}`
-                ).join('\n');
-
-                const selection = prompt(
-                    `Select a project to load (enter number 1-${projects.length}):\n\n${projectList}\n\nOr enter 0 to cancel.`,
-                    '1'
-                );
-
-                if (!selection || selection === '0' || selection.trim() === '') {
-                    return;
-                }
-
-                const selectedIndex = parseInt(selection) - 1;
-                if (selectedIndex < 0 || selectedIndex >= projects.length) {
-                    alert('Invalid selection.');
-                    return;
-                }
-
-                const selectedProject = projects[selectedIndex];
+                const selectedProject = await pickSubmissionFromModal(projects);
+                if (!selectedProject) return;
                 const payload = selectedProject.payload;
-
-                // Confirm loading
-                if (!confirm(`Load project "${selectedProject.displayName}"?\n\nThis will populate the form with this project's data.`)) {
-                    return;
-                }
 
                 // Clear form first
                 form.reset();
@@ -19229,6 +20500,50 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
 
                 showNotification(`✓ Project "${selectedProject.displayName}" loaded successfully!`, 'success');
 
+                if (selectedProject.status === 'final') {
+                    // View-only mode for final submissions
+                    currentEditingSubmissionId = null;
+                    if (autoSaveInterval) {
+                        clearInterval(autoSaveInterval);
+                        autoSaveInterval = null;
+                    }
+                    document.getElementById('auto-save-indicator-external')?.style && (document.getElementById('auto-save-indicator-external').style.display = 'none');
+                    const submitBtn = document.querySelector('#project-form button[type="submit"]');
+                    if (submitBtn) submitBtn.disabled = true;
+                    const saveBtn = document.getElementById('save-progress-btn');
+                    if (saveBtn) saveBtn.disabled = true;
+                    const finalBtn = document.getElementById('submit-final-external-btn');
+                    if (finalBtn) finalBtn.style.display = 'none';
+                    // Disable all inputs for safety
+                    document.querySelectorAll('#project-form input, #project-form select, #project-form textarea, #project-form button.add-expense-btn').forEach(el => {
+                        if (el && el.id !== 'load-project-external-btn') el.disabled = true;
+                    });
+                    showNotification('This submission is FINAL and is view-only.', 'info');
+                } else {
+                    // Enter edit mode for this submission (enables Save Draft + Submit Final)
+                    currentEditingSubmissionId = selectedProject.id;
+                    setupAutoSave(selectedProject.id);
+
+                    // Re-enable fields
+                    document.querySelectorAll('#project-form input, #project-form select, #project-form textarea, #project-form button.add-expense-btn').forEach(el => {
+                        if (el) el.disabled = false;
+                    });
+                    const submitBtn = document.querySelector('#project-form button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Update Project (Draft)';
+                        submitBtn.dataset.editMode = 'true';
+                    }
+                    const saveBtn = document.getElementById('save-progress-btn');
+                    if (saveBtn) saveBtn.disabled = false;
+
+                    // Show final submit button for external users
+                    const finalBtn = document.getElementById('submit-final-external-btn');
+                    if (finalBtn && window.currentUser?.role === 'user') {
+                        finalBtn.style.display = 'inline-block';
+                    }
+                }
+
             } catch (error) {
                 console.error('Error loading project:', error);
                 alert(`Error loading project: ${error.message}`);
@@ -19238,8 +20553,15 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
         function setupTestDataFillers() {
             // External form test data button
             const externalTestBtn = document.getElementById('fill-test-data-external-btn');
+            const isAdminInternal = window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'internal');
             if (externalTestBtn) {
-                externalTestBtn.onclick = fillExternalFormTestData;
+                if (isAdminInternal) {
+                    externalTestBtn.style.display = '';
+                    externalTestBtn.onclick = fillExternalFormTestData;
+                } else {
+                    externalTestBtn.style.display = 'none';
+                    externalTestBtn.onclick = null;
+                }
             }
 
             // External form load project button
@@ -19248,14 +20570,24 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 loadProjectBtn.onclick = loadProjectIntoExternalForm;
             }
 
+            // External form: start new draft
+            const newDraftBtn = document.getElementById('external-new-draft-btn');
+            if (newDraftBtn) {
+                newDraftBtn.onclick = () => resetExternalDraft();
+            }
+
             // Internal form test data button
             const internalTestBtn = document.getElementById('fill-test-data-internal-btn');
             if (internalTestBtn) {
                 internalTestBtn.onclick = fillInternalFormTestData;
             }
 
-            // Also expose to window for console access
-            window.fillExternalTestData = fillExternalFormTestData;
+            // Also expose to window for console access (admin/internal only)
+            if (isAdminInternal) {
+                window.fillExternalTestData = fillExternalFormTestData;
+            } else {
+                try { delete window.fillExternalTestData; } catch (_) {}
+            }
             window.fillInternalTestData = fillInternalFormTestData;
             window.loadProjectIntoExternalForm = loadProjectIntoExternalForm;
             
@@ -19267,6 +20599,124 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             document.addEventListener('DOMContentLoaded', setupTestDataFillers);
         } else {
             setupTestDataFillers();
+        }
+
+        function closeFinalSubmitModal() {
+            document.getElementById('final-submit-modal')?.classList.add('hidden');
+            const err = document.getElementById('final-submit-error');
+            if (err) {
+                err.textContent = '';
+                err.classList.add('hidden');
+            }
+            const name = document.getElementById('final-submit-name');
+            if (name) name.value = '';
+            const cb = document.getElementById('final-submit-checkbox');
+            if (cb) cb.checked = false;
+        }
+
+        function openFinalSubmitModal() {
+            const modal = document.getElementById('final-submit-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            const name = document.getElementById('final-submit-name');
+            if (name) name.focus();
+        }
+
+        function setupFinalSubmitModal() {
+            const btn = document.getElementById('submit-final-external-btn');
+            const modal = document.getElementById('final-submit-modal');
+            if (!btn || !modal) return;
+
+            btn.onclick = function() {
+                if (!window.apiClient || !window.currentUser) {
+                    showNotification('Please log in first.');
+                    return;
+                }
+                if (!currentEditingSubmissionId) {
+                    showNotification('Load a prior submission first, then click Submit Final.');
+                    return;
+                }
+                openFinalSubmitModal();
+            };
+
+            const cancel = document.getElementById('final-submit-cancel');
+            const cancelX = document.getElementById('final-submit-cancel-x');
+            if (cancel) cancel.onclick = closeFinalSubmitModal;
+            if (cancelX) cancelX.onclick = closeFinalSubmitModal;
+
+            // Close if clicking the overlay
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeFinalSubmitModal();
+            });
+
+            const confirm = document.getElementById('final-submit-confirm');
+            if (confirm) {
+                confirm.onclick = async function() {
+                    const err = document.getElementById('final-submit-error');
+                    const name = (document.getElementById('final-submit-name')?.value || '').trim();
+                    const checked = !!document.getElementById('final-submit-checkbox')?.checked;
+                    if (!checked) {
+                        if (err) {
+                            err.textContent = 'Please confirm the certification checkbox.';
+                            err.classList.remove('hidden');
+                        }
+                        return;
+                    }
+                    if (!name) {
+                        if (err) {
+                            err.textContent = 'Please type your full name to sign.';
+                            err.classList.remove('hidden');
+                        }
+                        return;
+                    }
+
+                    try {
+                        confirm.disabled = true;
+                        confirm.textContent = 'Submitting...';
+                        await apiClient.finalizeSubmission({ submissionId: currentEditingSubmissionId, attestationName: name });
+                        closeFinalSubmitModal();
+                        showNotification('Final submission completed. Thank you!');
+
+                        // Lock UI for this submission (view-only)
+                        const finalBtn = document.getElementById('submit-final-external-btn');
+                        if (finalBtn) finalBtn.style.display = 'none';
+                        const saveBtn = document.getElementById('save-progress-btn');
+                        if (saveBtn) saveBtn.disabled = true;
+                        const submitBtn = document.querySelector('#project-form button[type="submit"]');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        document.querySelectorAll('#project-form input, #project-form select, #project-form textarea, #project-form button.add-expense-btn').forEach(el => {
+                            if (el && el.id !== 'load-project-external-btn') el.disabled = true;
+                        });
+
+                        // Exit edit mode
+                        currentEditingSubmissionId = null;
+                        if (autoSaveInterval) {
+                            clearInterval(autoSaveInterval);
+                            autoSaveInterval = null;
+                        }
+                        const indicator = document.getElementById('auto-save-indicator-external');
+                        if (indicator) indicator.style.display = 'none';
+                    } catch (e) {
+                        if (err) {
+                            err.textContent = e?.message || 'Final submission failed.';
+                            err.classList.remove('hidden');
+                        } else {
+                            alert(e?.message || 'Final submission failed.');
+                        }
+                    } finally {
+                        confirm.disabled = false;
+                        confirm.textContent = 'Submit Final';
+                    }
+                };
+            }
+        }
+
+        // Initialize final submit modal wiring
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupFinalSubmitModal);
+        } else {
+            setupFinalSubmitModal();
         }
 
         // ========== PROJECT SELECTION MODAL FOR REPORT GENERATION ==========
@@ -19449,7 +20899,7 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 </div>
                 <div style="display: flex; gap: 12px; justify-content: flex-end;">
                     <button onclick="closeProjectSelectionModal()" class="btn btn-secondary" style="padding: 10px 20px;">Cancel</button>
-                    <button onclick="generateReportWithSelectedProjects('${city}', '${year}')" class="btn btn-success" style="padding: 10px 20px;">Generate Report</button>
+                    <button onclick="generateReportWithSelectedProjects('${city}', '${year}')" class="btn btn-success" style="padding: 10px 20px;">JUN30 Report</button>
                 </div>
             `;
 

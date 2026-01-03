@@ -18,6 +18,16 @@ import {
 import { db } from './db.js';
 import config from './config.js';
 import { isSmtpConfigured, sendMail } from './mailer.js';
+import {
+  getClientIP,
+  isBlocked,
+  recordFailedAttempt,
+  recordSuccess,
+  getRemainingAttempts,
+  getBlockedUntil
+} from './utils/rateLimiter.js';
+
+const MAX_ATTEMPTS = 5;
 
 const router = express.Router();
 
@@ -36,6 +46,85 @@ function datePrefix() {
     pad(now.getHours()) +
     pad(now.getMinutes())
   );
+}
+
+function getAuthUserId(req) {
+  return req.user?.sub;
+}
+
+function getAuthRole(req) {
+  return req.user?.role;
+}
+
+function getRequestUserAgent(req) {
+  return (req.headers['user-agent'] || '').toString().slice(0, 512);
+}
+
+function safeJsonParse(raw, fallback = {}) {
+  try {
+    if (!raw) return fallback;
+    return typeof raw === 'string' ? JSON.parse(raw) : raw;
+  } catch {
+    return fallback;
+  }
+}
+
+function computeChangedTopLevelFields(prevPayload, nextPayload) {
+  const prev = prevPayload && typeof prevPayload === 'object' ? prevPayload : {};
+  const next = nextPayload && typeof nextPayload === 'object' ? nextPayload : {};
+  const keys = new Set([...Object.keys(prev), ...Object.keys(next)]);
+  const changed = [];
+  for (const k of keys) {
+    const a = prev[k];
+    const b = next[k];
+    const aStr = typeof a === 'string' ? a : JSON.stringify(a);
+    const bStr = typeof b === 'string' ? b : JSON.stringify(b);
+    if (aStr !== bStr) changed.push(k);
+  }
+  return changed;
+}
+
+function authorizeSubmissionAccess({ submissionRow, userRow, tokenRole }) {
+  if (!submissionRow || !userRow) return false;
+  if (tokenRole === 'admin' || tokenRole === 'internal') return true;
+  if (!userRow.county || !userRow.agency) return false;
+  const payload = safeJsonParse(submissionRow.payload_json, {});
+  const submissionCounty = payload.county || '';
+  const submissionAgency = payload.submitterName || payload.cityCounty || payload.city || payload.agency || '';
+  return submissionCounty === userRow.county && submissionAgency === userRow.agency;
+}
+
+function recordSubmissionEvent({
+  submissionId,
+  orgId,
+  userId,
+  eventType,
+  changedFields = null,
+  payloadSnapshot = null,
+  ip = null,
+  userAgent = null,
+  note = null
+}) {
+  try {
+    db.prepare(
+      `INSERT INTO submission_events (id, submission_id, org_id, user_id, event_type, changed_fields_json, payload_snapshot_json, ip, user_agent, note)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      uuid(),
+      submissionId,
+      orgId,
+      userId,
+      eventType,
+      changedFields ? JSON.stringify(changedFields) : null,
+      payloadSnapshot ? JSON.stringify(payloadSnapshot) : null,
+      ip,
+      userAgent,
+      note
+    );
+  } catch (e) {
+    // Don't break core workflows if audit insert fails (e.g., older DB); log and continue.
+    console.warn('[submission_events] Failed to record event:', e?.message || e);
+  }
 }
 
 const storage = multer.diskStorage({
@@ -69,19 +158,133 @@ router.get('/health', (_, res) => {
 });
 
 // ---- Auth ----
+// Get available counties from scraped tax_rates data (public endpoint for signup)
+router.get('/auth/counties', async (req, res) => {
+  try {
+    const counties = new Set();
+    
+    // From tax rates
+    const taxCounties = db.prepare(`
+      SELECT DISTINCT county 
+      FROM tax_rates 
+      WHERE county IS NOT NULL AND county != ''
+    `).all();
+    taxCounties.forEach(row => counties.add(row.county));
+    
+    // From submissions payloads
+    const submissions = db.prepare('SELECT payload_json FROM submissions').all();
+    submissions.forEach(row => {
+      try {
+        const payload = typeof row.payload_json === 'string'
+          ? JSON.parse(row.payload_json)
+          : row.payload_json || {};
+        if (payload.county) counties.add(payload.county);
+      } catch (err) {
+        // ignore parse errors
+      }
+    });
+    
+    // From existing users
+    const userCounties = db.prepare(`
+      SELECT DISTINCT county 
+      FROM users 
+      WHERE county IS NOT NULL AND county != ''
+    `).all();
+    userCounties.forEach(row => counties.add(row.county));
+    
+    res.json({ counties: Array.from(counties).sort() });
+  } catch (error) {
+    console.error('[auth/counties] Error:', error);
+    res.status(500).json({ error: 'Failed to fetch counties' });
+  }
+});
+
+// Get available agencies for a county from scraped tax_rates data (public endpoint for signup)
+router.get('/auth/agencies/:county', async (req, res) => {
+  try {
+    const { county } = req.params;
+    const agencies = new Set();
+    
+    if (!county) {
+      return res.json({ agencies: [] });
+    }
+    
+    // From tax rates
+    const taxAgencies = db.prepare(`
+      SELECT DISTINCT agency 
+      FROM tax_rates 
+      WHERE county = ? AND agency IS NOT NULL AND agency != ''
+    `).all(county);
+    taxAgencies.forEach(row => agencies.add(row.agency));
+    
+    // From submissions payloads
+    const submissions = db.prepare('SELECT payload_json FROM submissions').all();
+    submissions.forEach(row => {
+      try {
+        const payload = typeof row.payload_json === 'string'
+          ? JSON.parse(row.payload_json)
+          : row.payload_json || {};
+        if ((payload.county || '').toLowerCase() === county.toLowerCase()) {
+          const agencyName =
+            payload.submitterName ||
+            payload.cityCounty ||
+            payload.agency ||
+            payload.projectArea ||
+            payload.projectAreaName;
+          if (agencyName) agencies.add(agencyName);
+        }
+      } catch (err) {
+        // ignore parse errors
+      }
+    });
+    
+    // From existing users
+    const userAgencies = db.prepare(`
+      SELECT DISTINCT agency 
+      FROM users 
+      WHERE county = ? AND agency IS NOT NULL AND agency != ''
+    `).all(county);
+    userAgencies.forEach(row => agencies.add(row.agency));
+    
+    res.json({ agencies: Array.from(agencies).sort() });
+  } catch (error) {
+    console.error('[auth/agencies] Error:', error);
+    res.status(500).json({ error: 'Failed to fetch agencies' });
+  }
+});
+
 router.post('/auth/signup', async (req, res) => {
   try {
-    const { email, password, orgCode } = req.body || {};
-    if (!email || !password || !orgCode) {
-      return res.status(400).json({ error: 'email, password, orgCode are required' });
+    const { email, password, county, agency } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ error: 'email and password are required' });
     }
-    const org = findOrgByCode(orgCode);
-    if (!org) return res.status(400).json({ error: 'Invalid org code' });
+    if (!county || !agency) {
+      return res.status(400).json({ error: 'county and agency are required' });
+    }
+    
+    // Auto-generate organization code from county/agency
+    // Format: COUNTY_AGENCY (sanitized for use as code)
+    const orgCode = `${county}_${agency}`.toUpperCase()
+      .replace(/[^A-Z0-9_]/g, '_')
+      .replace(/_+/g, '_')
+      .substring(0, 100); // Limit length
+    
+    // Find or create organization
+    let org = findOrgByCode(orgCode);
+    if (!org) {
+      // Create new organization with county/agency as identifier
+      const orgId = uuid();
+      const orgName = `${agency} (${county})`;
+      db.prepare('INSERT INTO organizations (id, name, code) VALUES (?, ?, ?)').run(orgId, orgName, orgCode);
+      org = db.prepare('SELECT * FROM organizations WHERE id = ?').get(orgId);
+    }
+    
     const existing = findUserByEmail(email);
     if (existing) return res.status(409).json({ error: 'User already exists' });
     const password_hash = await hashPassword(password);
     // Force client role on self-signup; internal/admin users must be provisioned separately
-    const user = createUser({ email, password_hash, role: 'user', org_id: org.id });
+    const user = createUser({ email, password_hash, role: 'user', org_id: org.id, county, agency });
     const token = issueToken(user);
     return res.json({ token, user: sanitizeUser(user) });
   } catch (err) {
@@ -93,17 +296,45 @@ router.post('/auth/signup', async (req, res) => {
 router.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    console.log('[auth/login] Attempting login for:', email ? email.toLowerCase() : 'no email');
+    const ip = getClientIP(req);
+    
+    // Check if IP is blocked
+    if (isBlocked(ip)) {
+      const blockedUntil = getBlockedUntil(ip);
+      const minutesRemaining = Math.ceil((blockedUntil - Date.now()) / 60000);
+      return res.status(429).json({ 
+        error: `Too many failed login attempts. IP address blocked for ${minutesRemaining} more minute(s).` 
+      });
+    }
+    
+    console.log('[auth/login] Attempting login for:', email ? email.toLowerCase() : 'no email', 'from IP:', ip);
     const user = findUserByEmail(email || '');
     if (!user) {
       console.log('[auth/login] User not found:', email);
-      return res.status(401).json({ error: 'Invalid credentials' });
+      const record = recordFailedAttempt(ip);
+      const remaining = getRemainingAttempts(ip);
+      return res.status(401).json({ 
+        error: 'Invalid credentials',
+        remainingAttempts: remaining,
+        blocked: record.count >= MAX_ATTEMPTS
+      });
     }
     const ok = await verifyPassword(password, user.password_hash);
     if (!ok) {
       console.log('[auth/login] Password incorrect for:', email);
-      return res.status(401).json({ error: 'Invalid credentials' });
+      const record = recordFailedAttempt(ip);
+      const remaining = getRemainingAttempts(ip);
+      const isNowBlocked = record.count >= MAX_ATTEMPTS;
+      return res.status(401).json({ 
+        error: 'Invalid credentials',
+        remainingAttempts: remaining,
+        blocked: isNowBlocked,
+        message: isNowBlocked ? 'Too many failed attempts. IP address blocked for 5 minutes.' : undefined
+      });
     }
+    
+    // Successful login - clear failed attempts
+    recordSuccess(ip);
     console.log('[auth/login] Login successful for:', email, 'role:', user.role);
     const token = issueToken(user);
     return res.json({ token, user: sanitizeUser(user) });
@@ -198,24 +429,99 @@ router.get('/orgs/:id', requireAuth, (req, res) => {
 
 // ---- Submissions ----
 router.post('/submissions', requireAuth, (req, res) => {
-  const { year, payload } = req.body || {};
+  const { year, payload, status } = req.body || {};
   const id = uuid();
   const now = new Date().toISOString();
+  const role = getAuthRole(req);
+  const normalizedStatus = (status || '').toString().toLowerCase();
+  const finalStatus =
+    role === 'user'
+      ? 'draft'
+      : (['draft', 'submitted'].includes(normalizedStatus) ? normalizedStatus : 'submitted');
   db.prepare(
-    'INSERT INTO submissions (id, org_id, user_id, payload_json, year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).run(id, req.user.org_id, req.user.sub, JSON.stringify(payload || {}), year || null, now, now);
+    'INSERT INTO submissions (id, org_id, user_id, payload_json, year, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).run(id, req.user.org_id, getAuthUserId(req), JSON.stringify(payload || {}), year || null, finalStatus, now, now);
   const submission = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
+
+  recordSubmissionEvent({
+    submissionId: id,
+    orgId: req.user.org_id,
+    userId: getAuthUserId(req),
+    eventType: 'created',
+    ip: getClientIP(req),
+    userAgent: getRequestUserAgent(req)
+  });
+
   res.json({ submission });
 });
 
-router.get('/submissions', requireAuth, (req, res) => {
-  const { year } = req.query;
-  const stmt =
-    year ?
-      db.prepare('SELECT * FROM submissions WHERE org_id=? AND year=? ORDER BY created_at DESC') :
-      db.prepare('SELECT * FROM submissions WHERE org_id=? ORDER BY created_at DESC');
-  const submissions = year ? stmt.all(req.user.org_id, year) : stmt.all(req.user.org_id);
-  res.json({ submissions });
+router.get('/submissions', requireAuth, async (req, res) => {
+  try {
+    const { year } = req.query;
+    
+    // Get user's county and agency from database
+    const user = db.prepare('SELECT county, agency, role FROM users WHERE id=?').get(getAuthUserId(req));
+    
+    // Admin users can see all submissions in their org
+    // Regular users can only see submissions matching their county/agency
+    let query, params;
+    
+    if (user?.role === 'admin') {
+      // Admin: see all submissions in org
+      if (year) {
+        query = 'SELECT * FROM submissions WHERE org_id=? AND year=? ORDER BY created_at DESC';
+        params = [req.user.org_id, year];
+      } else {
+        query = 'SELECT * FROM submissions WHERE org_id=? ORDER BY created_at DESC';
+        params = [req.user.org_id];
+      }
+    } else if (user?.county && user?.agency) {
+      // Regular user: filter by county/agency from submission payload
+      if (year) {
+        query = `
+          SELECT * FROM submissions 
+          WHERE org_id=? AND year=?
+          ORDER BY created_at DESC
+        `;
+        params = [req.user.org_id, year];
+      } else {
+        query = `
+          SELECT * FROM submissions 
+          WHERE org_id=?
+          ORDER BY created_at DESC
+        `;
+        params = [req.user.org_id];
+      }
+    } else {
+      // User without county/agency: no submissions
+      return res.json({ submissions: [] });
+    }
+    
+    let submissions = db.prepare(query).all(...params);
+    
+    // Filter by county/agency for non-admin users by checking payload_json
+    if (user?.role !== 'admin' && user?.county && user?.agency) {
+      submissions = submissions.filter(sub => {
+        try {
+          const payload = typeof sub.payload_json === 'string' 
+            ? JSON.parse(sub.payload_json) 
+            : sub.payload_json || {};
+          
+          const submissionCounty = payload.county || '';
+          const submissionAgency = payload.submitterName || payload.cityCounty || payload.city || payload.agency || '';
+          
+          return submissionCounty === user.county && submissionAgency === user.agency;
+        } catch (e) {
+          return false;
+        }
+      });
+    }
+    
+    res.json({ submissions });
+  } catch (error) {
+    console.error('[submissions] Error:', error);
+    res.status(500).json({ error: 'Failed to fetch submissions' });
+  }
 });
 
 router.put('/submissions/:id', requireAuth, (req, res) => {
@@ -226,15 +532,125 @@ router.put('/submissions/:id', requireAuth, (req, res) => {
   const existing = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
   if (!existing) return res.status(404).json({ error: 'Submission not found' });
   if (existing.org_id !== req.user.org_id) return res.status(403).json({ error: 'Forbidden' });
+
+  const tokenRole = getAuthRole(req);
+  const userRow = db.prepare('SELECT county, agency, role FROM users WHERE id=?').get(getAuthUserId(req));
+  if (!authorizeSubmissionAccess({ submissionRow: existing, userRow, tokenRole })) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  // Prevent external users from modifying finalized submissions
+  if (existing.status === 'final' && tokenRole === 'user') {
+    return res.status(409).json({ error: 'Submission is final and cannot be edited' });
+  }
   
   // Update submission
   const now = new Date().toISOString();
+  const prevPayload = safeJsonParse(existing.payload_json, {});
+  const changedFields = computeChangedTopLevelFields(prevPayload, payload || {});
   db.prepare(
     'UPDATE submissions SET payload_json=?, year=?, updated_at=? WHERE id=?'
   ).run(JSON.stringify(payload || {}), year || null, now, id);
   
   const submission = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
+
+  recordSubmissionEvent({
+    submissionId: id,
+    orgId: req.user.org_id,
+    userId: getAuthUserId(req),
+    eventType: 'updated',
+    changedFields,
+    payloadSnapshot: existing.status === 'final' ? (payload || {}) : null,
+    ip: getClientIP(req),
+    userAgent: getRequestUserAgent(req)
+  });
+
   res.json({ submission });
+});
+
+router.post('/submissions/:id/finalize', requireAuth, (req, res) => {
+  const { id } = req.params;
+  const { attestationName } = req.body || {};
+  const signerName = (attestationName || '').toString().trim();
+  if (!signerName) return res.status(400).json({ error: 'attestationName is required' });
+
+  const existing = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
+  if (!existing) return res.status(404).json({ error: 'Submission not found' });
+  if (existing.org_id !== req.user.org_id) return res.status(403).json({ error: 'Forbidden' });
+
+  const tokenRole = getAuthRole(req);
+  const userRow = db.prepare('SELECT county, agency, role FROM users WHERE id=?').get(getAuthUserId(req));
+  if (!authorizeSubmissionAccess({ submissionRow: existing, userRow, tokenRole })) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  if (existing.status === 'final') {
+    return res.status(409).json({ error: 'Submission is already final' });
+  }
+
+  const now = new Date().toISOString();
+  db.prepare(
+    `UPDATE submissions
+     SET status='final', updated_at=?, finalized_at=?, finalized_by_user_id=?, finalized_by_name=?, finalized_ip=?, finalized_user_agent=?
+     WHERE id=?`
+  ).run(now, now, getAuthUserId(req), signerName, getClientIP(req), getRequestUserAgent(req), id);
+
+  recordSubmissionEvent({
+    submissionId: id,
+    orgId: req.user.org_id,
+    userId: getAuthUserId(req),
+    eventType: 'finalized',
+    payloadSnapshot: safeJsonParse(existing.payload_json, {}),
+    ip: getClientIP(req),
+    userAgent: getRequestUserAgent(req),
+    note: signerName
+  });
+
+  const submission = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
+  res.json({ submission });
+});
+
+router.delete('/submissions/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+  
+  // Verify submission exists and belongs to user's org
+  const existing = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
+  if (!existing) return res.status(404).json({ error: 'Submission not found' });
+  if (existing.org_id !== req.user.org_id) return res.status(403).json({ error: 'Forbidden' });
+
+  const tokenRole = getAuthRole(req);
+  const userRow = db.prepare('SELECT county, agency, role FROM users WHERE id=?').get(getAuthUserId(req));
+  if (!authorizeSubmissionAccess({ submissionRow: existing, userRow, tokenRole })) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  if (existing.status === 'final' && tokenRole === 'user') {
+    return res.status(409).json({ error: 'Submission is final and cannot be deleted' });
+  }
+  
+  // Count project-specific tax rates that will be cascade deleted
+  const projectTaxRatesCount = db.prepare('SELECT COUNT(*) as count FROM tax_rates WHERE submission_id=?').get(id);
+  
+  // Delete submission (cascade will handle related records like uploads and project-specific tax_rates)
+  // Note: Master tax rates (submission_id IS NULL) are NOT affected
+  db.prepare('DELETE FROM submissions WHERE id=?').run(id);
+
+  recordSubmissionEvent({
+    submissionId: id,
+    orgId: req.user.org_id,
+    userId: getAuthUserId(req),
+    eventType: 'deleted',
+    ip: getClientIP(req),
+    userAgent: getRequestUserAgent(req)
+  });
+  
+  console.log(`[DELETE /submissions/${id}] Deleted submission. Cascade deleted ${projectTaxRatesCount.count} project-specific tax rate(s). Master tax rates (scrape DB) remain untouched.`);
+  
+  res.json({ 
+    ok: true, 
+    message: 'Submission deleted successfully',
+    deletedTaxRates: projectTaxRatesCount.count 
+  });
 });
 
 // ---- Uploads ----
@@ -256,47 +672,174 @@ router.post('/uploads', requireAuth, upload.single('file'), (req, res) => {
   });
 });
 
+router.get('/uploads/submission/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+
+  const submission = db.prepare('SELECT * FROM submissions WHERE id=?').get(id);
+  if (!submission) return res.status(404).json({ error: 'Submission not found' });
+  if (submission.org_id !== req.user.org_id) return res.status(403).json({ error: 'Forbidden' });
+
+  const tokenRole = getAuthRole(req);
+  const userRow = db.prepare('SELECT county, agency, role FROM users WHERE id=?').get(getAuthUserId(req));
+  if (!authorizeSubmissionAccess({ submissionRow: submission, userRow, tokenRole })) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const uploads = db
+    .prepare(
+      `SELECT id, stored_name, original_name, mime_type, size, created_at
+       FROM uploads
+       WHERE submission_id=?
+       ORDER BY created_at DESC`
+    )
+    .all(id)
+    .map((u) => ({
+      id: u.id,
+      storedName: u.stored_name,
+      originalName: u.original_name,
+      mimeType: u.mime_type,
+      size: u.size,
+      createdAt: u.created_at,
+      url: `/uploads/${u.stored_name}`
+    }));
+
+  res.json({ uploads });
+});
+
 // ---- Reports ----
 router.post('/reports/tif', requireAuth, async (req, res) => {
   try {
+    console.log('[reports/tif] Request received');
     const { submissionId, year, projectionYears = 20 } = req.body || {};
     
     if (!submissionId) {
+      console.error('[reports/tif] Missing submissionId');
       return res.status(400).json({ error: 'submissionId is required' });
     }
     
+    console.log('[reports/tif] Fetching submission:', submissionId);
     // Fetch submission
     const submission = db.prepare('SELECT * FROM submissions WHERE id=? AND org_id=?')
       .get(submissionId, req.user.org_id);
     
     if (!submission) {
+      console.error('[reports/tif] Submission not found:', submissionId);
       return res.status(404).json({ error: 'Submission not found' });
     }
     
-    // Fetch tax rates for this submission
-    const taxRates = db.prepare(`
-      SELECT * FROM tax_rates 
-      WHERE org_id=? AND (submission_id=? OR submission_id IS NULL)
-      ORDER BY year, entity_name
-    `).all(req.user.org_id, submissionId);
+    console.log('[reports/tif] Parsing submission payload');
+    // Parse submission payload to get county/agency/project
+    let submissionData;
+    try {
+      submissionData = JSON.parse(submission.payload_json);
+    } catch (parseError) {
+      console.error('[reports/tif] Failed to parse payload_json:', parseError);
+      return res.status(400).json({ error: 'Invalid submission data format', details: parseError.message });
+    }
+    
+    const county = submissionData.county;
+    const agency = submissionData.submitterName || submissionData.cityCounty || submissionData.city;
+    const project = submissionData.projectAreaName || submissionData.projectArea;
+    const reportYear = year || submission.year || parseInt(submissionData.year) || new Date().getFullYear();
+    
+    console.log('[reports/tif] County:', county, 'Agency:', agency, 'Project:', project, 'Year:', reportYear);
+    
+    // Fetch tax rates matching county/agency/project (preferred) or fallback to org-wide
+    let taxRates = [];
+    if (county && agency && project) {
+      console.log('[reports/tif] Fetching tax rates by county/agency/project');
+      // Try to match by county/agency/project first
+      taxRates = db.prepare(`
+        SELECT * FROM tax_rates 
+        WHERE org_id=? 
+          AND county=? 
+          AND agency=? 
+          AND project=?
+          AND year=?
+        ORDER BY entity_name
+      `).all(req.user.org_id, county, agency, project, reportYear);
+      
+      // If no exact match, try without year constraint
+      if (taxRates.length === 0) {
+        console.log('[reports/tif] No exact match, trying without year');
+        taxRates = db.prepare(`
+          SELECT * FROM tax_rates 
+          WHERE org_id=? 
+            AND county=? 
+            AND agency=? 
+            AND project=?
+          ORDER BY year DESC, entity_name
+        `).all(req.user.org_id, county, agency, project);
+      }
+      
+      // If still no match, try with just county/agency
+      if (taxRates.length === 0) {
+        console.log('[reports/tif] No project match, trying county/agency only');
+        taxRates = db.prepare(`
+          SELECT * FROM tax_rates 
+          WHERE org_id=? 
+            AND county=? 
+            AND agency=?
+          AND year=?
+          ORDER BY entity_name
+        `).all(req.user.org_id, county, agency, reportYear);
+      }
+    }
+    
+    // Fallback: use submission_id or org-wide rates
+    if (!taxRates || taxRates.length === 0) {
+      console.log('[reports/tif] Using fallback: submission_id or org-wide rates');
+      taxRates = db.prepare(`
+        SELECT * FROM tax_rates 
+        WHERE org_id=? AND (submission_id=? OR submission_id IS NULL)
+        ORDER BY year DESC, entity_name
+        LIMIT 100
+      `).all(req.user.org_id, submissionId);
+    }
+    
+    console.log('[reports/tif] Found', taxRates.length, 'tax rates');
     
     // Import generator
+    console.log('[reports/tif] Importing TIF generator');
     const { generateTIFReport } = await import('./reports/tifGenerator.js');
     
     // Generate Excel file
+    console.log('[reports/tif] Generating Excel file...');
     const excelBuffer = await generateTIFReport({
-      submission: JSON.parse(submission.payload_json),
+      submission: submissionData,
       taxRates,
-      year: year || submission.year,
+      year: reportYear,
       projectionYears
     });
     
-    // Generate filename
-    const projectArea = JSON.parse(submission.payload_json).projectAreaName || 
-                       JSON.parse(submission.payload_json).projectArea || 
+    console.log('[reports/tif] Excel file generated, size:', excelBuffer.length);
+    
+    // Generate filename with yymmddHHMM format
+    const { generateReportFilename, saveReport } = await import('./utils/reportStorage.js');
+    const projectArea = submissionData.projectAreaName || 
+                       submissionData.projectArea || 
                        'Project';
-    const reportYear = year || submission.year || new Date().getFullYear();
-    const filename = `TIF_Report_${projectArea.replace(/\s+/g, '_')}_${reportYear}.xlsx`;
+    const filename = generateReportFilename(projectArea, 'TIF');
+    
+    // Save report to database and disk
+    try {
+      const savedReport = await saveReport({
+        buffer: excelBuffer,
+        reportType: 'TIF',
+        filename,
+        orgId: req.user.org_id,
+        userId: getAuthUserId(req),
+        submissionId,
+        county,
+        agency,
+        project,
+        year: reportYear
+      });
+      console.log('[reports/tif] Report saved:', savedReport.id);
+    } catch (saveError) {
+      console.error('[reports/tif] Error saving report to database:', saveError);
+      // Continue even if save fails - still return the file
+    }
     
     // Return as download
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -305,7 +848,14 @@ router.post('/reports/tif', requireAuth, async (req, res) => {
     
   } catch (error) {
     console.error('[reports/tif] Error:', error);
-    res.status(500).json({ error: 'TIF report generation failed', details: error.message });
+    console.error('[reports/tif] Error stack:', error.stack);
+    console.error('[reports/tif] Submission ID:', req.body?.submissionId);
+    console.error('[reports/tif] User org_id:', req.user?.org_id);
+    res.status(500).json({ 
+      error: 'TIF report generation failed', 
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -322,30 +872,99 @@ router.get('/reports/tif/:submissionId', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'Submission not found' });
     }
     
-    // Fetch tax rates
-    const taxRates = db.prepare(`
-      SELECT * FROM tax_rates 
-      WHERE org_id=? AND (submission_id=? OR submission_id IS NULL)
-      ORDER BY year, entity_name
-    `).all(req.user.org_id, submissionId);
+    // Parse submission payload to get county/agency/project
+    const submissionData = JSON.parse(submission.payload_json);
+    const county = submissionData.county;
+    const agency = submissionData.submitterName || submissionData.cityCounty || submissionData.city;
+    const project = submissionData.projectAreaName || submissionData.projectArea;
+    const reportYear = year ? parseInt(year) : submission.year || parseInt(submissionData.year) || new Date().getFullYear();
+    
+    // Fetch tax rates matching county/agency/project (preferred) or fallback to org-wide
+    let taxRates;
+    if (county && agency && project) {
+      // Try to match by county/agency/project first
+      taxRates = db.prepare(`
+        SELECT * FROM tax_rates 
+        WHERE org_id=? 
+          AND county=? 
+          AND agency=? 
+          AND project=?
+          AND year=?
+        ORDER BY entity_name
+      `).all(req.user.org_id, county, agency, project, reportYear);
+      
+      // If no exact match, try without year constraint
+      if (taxRates.length === 0) {
+        taxRates = db.prepare(`
+          SELECT * FROM tax_rates 
+          WHERE org_id=? 
+            AND county=? 
+            AND agency=? 
+            AND project=?
+          ORDER BY year DESC, entity_name
+        `).all(req.user.org_id, county, agency, project);
+      }
+      
+      // If still no match, try with just county/agency
+      if (taxRates.length === 0) {
+        taxRates = db.prepare(`
+          SELECT * FROM tax_rates 
+          WHERE org_id=? 
+            AND county=? 
+            AND agency=?
+            AND year=?
+          ORDER BY entity_name
+        `).all(req.user.org_id, county, agency, reportYear);
+      }
+    }
+    
+    // Fallback: use submission_id or org-wide rates
+    if (!taxRates || taxRates.length === 0) {
+      taxRates = db.prepare(`
+        SELECT * FROM tax_rates 
+        WHERE org_id=? AND (submission_id=? OR submission_id IS NULL)
+        ORDER BY year DESC, entity_name
+        LIMIT 100
+      `).all(req.user.org_id, submissionId);
+    }
     
     // Import generator
     const { generateTIFReport } = await import('./reports/tifGenerator.js');
     
     // Generate Excel file
     const excelBuffer = await generateTIFReport({
-      submission: JSON.parse(submission.payload_json),
+      submission: submissionData,
       taxRates,
-      year: year ? parseInt(year) : submission.year,
+      year: reportYear,
       projectionYears: projectionYears ? parseInt(projectionYears) : 20
     });
     
-    // Generate filename
-    const projectArea = JSON.parse(submission.payload_json).projectAreaName || 
-                       JSON.parse(submission.payload_json).projectArea || 
+    // Generate filename with yymmddHHMM format
+    const { generateReportFilename, saveReport } = await import('./utils/reportStorage.js');
+    const projectArea = submissionData.projectAreaName || 
+                       submissionData.projectArea || 
                        'Project';
-    const reportYear = year || submission.year || new Date().getFullYear();
-    const filename = `TIF_Report_${projectArea.replace(/\s+/g, '_')}_${reportYear}.xlsx`;
+    const filename = generateReportFilename(projectArea, 'TIF');
+    
+    // Save report to database and disk
+    try {
+      const savedReport = await saveReport({
+        buffer: excelBuffer,
+        reportType: 'TIF',
+        filename,
+        orgId: req.user.org_id,
+        userId: getAuthUserId(req),
+        submissionId,
+        county,
+        agency,
+        project,
+        year: reportYear
+      });
+      console.log('[reports/tif/:id] Report saved:', savedReport.id);
+    } catch (saveError) {
+      console.error('[reports/tif/:id] Error saving report to database:', saveError);
+      // Continue even if save fails - still return the file
+    }
     
     // Return as download
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -355,6 +974,105 @@ router.get('/reports/tif/:submissionId', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('[reports/tif/:id] Error:', error);
     res.status(500).json({ error: 'TIF report generation failed', details: error.message });
+  }
+});
+
+// JUN30 Report endpoint - accepts PDF buffer from frontend and saves it
+router.post('/reports/jun30', requireAuth, async (req, res) => {
+  try {
+    const { submissionId, pdfBuffer, county, agency, project, year } = req.body || {};
+    
+    if (!submissionId) {
+      return res.status(400).json({ error: 'submissionId is required' });
+    }
+    
+    if (!pdfBuffer) {
+      return res.status(400).json({ error: 'pdfBuffer is required (base64 encoded PDF)' });
+    }
+    
+    // Fetch submission to get metadata
+    const submission = db.prepare('SELECT * FROM submissions WHERE id=? AND org_id=?')
+      .get(submissionId, req.user.org_id);
+    
+    if (!submission) {
+      return res.status(404).json({ error: 'Submission not found' });
+    }
+    
+    // Parse submission payload if needed
+    let submissionData = {};
+    try {
+      submissionData = JSON.parse(submission.payload_json);
+    } catch (e) {
+      // Ignore parse errors
+    }
+    
+    // Use provided values or extract from submission
+    const reportCounty = county || submissionData.county;
+    const reportAgency = agency || submissionData.submitterName || submissionData.cityCounty || submissionData.city;
+    const reportProject = project || submissionData.projectAreaName || submissionData.projectArea || 'Project';
+    const reportYear = year || submission.year || parseInt(submissionData.year) || new Date().getFullYear();
+    
+    // Convert base64 buffer to actual buffer
+    const pdfData = Buffer.from(pdfBuffer, 'base64');
+    
+    // Generate filename
+    const { generateReportFilename, saveReport } = await import('./utils/reportStorage.js');
+    const filename = generateReportFilename(reportProject, 'JUN30').replace('.xlsx', '.pdf');
+    
+    // Save report to database and disk
+    const savedReport = await saveReport({
+      buffer: pdfData,
+      reportType: 'JUN30',
+      filename,
+      orgId: req.user.org_id,
+      userId: getAuthUserId(req),
+      submissionId,
+      county: reportCounty,
+      agency: reportAgency,
+      project: reportProject,
+      year: reportYear,
+      mimeType: 'application/pdf'
+    });
+    
+    res.json({
+      success: true,
+      reportId: savedReport.id,
+      filename: savedReport.filename,
+      message: 'JUN30 report saved successfully'
+    });
+    
+  } catch (error) {
+    console.error('[reports/jun30] Error:', error);
+    res.status(500).json({ 
+      error: 'JUN30 report save failed', 
+      details: error.message 
+    });
+  }
+});
+
+// Get JUN30 report for a single project
+router.post('/reports/jun30/:submissionId', requireAuth, async (req, res) => {
+  try {
+    const { submissionId } = req.params;
+    
+    // Fetch submission
+    const submission = db.prepare('SELECT * FROM submissions WHERE id=? AND org_id=?')
+      .get(submissionId, req.user.org_id);
+    
+    if (!submission) {
+      return res.status(404).json({ error: 'Submission not found' });
+    }
+    
+    // For now, return a message that this endpoint will generate the report
+    // In the future, this could generate a single-project JUN30 report
+    res.json({
+      message: 'Single project JUN30 report generation - to be implemented',
+      submissionId
+    });
+    
+  } catch (error) {
+    console.error('[reports/jun30/:id] Error:', error);
+    res.status(500).json({ error: 'JUN30 report generation failed', details: error.message });
   }
 });
 

@@ -8,7 +8,9 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "db:migrate": "node src/migrate.js",
-    "create-admins": "node src/create-admin-users.js"
+    "create-admins": "node src/create-admin-users.js",
+    "test:submission": "node scripts/create-test-submission.js",
+    "report:tax-rates": "node scripts/report-tax-rates.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
