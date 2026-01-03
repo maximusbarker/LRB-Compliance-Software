@@ -14,7 +14,7 @@ Run:
 
 [CmdletBinding()]
 param(
-  [string]$InstallRoot = "$env:USERPROFILE\LRB Jun30 Build",
+  [string]$InstallRoot = "",
   [switch]$NoShortcuts
 )
 
@@ -33,6 +33,42 @@ function Show-InstallMessage([string]$title, [string]$message, [switch]$IsError)
     # If WPF isn't available, just print to console.
     if ($IsError) { Write-Err "$title`n$message" } else { Write-Info "$title`n$message" }
   }
+}
+
+function Get-UserProfileDir() {
+  try {
+    $p = [Environment]::GetFolderPath("UserProfile")
+    if ($p) { return $p }
+  } catch {}
+  if ($env:USERPROFILE) { return $env:USERPROFILE }
+  if ($env:HOMEDRIVE -and $env:HOMEPATH) { return ($env:HOMEDRIVE + $env:HOMEPATH) }
+  # Last resort
+  return (Get-Location).Path
+}
+
+function Get-TempDir() {
+  try {
+    $t = [IO.Path]::GetTempPath()
+    if ($t) { return $t.TrimEnd('\') }
+  } catch {}
+  if ($env:TEMP) { return $env:TEMP.TrimEnd('\') }
+  return (Get-Location).Path
+}
+
+function Get-InstallerDir() {
+  # Works for both .ps1 and compiled .exe (PS2EXE)
+  try {
+    $base = [AppDomain]::CurrentDomain.BaseDirectory
+    if ($base) { return $base.TrimEnd('\') }
+  } catch {}
+  try {
+    if ($PSCommandPath) { return (Split-Path -Parent $PSCommandPath) }
+  } catch {}
+  try {
+    $p = $MyInvocation.MyCommand.Path
+    if ($p) { return (Split-Path -Parent $p) }
+  } catch {}
+  return (Get-Location).Path
 }
 
 function Test-Command([string]$name) {
@@ -69,7 +105,7 @@ function Install-PortableNode([string]$installDir) {
 
   $toolsDir = Join-Path $installDir "tools"
   $nodeRoot = Join-Path $toolsDir "node"
-  $tmpDir = Join-Path $env:TEMP ("lrb-node-" + [Guid]::NewGuid().ToString("N"))
+  $tmpDir = Join-Path (Get-TempDir) ("lrb-node-" + [Guid]::NewGuid().ToString("N"))
   New-Item -ItemType Directory -Force $tmpDir | Out-Null
   New-Item -ItemType Directory -Force $toolsDir | Out-Null
 
@@ -226,11 +262,23 @@ function New-DesktopShortcuts([string]$installDir) {
 }
 
 try {
-  $logDir = Join-Path $env:TEMP "LRB-Installer"
+  $userProfile = Get-UserProfileDir
+  if (-not $InstallRoot) {
+    $InstallRoot = Join-Path $userProfile "LRB Jun30 Build"
+  }
+
+  $tempDir = Get-TempDir
+  $logDir = Join-Path $tempDir "LRB-Installer"
   New-Item -ItemType Directory -Force $logDir | Out-Null
   $ts = Get-Date -Format "yyyyMMdd-HHmmss"
   $logPath = Join-Path $logDir "install-$ts.log"
   try { Start-Transcript -Path $logPath -Force | Out-Null } catch {}
+
+  $installerDir = Get-InstallerDir
+  Write-Info "InstallerDir: $installerDir"
+  Write-Info "InstallRoot:  $InstallRoot"
+  Write-Info "TempDir:      $tempDir"
+  Write-Info "LogPath:      $logPath"
 
   $answer = Read-Host "Do you want to do a full install of this LRB build? (Y/N)"
   if ($answer -notin @("Y","y","Yes","yes")) {
@@ -238,7 +286,8 @@ try {
     exit 0
   }
 
-  $sourceDir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+  # Source directory is the repo root (one level above installer/)
+  $sourceDir = (Resolve-Path (Join-Path $installerDir "..")).Path
   $installDir = (Resolve-Path $InstallRoot -ErrorAction SilentlyContinue)
   if (-not $installDir) { $installDir = $InstallRoot }
   else { $installDir = $installDir.Path }
