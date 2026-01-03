@@ -57,7 +57,7 @@ if (Test-Path $OutputExe) {
 }
 
 # Build a console EXE (omit -noConsole switch). Default is console.
-Invoke-PS2EXE -InputFile $InputScript -OutputFile $OutputExe -x64 -noConfigFile
+Invoke-PS2EXE -InputFile $InputScript -OutputFile $OutputExe -x64 -noConfigFile -STA
 
 Write-Info "Done."
 Write-Info "Installer EXE: $OutputExe"

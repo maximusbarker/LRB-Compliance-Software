@@ -24,6 +24,17 @@ function Write-Info([string]$msg) { Write-Host "[LRB] $msg" -ForegroundColor Cya
 function Write-Warn([string]$msg) { Write-Host "[LRB] $msg" -ForegroundColor Yellow }
 function Write-Err([string]$msg)  { Write-Host "[LRB] $msg" -ForegroundColor Red }
 
+function Show-InstallMessage([string]$title, [string]$message, [switch]$IsError) {
+  try {
+    Add-Type -AssemblyName PresentationFramework -ErrorAction Stop
+    $icon = if ($IsError) { [System.Windows.MessageBoxImage]::Error } else { [System.Windows.MessageBoxImage]::Information }
+    [System.Windows.MessageBox]::Show($message, $title, [System.Windows.MessageBoxButton]::OK, $icon) | Out-Null
+  } catch {
+    # If WPF isn't available, just print to console.
+    if ($IsError) { Write-Err "$title`n$message" } else { Write-Info "$title`n$message" }
+  }
+}
+
 function Test-Command([string]$name) {
   $null -ne (Get-Command $name -ErrorAction SilentlyContinue)
 }
@@ -215,6 +226,12 @@ function New-DesktopShortcuts([string]$installDir) {
 }
 
 try {
+  $logDir = Join-Path $env:TEMP "LRB-Installer"
+  New-Item -ItemType Directory -Force $logDir | Out-Null
+  $ts = Get-Date -Format "yyyyMMdd-HHmmss"
+  $logPath = Join-Path $logDir "install-$ts.log"
+  try { Start-Transcript -Path $logPath -Force | Out-Null } catch {}
+
   $answer = Read-Host "Do you want to do a full install of this LRB build? (Y/N)"
   if ($answer -notin @("Y","y","Yes","yes")) {
     Write-Warn "Install cancelled."
@@ -255,9 +272,20 @@ try {
   Write-Host "Next:" -ForegroundColor Green
   Write-Host "  - Double-click 'LRB Jun30 - Start' on your Desktop" -ForegroundColor Green
   Write-Host ""
+
+  Show-InstallMessage -title "LRB Jun30 Build" -message ("Install complete.`n`nFolder:`n{0}`n`nLog:`n{1}`n`nNext: Use the Desktop shortcut 'LRB Jun30 - Start'." -f $installDir, $logPath)
 } catch {
-  Write-Err $_.Exception.Message
+  $msg = $_.Exception.Message
+  Write-Err $msg
+  if (-not $logPath) {
+    $logPath = "(log not available)"
+  }
+  Show-InstallMessage -title "LRB Jun30 Build - Install Failed" -message ("{0}`n`nLog:`n{1}" -f $msg, $logPath) -IsError
+  # Keep console visible if user double-clicked the EXE
+  try { Read-Host "Press Enter to close" | Out-Null } catch {}
   exit 1
+} finally {
+  try { Stop-Transcript | Out-Null } catch {}
 }
 
 
