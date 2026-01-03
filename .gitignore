@@ -43,6 +43,13 @@ dist/
 build/
 *.exe
 
+# Videos (keep these out of git)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
 # Temporary files
 *.tmp
 *.temp
