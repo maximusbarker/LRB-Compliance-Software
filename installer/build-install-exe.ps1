@@ -10,13 +10,20 @@ Output:
 
 [CmdletBinding()]
 param(
-  [string]$InputScript = "$PSScriptRoot\Install-LRB.ps1",
-  [string]$OutputExe = "$PSScriptRoot\install.exe"
+  [string]$InputScript,
+  [string]$OutputExe
 )
 
 $ErrorActionPreference = "Stop"
 
 function Write-Info([string]$msg) { Write-Host "[build] $msg" -ForegroundColor Cyan }
+
+function Get-ScriptDir() {
+  $p = $MyInvocation.MyCommand.Path
+  if ($p) { return (Split-Path -Parent $p) }
+  if ($PSScriptRoot) { return $PSScriptRoot }
+  return (Get-Location).Path
+}
 
 Write-Info "Ensuring PS2EXE module..."
 try {
@@ -30,6 +37,14 @@ try {
 
 Import-Module ps2exe -Force
 
+$scriptDir = Get-ScriptDir
+if (-not $InputScript) { $InputScript = Join-Path $scriptDir "Install-LRB.ps1" }
+if (-not $OutputExe) { $OutputExe = Join-Path $scriptDir "install.exe" }
+
+Write-Info "ScriptDir: $scriptDir"
+Write-Info "InputScript: $InputScript"
+Write-Info "OutputExe: $OutputExe"
+
 if (-not (Test-Path $InputScript)) {
   throw "Input script not found: $InputScript"
 }
@@ -37,7 +52,12 @@ if (-not (Test-Path $InputScript)) {
 Write-Info "Compiling $InputScript -> $OutputExe"
 
 # ps2exe will embed the script into an exe wrapper.
-Invoke-PS2EXE -InputFile $InputScript -OutputFile $OutputExe -NoConsole:$false -Force
+if (Test-Path $OutputExe) {
+  Remove-Item -LiteralPath $OutputExe -Force
+}
+
+# Build a console EXE (omit -noConsole switch). Default is console.
+Invoke-PS2EXE -InputFile $InputScript -OutputFile $OutputExe -x64 -noConfigFile
 
 Write-Info "Done."
 Write-Info "Installer EXE: $OutputExe"

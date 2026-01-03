@@ -43,6 +43,9 @@ dist/
 build/
 *.exe
 
+# Installer output (generated locally)
+installer/install.exe
+
 # Videos (keep these out of git)
 *.mp4
 *.mov
