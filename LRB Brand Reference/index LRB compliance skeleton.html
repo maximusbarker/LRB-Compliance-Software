@@ -3734,7 +3734,7 @@
         // Set API base URL - defaults to localhost, can be overridden for production
         window.API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000/api';
     </script>
-    <script src="../client/apiClient.js"></script>
+    <script src="../client/apiClient.js" onerror="console.error('Failed to load apiClient.js. Make sure the file exists at ../client/apiClient.js');"></script>
     
     <script>
         // Global jsPDF reference - handle different loading scenarios
@@ -13469,14 +13469,35 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
             try {
                 // Create PDF document definition (simplified version for single project)
                 const docDefinition = {
-                    content: [],
+                    pageSize: 'LETTER',
+                    pageMargins: [40, 60, 40, 60],
                     defaultStyle: {
-                        font: 'Roboto'
-                    }
+                        font: 'Roboto',
+                        fontSize: 10,
+                        lineHeight: 1.2
+                    },
+                    footer: function(currentPage, pageCount) {
+                        return {
+                            margin: [40, 0, 40, 0],
+                            text: [
+                                { text: `Page ${currentPage}`, fontSize: 8, color: '#999999' },
+                                { text: '  |  ', fontSize: 8, color: '#999999' },
+                                { text: 'LRB PUBLIC FINANCE ADVISORS | 41 NORTH RIO GRANDE, SUITE 101 | SALT LAKE CITY, UT 84101', fontSize: 8, color: '#999999' }
+                            ],
+                            alignment: 'center',
+                            margin: [40, 20, 40, 0] // Top margin pushes text to bottom of footer area
+                        };
+                    },
+                    content: []
                 };
                 
+                // Get submitter name from first submission
+                const submitterName = submissions.length > 0 
+                    ? (submissions[0].submitterName || submissions[0].cityCounty || city)
+                    : city;
+                
                 // Add cover page
-                addCoverPagePDFMake(docDefinition, city, year);
+                addCoverPagePDFMake(docDefinition, city, year, submitterName);
                 
                 // Add table of contents
                 addTableOfContentsPDFMake(docDefinition, submissions);
@@ -13491,7 +13512,7 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 addGoverningBoardSectionPDFMake(docDefinition, submissions);
                 
                 // Add combined budget section
-                addCombinedBudgetSectionPDFMake(docDefinition, submissions);
+                addCombinedBudgetSectionPDFMake(docDefinition, submissions, year);
                 
                 // Add acreage overview section
                 addAcreageOverviewSectionPDFMake(docDefinition, submissions);
@@ -13908,15 +13929,14 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 
                 console.log('✓ Proceeding with PDF generation for', cityYearSubmissions.length, 'submissions');
 
-                // Build PDFMake document definition
-                // Note: PDFMake uses Roboto fonts from vfs_fonts by default
+                // Build PDFMake document definition - MUST match individual report exactly
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [40, 60, 40, 60],
                     defaultStyle: {
+                        font: 'Roboto',
                         fontSize: 10,
                         lineHeight: 1.2
-                        // Don't specify font - PDFMake will use default (Roboto from vfs_fonts)
                     },
                     footer: function(currentPage, pageCount) {
                         return {
