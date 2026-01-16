@@ -14728,10 +14728,10 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                     coverPageContent.push({
                         canvas: [{
                             type: 'rect',
-                            x: -40, // Extend to left edge (negative left margin)
-                            y: -60, // Extend to top edge (negative top margin)
-                            w: bgWidth + 80, // Full width including margins
-                            h: bgHeight + 60, // Height including top margin
+                            x: 0, // Start at left edge of page
+                            y: 0, // Start at top edge of page
+                            w: 612, // Full page width (letter size)
+                            h: bgHeight, // Height
                             color: '#000000'
                         }]
                     });
@@ -15130,10 +15130,10 @@ Primary Rate: ${formatMasterRateValue(primaryRate)}`;
                 pageBreak: 'before',
                 canvas: [{
                     type: 'rect',
-                    x: -40, // Extend to left edge (negative left margin)
-                    y: -60, // Extend to top edge (negative top margin)
-                    w: 612 + 80, // Full page width (612pt + 40pt margins on each side)
-                    h: 30 + 60, // Header height (30pt + 60pt for top margin)
+                    x: 0, // Start at left edge of page
+                    y: 0, // Start at top edge of page
+                    w: 612, // Full page width (letter size)
+                    h: 30, // Header height
                     color: '#00B0F0'
                 }]
             });
